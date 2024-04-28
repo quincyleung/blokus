@@ -6,7 +6,7 @@ Modify only the methods marked as TODO.
 import copy
 from typing import Optional
 
-from shape_definitions import ShapeKind
+from shape_definitions import ShapeKind, definitions
 
 # A point is represented by row and column numbers (r, c). The
 # top-left corner of a grid is (0, 0). Note that rows/columns
@@ -81,8 +81,37 @@ class Shape:
         Create a Shape based on its string representation
         in shape_definitions.py. See that file for details.
         """
-        # TODO
-        raise NotImplementedError
+        #check that entering legal shape
+        assert kind in definitions, "kind not in definitions :("
+    
+        #remember to keep track of origin as anchor
+        if kind == ShapeKind.ONE:
+            return Shape(kind, None, False, [(0,0)])
+            #no origin in string
+        
+        elif kind == ShapeKind.TWO:
+            return Shape(kind, (0,0), True, [(0,0), (0,1)])
+        
+        elif kind == ShapeKind.THREE:
+            return Shape(kind, (0,1), True, [(0,0), (0,1), (0,2)])
+        
+
+        elif kind == ShapeKind.TWO:
+            return
+        elif kind == ShapeKind.TWO:
+            return
+        elif kind == ShapeKind.TWO:
+            return
+        elif kind == ShapeKind.TWO:
+            return
+        elif kind == ShapeKind.TWO:
+            return
+        elif kind == ShapeKind.TWO:
+            return
+        elif kind == ShapeKind.TWO:
+            return
+        elif kind == ShapeKind.TWO:
+            return
 
     def flip_horizontally(self) -> None:
         """
@@ -90,8 +119,16 @@ class Shape:
         (across the vertical axis through its origin),
         by modifying the squares in place.
         """
-        # TODO
-        raise NotImplementedError
+        _, o_col = self.origin
+    
+        for i, point in enumerate(self.squares):
+            row, col = point
+            if col < o_col:
+                self.squares[i] = (row, o_col+(o_col-col))
+                #update col value to origin col + diff in col vals
+            elif col > o_col:
+                self.squares[i] = (row, o_col-(o_col-col))
+                #update col value to origin col - diff in col vals
 
     def rotate_left(self) -> None:
         """
