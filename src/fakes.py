@@ -4,7 +4,7 @@ Fake implementations of BlokusBase.
 We provide a BlokusStub implementation, and
 you must provide a BlokusFake implementation.
 """
-from shape_definitions import ShapeKind
+from shape_definitions import ShapeKind, definitions
 from piece import Point, Shape, Piece
 from base import BlokusBase, Grid
 
@@ -249,11 +249,16 @@ class BlokusStub(BlokusBase):
 #
 # Your BlokusFake implementation goes here
 #
-class BlockusFake(BlokusBase):
+class BlokusFake(BlokusBase):
     """
     Class for Fake Blokus game logic.
     """
     def __init__(self, num_players: int, size: int, start_positions: set[tuple[int, int]]) -> None:
+        if not (1 <= num_players <= 4) or size < 5 or len(start_positions) < num_players:
+            raise ValueError
+        for x, y in start_positions:
+            if not (0 <= x < size) or not (0 <= x < size):
+                raise ValueError
         super().__init__(num_players, size, start_positions)
     
     #
@@ -275,7 +280,15 @@ class BlockusFake(BlokusBase):
 
         See shape_definitions.py for more details.
         """
-        raise NotImplementedError
+        all_shapes: dict[ShapeKind, Shape] = dict()
+
+        shape_kinds = [ShapeKind.ONE, ShapeKind.TWO, ShapeKind.THREE]
+        
+        for kind in shape_kinds:
+            Shape.from_string(kind, definitions[kind])
+        #all_shapes[ShapeKind.ONE] = Shape(ShapeKind.ONE, (0, 0), False, [(0, 0)])
+        print("Shape dict:", all_shapes)
+
     
     @property
     def size(self) -> int:
@@ -428,7 +441,17 @@ class BlockusFake(BlokusBase):
         can be computed at any time during gameplay or at the
         completion of a game.
         """
-        raise NotImplementedError
+        total = 0
+        for row in self.grid:
+            for cell in row:
+                num, shape_kind = cell
+                if num == player:
+                    shape = definitions[shape_kind]
+                    total += shape.count('X')
+                    total += shape.count('O')
+        # need to subtract pieces they have not played
+        return total
+
 
     def available_moves(self) -> set[Piece]:
         """
