@@ -261,14 +261,15 @@ class Piece:
 
         Raises ValueError if anchor is not set.
         """
-        assert self.anchor is not None #idk if needed bc checked in self.squares
-        #attempting set comprehension
-        #return {(r-1,c), (r+1,c), (r,c+1), (r,c-1) for (r,c) in self.squares}
-        #commenting out bc i don't think that works
-    
+        if self.anchor is None:
+            raise ValueError("anchor is not set")
+
         card_nbs = set()
         for (r,c) in self.squares:
-            card_nbs.add((r-1,c), (r+1,c), (r,c+1), (r,c-1))
+            n_s_e_w = {(r-1,c), (r+1,c), (r,c+1), (r,c-1)}
+            for neighbor in n_s_e_w:
+                if neighbor not in self.squares:
+                    card_nbs.add(neighbor)
         return card_nbs
 
     def intercardinal_neighbors(self) -> set[Point]:
