@@ -261,8 +261,15 @@ class Piece:
 
         Raises ValueError if anchor is not set.
         """
-        # TODO
-        raise NotImplementedError
+        assert self.anchor is not None #idk if needed bc checked in self.squares
+        #attempting list comprehension
+        #return [(r-1,c), (r+1,c), (r,c+1), (r,c-1) for (r,c) in self.squares]
+        #commenting out bc i don't think that works
+    
+        card_nbs = set()
+        for (r,c) in self.squares:
+            card_nbs.add((r-1,c), (r+1,c), (r,c+1), (r,c-1))
+        return card_nbs
 
     def intercardinal_neighbors(self) -> set[Point]:
         """
