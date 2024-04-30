@@ -1,12 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from base import BlokusBase
+from base import BlokusBase, Grid
 from piece import Point, Shape, Piece
 from shape_definitions import ShapeKind
 
-Cell = Optional[tuple[int, ShapeKind]]
-Grid = list[list[Cell]]
 
 class Blokus(BlokusBase):
     @property
