@@ -81,10 +81,9 @@ class Shape:
         Create a Shape based on its string representation
         in shape_definitions.py. See that file for details.
         """
-        #check that entering legal shape
-        assert kind in definitions, "kind not in definitions :("
+        # Check that entering legal shape
+        assert kind in definitions, f"kind: {kind} not in definitions :("
     
-        #remember to keep track of origin as anchor
         if kind == ShapeKind.ONE:
             return Shape(kind, (0, 0), False, [(0,0)])
         
@@ -94,7 +93,6 @@ class Shape:
         elif kind == ShapeKind.THREE:
             return Shape(kind, (0, 0), True, [(-1, 0), (0, 0), (0, 1)])
         
-        #grace
         elif kind == ShapeKind.C:
             return Shape(kind, (0, 0), True, [(0, 0), (0, 1), (1, 0)])
 
@@ -253,8 +251,7 @@ class Piece:
 
         Raises ValueError if anchor is not set.
         """
-        if self.anchor is None:
-            raise ValueError("anchor is not set")
+        self._check_anchor()
 
         card_nbs = set()
         for (r,c) in self.squares:
