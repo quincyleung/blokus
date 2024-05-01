@@ -405,7 +405,14 @@ class BlokusFake(BlokusBase):
         Returns a list of shape kinds that a particular
         player has not yet played.
         """
-        
+        shape_kinds = self.shapes.keys().copy()
+
+        for row in self.grid:
+            for cell in row:
+                p, shape = cell
+                if player == p:
+                    shape_kinds.remove(shape)
+        return shape_kinds
 
     def any_wall_collisions(self, piece: Piece) -> bool:
         """
@@ -422,7 +429,17 @@ class BlokusFake(BlokusBase):
         Raises ValueError if the anchor of the piece
         is None or not a valid position on the board.
         """
-        raise NotImplementedError
+        if piece not in self.remaining_shapes or piece.origin is None:
+            raise ValueError
+        r, c = piece.origin
+        if (r < 0 or r >= self.size) or (c < 0 or c >= self.size):
+            raise ValueError
+        
+        for point in piece.squares():
+            r, c = point
+            if (r < 0 or r >= self.size) or (c < 0 or c >= self.size):
+                return False
+        return True
 
     def any_collisions(self, piece: Piece) -> bool:
         """
@@ -438,7 +455,17 @@ class BlokusFake(BlokusBase):
         Raises ValueError if the anchor of the piece
         is None or not a valid position on the board.
         """
-        raise NotImplementedError
+        if piece not in self.remaining_shapes or piece.origin is None:
+            raise ValueError
+        r, c = piece.origin
+        if (r < 0 or r >= self.size) or (c < 0 or c >= self.size):
+            raise ValueError
+        
+        for point in piece.squares():
+            r, c = point
+            if self.grid[r][c] is not None:
+                return False
+        return self.any_wall_collisions(piece)
 
     def legal_to_place(self, piece: Piece) -> bool:
         """
@@ -457,6 +484,10 @@ class BlokusFake(BlokusBase):
         Raises ValueError if the player has already
         played a piece with this shape.
         """
+        if piece not in self.remaining_shapes:
+            raise ValueError
+        if len(self.available_moves) == 21:
+            piece.
 
     def maybe_place(self, piece: Piece) -> bool:
         """
@@ -484,7 +515,7 @@ class BlokusFake(BlokusBase):
         may choose to retire. This player does not get any more
         turns; they are skipped over during subsequent gameplay.
         """
-        self.retired_players
+        self._retired_players.add(self.curr_player)
 
     def get_score(self, player: int) -> int:
         """
