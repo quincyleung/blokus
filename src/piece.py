@@ -86,8 +86,7 @@ class Shape:
     
         #remember to keep track of origin as anchor
         if kind == ShapeKind.ONE:
-            return Shape(kind, None, False, [(0,0)])
-            #no origin in string
+            return Shape(kind, (0, 0), False, [(0,0)])
         
         elif kind == ShapeKind.TWO:
             return Shape(kind, (0, 0), True, [(0, 0), (0, 1)])
@@ -109,7 +108,7 @@ class Shape:
             return Shape(kind, (0, 0), True, [(0, 0), (0, 1), (1, -1), (1, 0)])
 
         elif kind == ShapeKind.LETTER_O:
-            return Shape(kind, None, False, [(0, 0), (0, 1), (1, 0), (1, 1)])
+            return Shape(kind, (0, 0), False, [(0, 0), (0, 1), (1, 0), (1, 1)])
 
         elif kind == ShapeKind.A:
             return Shape(kind, (0, 0), True, [(-1, 0), (0, -1), (0, 0), (0, 1)])
