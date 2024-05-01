@@ -4,6 +4,8 @@ Fake implementations of BlokusBase.
 We provide a BlokusStub implementation, and
 you must provide a BlokusFake implementation.
 """
+from typing import Optional
+
 from shape_definitions import ShapeKind, definitions
 from piece import Point, Shape, Piece
 from base import BlokusBase, Grid
@@ -252,12 +254,22 @@ class BlokusStub(BlokusBase):
 class BlokusFake(BlokusBase):
     """
     Class for Fake Blokus game logic.
+    
+    num_players: Number of players
+    size: Number of squares on each side of the board
+    start_positions: Positions for players' first moves
+
+    Raises ValueError...
+    if num_players is less than 1 or more than 4,
+    if the size is less than 5,
+    if not all start_positions are on the board, or
+    if there are fewer start_positions than num_players.    
     """
     def __init__(self, num_players: int, size: int, start_positions: set[tuple[int, int]]) -> None:
-        if not (1 <= num_players <= 4) or size < 5 or len(start_positions) < num_players:
+        if not (1 <= num_players <= 2) or size < 5 or len(start_positions) < num_players:
             raise ValueError
         for x, y in start_positions:
-            if not (0 <= x < size) or not (0 <= x < size):
+            if not (0 <= x < size) or not (0 <= y < size):
                 raise ValueError
         super().__init__(num_players, size, start_positions)
     
@@ -289,7 +301,6 @@ class BlokusFake(BlokusBase):
         #all_shapes[ShapeKind.ONE] = Shape(ShapeKind.ONE, (0, 0), False, [(0, 0)])
         print("Shape dict:", all_shapes)
 
-    
     @property
     def size(self) -> int:
         """
@@ -344,7 +355,24 @@ class BlokusFake(BlokusBase):
         then the Cell is None.
         """
         raise NotImplementedError
-    
+ 
+    @property
+    def game_over(self) -> bool:
+        """
+        Returns whether or not the game is over. A game is over
+        when every player is either retired or has played all
+        their pieces.
+        """
+        return self.retired_players == self.num_players
+
+    @property
+    def winners(self) -> Optional[list[int]]:
+        """
+        Returns the (one or more) players who have the highest
+        score. Returns None if the game is not over.
+        """
+        return [1]
+
     #
     # METHODS
     #
@@ -433,7 +461,7 @@ class BlokusFake(BlokusBase):
         may choose to retire. This player does not get any more
         turns; they are skipped over during subsequent gameplay.
         """
-        raise NotImplementedError
+        self.retired_players
 
     def get_score(self, player: int) -> int:
         """
@@ -441,17 +469,14 @@ class BlokusFake(BlokusBase):
         can be computed at any time during gameplay or at the
         completion of a game.
         """
-        total = 0
-        for row in self.grid:
-            for cell in row:
-                num, shape_kind = cell
-                if num == player:
-                    shape = definitions[shape_kind]
-                    total += shape.count('X')
-                    total += shape.count('O')
-        # need to subtract pieces they have not played
-        return total
+        # score = total number of squares - square on pieces they have not played
+        remaining = 0
 
+        for piece in self.available_moves():
+            num_squares = len(piece.squares())
+            remaining += num_squares
+        print("remaining", remaining)
+        return -(remaining)
 
     def available_moves(self) -> set[Piece]:
         """
