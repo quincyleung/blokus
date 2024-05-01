@@ -129,16 +129,9 @@ class Shape:
         (across the vertical axis through its origin),
         by modifying the squares in place.
         """
-        _, o_col = self.origin
-    
         for i, point in enumerate(self.squares):
             row, col = point
-            if col < o_col:
-                self.squares[i] = (row, o_col+(o_col-col))
-                #update col value to origin col + diff in col vals
-            elif col > o_col:
-                self.squares[i] = (row, o_col-(o_col-col))
-                #update col value to origin col - diff in col vals
+            self.squares[i] = (row, -col)
 
     def rotate_left(self) -> None:
         """
