@@ -265,6 +265,14 @@ class BlokusFake(BlokusBase):
     if not all start_positions are on the board, or
     if there are fewer start_positions than num_players.    
     """
+
+    _shapes: dict[ShapeKind, Shape]
+    _size: int
+    _num_players: int
+    _curr_player: int
+    _grid: Grid
+    _num_moves: int
+
     def __init__(self, num_players: int, size: int, start_positions: set[tuple[int, int]]) -> None:
         if not (1 <= num_players <= 2) or size < 5 or len(start_positions) < num_players:
             raise ValueError
@@ -272,7 +280,17 @@ class BlokusFake(BlokusBase):
             if not (0 <= x < size) or not (0 <= y < size):
                 raise ValueError
         super().__init__(num_players, size, start_positions)
-    
+        self._shapes = {}
+        self._curr_player = 1
+        self._grid = [[None] * size for _ in range(size)]
+        self._num_moves = 0
+
+        # load 21 shapes
+        for kind, definition in definitions.items():
+            cur_shape = Shape.from_string(kind, definition)
+        self._shapes[kind] = cur_shape
+        print("Shape dict:", self._shapes)
+
     #
     # PROPERTIES
     #
@@ -292,28 +310,21 @@ class BlokusFake(BlokusBase):
 
         See shape_definitions.py for more details.
         """
-        all_shapes: dict[ShapeKind, Shape] = dict()
-
-        shape_kinds = [ShapeKind.ONE, ShapeKind.TWO, ShapeKind.THREE]
-        
-        for kind in shape_kinds:
-            Shape.from_string(kind, definitions[kind])
-        #all_shapes[ShapeKind.ONE] = Shape(ShapeKind.ONE, (0, 0), False, [(0, 0)])
-        print("Shape dict:", all_shapes)
+        return self._shapes
 
     @property
     def size(self) -> int:
         """
         Returns the board size (the number of squares per side).
         """
-        raise NotImplementedError
+        return self._size
     
     @property
     def start_positions(self) -> set[Point]:
         """
         Returns the start positions.
         """
-        raise NotImplementedError
+        return self._start_positions
 
     @property
     def num_players(self) -> int:
@@ -321,7 +332,7 @@ class BlokusFake(BlokusBase):
         Returns the number of players. Players are numbered
         consecutively, starting from 1.
         """
-        raise NotImplementedError
+        return self._num_players
     
     @property
     def curr_player(self) -> int:
@@ -333,8 +344,9 @@ class BlokusFake(BlokusBase):
         before playing all of their pieces. If the game is over,
         this property will not return a meaningful value.
         """
-        raise NotImplementedError
+        return self._curr_player
     
+    # need to implement
     @property
     def retired_players(self) -> set[int]:
         """
@@ -342,7 +354,7 @@ class BlokusFake(BlokusBase):
         players do not get any more turns; they are skipped
         over during subsequent gameplay.
         """
-        raise NotImplementedError
+        return set()
     
     @property
     def grid(self) -> Grid:
@@ -354,8 +366,8 @@ class BlokusFake(BlokusBase):
         of that piece. If no played piece occupies this square,
         then the Cell is None.
         """
-        raise NotImplementedError
- 
+        return self._grid
+
     @property
     def game_over(self) -> bool:
         """
@@ -363,7 +375,7 @@ class BlokusFake(BlokusBase):
         when every player is either retired or has played all
         their pieces.
         """
-        return self.retired_players == self.num_players
+        return self.retired_players == self.num_players or len(self.available_moves) == 0
 
     @property
     def winners(self) -> Optional[list[int]]:
@@ -371,7 +383,17 @@ class BlokusFake(BlokusBase):
         Returns the (one or more) players who have the highest
         score. Returns None if the game is not over.
         """
-        return [1]
+        highest_score: int = float('-inf')
+        highest_player: list[int] = []
+
+        for i in range(self.num_players):
+            # if greater than tracker
+            if self.get_score(i) > highest_score:
+                highest_score = self.get_score(i)
+                highest_player.append(i)
+            elif self.get_score(i) == highest_score:
+                highest_player.append(i)
+        return highest_player
 
     #
     # METHODS
