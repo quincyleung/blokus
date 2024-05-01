@@ -272,6 +272,7 @@ class BlokusFake(BlokusBase):
     _curr_player: int
     _grid: Grid
     _num_moves: int
+    _retired_players: set[int]
 
     def __init__(self, num_players: int, size: int, start_positions: set[tuple[int, int]]) -> None:
         if not (1 <= num_players <= 2) or size < 5 or len(start_positions) < num_players:
@@ -284,6 +285,7 @@ class BlokusFake(BlokusBase):
         self._curr_player = 1
         self._grid = [[None] * size for _ in range(size)]
         self._num_moves = 0
+        self._retired_players = set()
 
         # load 21 shapes
         for kind, definition in definitions.items():
@@ -346,7 +348,6 @@ class BlokusFake(BlokusBase):
         """
         return self._curr_player
     
-    # need to implement
     @property
     def retired_players(self) -> set[int]:
         """
@@ -354,7 +355,7 @@ class BlokusFake(BlokusBase):
         players do not get any more turns; they are skipped
         over during subsequent gameplay.
         """
-        return set()
+        return self._retired_players
     
     @property
     def grid(self) -> Grid:
@@ -404,7 +405,7 @@ class BlokusFake(BlokusBase):
         Returns a list of shape kinds that a particular
         player has not yet played.
         """
-        raise NotImplementedError
+        
 
     def any_wall_collisions(self, piece: Piece) -> bool:
         """
