@@ -83,7 +83,8 @@ class Shape:
         """
         # Check that entering legal shape
         assert kind in definitions, f"kind: {kind} not in definitions :("
-    
+
+        # note: coordinates are in the form (row, column)
         if kind == ShapeKind.ONE:
             return Shape(kind, (0, 0), False, [(0,0)])
         
@@ -119,7 +120,34 @@ class Shape:
 
         elif kind == ShapeKind.L:
             return Shape(kind, (0, 0), True, [(-2, 0), (-1, 0), (0, 0), (1, 0), (1, 1)])
-    
+
+        elif kind == ShapeKind.N:
+            return Shape(kind, (0, 0), True, [(-1, 1), (0, 1), (0, 0), (0, 1), (0, 2)])
+
+        elif kind == ShapeKind.P:
+            return Shape(kind, (0, 0), True, [(-1, -1), (0, -1), (1, -1), (-1, 0), (0, 0)])
+
+        elif kind == ShapeKind.T:
+            return Shape(kind, (0, 0), True, [(-1, -1), (-1, 0), (-1, 1), (0, 0), (1, 0)])
+
+        elif kind == ShapeKind.U:
+            return Shape(kind, (0, 0), True, [(-1, -1), (0, -1), (0, 0), (-1, 1), (0, 1)])
+
+        elif kind == ShapeKind.V:
+            return Shape(kind, (0, 0), True, [(1, -1), (1, 0), (-1, 1), (0, 1), (1, 1)])
+
+        elif kind == ShapeKind.W:
+            return Shape(kind, (0, 0), True, [(1, -1), (1, 0), (0, 0), (0, 1), (-1, 1)])
+
+        elif kind == ShapeKind.X:
+            return Shape(kind, (0, 0), True, [(-1, 0), (0, -1), (0, 0), (1, 0), (0, 1)])
+
+        elif kind == ShapeKind.Y:
+            return Shape(kind, (0, 0), True, [(0, -1), (-1, 0), (0, 0), (1, 0), (2, 0)])
+
+        elif kind == ShapeKind.Z:
+            return Shape(kind, (0, 0), True, [(-1, -1), (-1, 0), (0, 0), (1, 0), (1, 1)])
+
 
     def flip_horizontally(self) -> None:
         """
