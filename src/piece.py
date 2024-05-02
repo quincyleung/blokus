@@ -101,25 +101,44 @@ class Shape:
         # Check that entering legal shape
         assert kind in definitions, f"kind: {kind} not in definitions :("
 
+        shape_squares: list[tuple[int]] = []
         shape_def_list = list(textwrap.dedent(definition))
         shape_def_list.remove("\n")
-        origin_index = shape_def_list.index("O")
-        shape_squares: list[tuple[int]] = []
-
-        print("Shape definition", shape_def_list)
-        print("origin:", origin_index)
-
-        square_row: int = 0
         square_col: int = 0
+        square_row: int = 0
+        has_origin = False
 
-        for index, square in enumerate(shape_def_list):
-            if square == "\n":
-                square_col = index - origin_index
-                square_row = index
-            elif square == "X" or "O":
+        print("shape def list:", shape_def_list)
+        if "O" in shape_def_list:
+            origin_index = shape_def_list.index("O")
+            prev_rows = shape_def_list[:origin_index].count("\n")
+            prev_cols = shape_def_list[:origin_index].count(" ")
+            square_row = -prev_rows
+            square_col: int = -prev_cols
+            origin = tuple()
+            has_origin = True
+
+        for square in shape_def_list:
+            if square == "\n" and has_origin:
+                square_row += 1
+                square_col = -prev_cols
+            elif square == "\n" and not has_origin:
+                square_row += 1
+                square_col = 0
+            elif square == " ":
                 square_col += 1
+            elif square == "X":
                 shape_squares.append((square_row, square_col))
+                square_col += 1
+            elif square == "O":
+                square_row = 0
+                square_col = 0
+                shape_squares.append((square_row, square_col))
+                origin = (square_row, square_col)
         print("shape:", shape_squares)
+        if not has_origin:
+            return Shape(kind, (0, 0), False, shape_squares)
+        return Shape(kind, origin, True, shape_squares)
 
         # note: coordinates are in the form (row, column)
         if kind == ShapeKind.ONE:
