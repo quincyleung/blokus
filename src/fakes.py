@@ -290,14 +290,8 @@ class BlokusFake(BlokusBase):
 
         # load 21 shapes
         for kind, definition in definitions.items():
-            #definition_list = list(textwrap.dedent(definition))
-            #print("kind:", kind, "definition", definition_list)
             cur_shape = Shape.from_string(kind, definition)
-            #print("cur shape:", cur_shape)
             self._shapes[kind] = cur_shape
-        print("Shape dict:", self._shapes)
-
-        Shape(ShapeKind.ONE, (0, 0), False, [(0, 0)])
 
     #
     # PROPERTIES
@@ -441,14 +435,16 @@ class BlokusFake(BlokusBase):
         Raises ValueError if the anchor of the piece
         is None.
         """
-        if piece not in self.remaining_shapes or piece.anchor is None:
-            raise ValueError("Player has already played a piece with this shape or anchor of the piece is None")
+        if piece.shape.kind not in self.remaining_shapes(self.curr_player):
+            raise ValueError("Player has already played a piece with this shape")
+        if piece.anchor is None:
+            raise ValueError("Anchor of the piece is None")
 
         for point in piece.squares():
             r, c = point
             if (r < 0 or r >= self.size) or (c < 0 or c >= self.size):
-                return False
-        return True
+                return True
+        return False
 
     def any_collisions(self, piece: Piece) -> bool:
         """
@@ -464,13 +460,15 @@ class BlokusFake(BlokusBase):
         Raises ValueError if the anchor of the piece
         is None.
         """
-        if piece not in self.remaining_shapes or piece.anchor is None:
-            raise ValueError("Player has already played a piece with this shape or anchor of the piece is None")
+        if piece.shape.kind not in self.remaining_shapes(self.curr_player):
+            raise ValueError("Player has already played a piece with this shape")
+        if piece.anchor is None:
+            raise ValueError("Anchor of the piece is None")
         
         for point in piece.squares():
             r, c = point
             if self.grid[r][c] is not None:
-                return False
+                return True
         return self.any_wall_collisions(piece)
 
     def legal_to_place(self, piece: Piece) -> bool:
@@ -496,13 +494,15 @@ class BlokusFake(BlokusBase):
         pos_requirement = False
         corner = False
 
-        if piece not in self.remaining_shapes or piece.anchor is None:
-            raise ValueError("Player has already played a piece with this shape or anchor of the piece is None")
+        if piece.shape.kind not in self.remaining_shapes(self.curr_player):
+            raise ValueError("Player has already played a piece with this shape")
+        if piece.anchor is None:
+            raise ValueError("Anchor of the piece is None")
         
-        if not self.any_collisions(piece):
+        if self.any_collisions(piece):
             return False
         for point in piece.squares():
-            if len(self.remaining_shapes) == 21:
+            if len(self.remaining_shapes(self.curr_player)) == 21:
                 if point in self.start_positions:
                     pos_requirement = True
             r, c = point
@@ -535,8 +535,10 @@ class BlokusFake(BlokusBase):
         Raises ValueError if the anchor of the piece
         is None.
         """
-        if piece not in self.remaining_shapes or piece.anchor is None:
-            raise ValueError("Player has already played a piece with this shape or anchor of the piece is None")
+        if piece.shape.kind not in self.remaining_shapes(self.curr_player):
+            raise ValueError("Player has already played a piece with this shape")
+        if piece.anchor is None:
+            raise ValueError("Anchor of the piece is None")
         
         if self.legal_to_place(piece):
             for point in piece.squares():
