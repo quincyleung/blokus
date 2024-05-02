@@ -588,14 +588,11 @@ class BlokusFake(BlokusBase):
         can be computed at any time during gameplay or at the
         completion of a game.
         """
-        # score = total number of squares - square on pieces they have not played
         total: int = 0
         remaining = self.remaining_shapes(player)
         for shapekind in remaining:
-            #print("shape", shapekind)
             cur_shape = Shape.from_string(shapekind, definitions[shapekind])
             total += len(cur_shape.squares)
-        #print("remaining", total)
         return -(total)
 
     def available_moves(self) -> set[Piece]:
