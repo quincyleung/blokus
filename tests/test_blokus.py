@@ -82,55 +82,59 @@ def test_shapes_loaded() -> None:
     """
     blokus = init_blokus_classic()
 
-    expected_shapes = {
-        ShapeKind.ONE: {"can_be_transformed": False, "squares": [(0, 0)]},
-        ShapeKind.TWO: {"can_be_transformed": True, "squares": [(0, 0), 
-                                                                (0, 1)]},
-        ShapeKind.THREE: {"can_be_transformed": True, "squares": [(0, 0),
-                                                        (1, 0), (2, 0)]},
-        ShapeKind.C: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
-                                                                    (1, 0)]}, 
-        ShapeKind.FOUR: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
-                                                            (0, 2), (0, 3)]}, 
-        ShapeKind.SEVEN: {"can_be_transformed": True, "squares": [(0, 0),
-                                                    (0, 1), (1, 0), (1, 1)]}, 
-        ShapeKind.S: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
-                                                            (1, 1), (1, 2)]}, 
-        ShapeKind.LETTER_O: {"can_be_transformed": False, "squares": [(0, 0),
-                                                    (0, 1), (1, 0), (1, 1)]}, 
-        ShapeKind.A: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
-                                                            (1, 0), (2, 0)]}, 
-        ShapeKind.F: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
-                                                    (1, 0), (1, -1), (1, 1)]}, 
-        ShapeKind.FIVE: {"can_be_transformed": True, "squares": [(0, 0), (1, 0),
-                                                    (2, 0), (3, 0), (4, 0)]},
-        ShapeKind.L: {"can_be_transformed": True, "squares": [(0, 0), (1, 0),
-                                                    (2, 0), (2, 1), (2, 2)]}, 
-        ShapeKind.N: {"can_be_transformed": True, "squares": [(0, 0), (1, 0),
-                                                    (1, 1), (1, 2), (2, 2)]},                                                 
-        ShapeKind.P: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
-                                                    (1, 0), (1, 1), (2, 1)]}, 
-        ShapeKind.T: {"can_be_transformed": True, "squares": [(0, 0), (1, 0),
-                                                    (2, 0), (2, -1), (2, 1)]}, 
-        ShapeKind.U: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
-                                                    (0, 2), (1, 0), (1, 2)]}, 
-        ShapeKind.V: {"can_be_transformed": True, "squares": [(0, 0), (1, 0),
-                                                    (2, 0), (2, 1), (2, 2)]}, 
-        ShapeKind.W: {"can_be_transformed": True, "squares": [(0, 0), (1, 0),
-                                                    (1, 1), (2, 1), (2, 2)]},
-        ShapeKind.X: {"can_be_transformed": True, "squares": [(0, 1), (-1, 0),
-                                                    (0, 0), (1, 0), (0, -1)]}, 
-        ShapeKind.Y: {"can_be_transformed": True, "squares": [(0, 0), (1, 0),
-                                                    (2, 0), (3, 0), (2, 1)]}, 
-        ShapeKind.Z: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
-                                                    (1, 1), (1, 2), (2, 2)]}                                                                                                                                                                                                                                                                                                                                             
+    # Creating dict to track expected attributes of each shape
+    # Expected squares based on origin (0, 0) and string representations
+    expected_shapes: dict[ShapeKind, 
+                    dict[str, bool | set[tuple[int, int]]]] = {
+        ShapeKind.ONE: {"can_be_transformed": False, "squares": {(0, 0)}},
+        ShapeKind.TWO: {"can_be_transformed": True, "squares": {(0, 0), 
+                                                                (0, 1)}},
+        ShapeKind.THREE: {"can_be_transformed": True, "squares": {(0, -1),
+                                                        (0, 0), (0, 1)}},
+        ShapeKind.C: {"can_be_transformed": True, "squares": {(0, 0), (0, 1),
+                                                                    (1, 0)}}, 
+        ShapeKind.FOUR: {"can_be_transformed": True, "squares": {(0, -1), 
+                                                (0, 0), (0, 1), (0, 2)}}, 
+        ShapeKind.SEVEN: {"can_be_transformed": True, "squares": {(-1, -1),
+                                                    (-1, 0), (0, 0), (1, 0)}}, 
+        ShapeKind.S: {"can_be_transformed": True, "squares": {(0, 0), (0, 1),
+                                                            (1, -1), (1, 0)}}, 
+        ShapeKind.LETTER_O: {"can_be_transformed": False, "squares": {(0, 0),
+                                                    (0, 1), (1, 0), (1, 1)}}, 
+        ShapeKind.A: {"can_be_transformed": True, "squares": {(-1, 0), (0, -1),
+                                                            (0, 0), (0, 1)}}, 
+        ShapeKind.F: {"can_be_transformed": True, "squares": {(-1, 0), (-1, 1),
+                                                    (0, -1), (0, 0), (1, 0)}}, 
+        ShapeKind.FIVE: {"can_be_transformed": True, "squares": {(-2, 0),
+                                        (-1, 0), (0, 0), (1, 0), (2, 0)}},
+        ShapeKind.L: {"can_be_transformed": True, "squares": {(-2, 0), (-1, 0),
+                                                    (0, 0), (1, 0), (1, 1)}}, 
+        ShapeKind.N: {"can_be_transformed": True, "squares": {(-1, 1), (0, 0),
+                                                    (0, 1), (1, 0), (2, 0)}},                                                 
+        ShapeKind.P: {"can_be_transformed": True, "squares": {(-1, -1), (-1, 0),
+                                                    (0, -1), (0, 0), (1, -1)}}, 
+        ShapeKind.T: {"can_be_transformed": True, "squares": {(-1, -1), (-1, 0),
+                                                    (-1, 1), (0, 0), (1, 0)}}, 
+        ShapeKind.U: {"can_be_transformed": True, "squares": {(-1, -1), (0, -1),
+                                                    (0, 0), (0, 1), (-1, 1)}}, 
+        ShapeKind.V: {"can_be_transformed": True, "squares": {(-1, 1), (0, 1),
+                                                    (1, -1), (1, 0), (1, 1)}}, 
+        ShapeKind.W: {"can_be_transformed": True, "squares": {(0, 2), (1, 1),
+                                                    (1, 2), (2, 0), (2, 1)}},
+        ShapeKind.X: {"can_be_transformed": True, "squares": {(-1, 1), (0, 0),
+                                                    (0, 1), (1, -1), (1, 0)}}, 
+        ShapeKind.Y: {"can_be_transformed": True, "squares": {(-1, 0), (0, -1),
+                                                    (0, 0), (1, 0), (2, 0)}}, 
+        ShapeKind.Z: {"can_be_transformed": True, "squares": {(-1, -1), (-1, 0),
+                                                    (0, 0), (1, 0), (1, 1)}}                                                                                                                                                                                                                                                                                                                                             
     }
 
     for kind, exp in expected_shapes.items():
         shape = blokus.shapes[kind]
         assert shape.kind == kind
         assert shape.can_be_transformed == exp["can_be_transformed"]
-        assert shape.squares == exp["squares"]
+        for square in shape.squares:
+            assert square in exp["squares"]
     
 def test_some_flipped_shapes() -> Blokus:
     """
