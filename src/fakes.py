@@ -507,10 +507,11 @@ class BlokusFake(BlokusBase):
                     pos_requirement = True
             r, c = point
             for i in range(9):
-                if i != 4 and i % 2 == 0:
-                    if self.grid[r - 1 + (i//3)][(c-1) + i % 3][0] == self.curr_player:
+                grid_value = self.grid[r - 1 + (i//3)][(c-1) + i % 3][0]
+                if i != 4 and i % 2 == 0 and grid_value is not None:
+                    if grid_value[0] == self.curr_player:
                         corner = True
-                elif self.grid[r - 1 + (i//3)][(c-1) + i % 3][0] == self.curr_player:
+                elif grid_value is not None and grid_value[0] == self.curr_player:
                     return False
         return pos_requirement and self.any_collisions(piece) and corner
 
