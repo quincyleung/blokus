@@ -22,10 +22,12 @@ Point = tuple[int, int]
 # In other cases, the row and col functions may be helpful.
 #
 def row(point: Point) -> int:
+    """Returns the row value of a point."""
     return point[0]
 
 
 def col(point: Point) -> int:
+    """Returns the column value of a point."""
     return point[1]
 
 
@@ -115,7 +117,8 @@ class Shape:
             if "@" in shape_def_list:
                 origin_index = shape_def_list.index("@")
             prev_rows = shape_def_list[:origin_index].count("\n")
-            prev_cols = shape_def_list[:origin_index].count(" ") + shape_def_list[:origin_index].count("@")
+            prev_cols = (shape_def_list[:origin_index].count(" ")
+                        + shape_def_list[:origin_index].count("@"))
             for prev in shape_def_list[:origin_index]:
                 if prev == "\n":
                     prev_cols = 0
@@ -279,15 +282,8 @@ class Piece:
 
         Raises ValueError if anchor is not set.
         """
-        self._check_anchor()
-
-        card_nbs = set()
-        for (r,c) in self.squares:
-            n_s_e_w = {(r-1,c), (r+1,c), (r,c+1), (r,c-1)}
-            for neighbor in n_s_e_w:
-                if neighbor not in self.squares:
-                    card_nbs.add(neighbor)
-        return card_nbs
+        # TODO
+        raise NotImplementedError
 
     def intercardinal_neighbors(self) -> set[Point]:
         """
