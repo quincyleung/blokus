@@ -5,6 +5,7 @@ We provide a BlokusStub implementation, and
 you must provide a BlokusFake implementation.
 """
 from typing import Optional
+import textwrap
 
 from shape_definitions import ShapeKind, definitions
 from piece import Point, Shape, Piece
@@ -279,7 +280,7 @@ class BlokusFake(BlokusBase):
             raise ValueError
         for x, y in start_positions:
             if not (0 <= x < size) or not (0 <= y < size):
-                raise ValueError
+                raise ValueError("Not all start positions are on the board")
         super().__init__(num_players, size, start_positions)
         self._shapes = {}
         self._curr_player = 1
@@ -289,9 +290,14 @@ class BlokusFake(BlokusBase):
 
         # load 21 shapes
         for kind, definition in definitions.items():
+            definition_list = list(textwrap.dedent(definition))
+            print("kind:", kind, "definition", definition_list)
             cur_shape = Shape.from_string(kind, definition)
-        self._shapes[kind] = cur_shape
-        print("Shape dict:", self._shapes)
+            print("cur shape:", cur_shape)
+            self._shapes[kind] = cur_shape
+        #print("Shape dict:", self._shapes)
+
+        Shape(ShapeKind.ONE, (0, 0), False, [(0, 0)])
 
     #
     # PROPERTIES
@@ -376,7 +382,12 @@ class BlokusFake(BlokusBase):
         when every player is either retired or has played all
         their pieces.
         """
-        return self.retired_players == self.num_players or len(self.available_moves) == 0
+        if self.retired_players == self.num_players:
+            return True
+        for i in range(self.num_players):
+            if len(self.remaining_shapes(i)) != 0:
+                return False
+        return True
 
     @property
     def winners(self) -> Optional[list[int]]:
@@ -405,7 +416,7 @@ class BlokusFake(BlokusBase):
         Returns a list of shape kinds that a particular
         player has not yet played.
         """
-        shape_kinds = self.shapes.keys().copy()
+        shape_kinds = self.shapes.keys()
 
         for row in self.grid:
             for cell in row:
@@ -430,10 +441,10 @@ class BlokusFake(BlokusBase):
         is None or not a valid position on the board.
         """
         if piece not in self.remaining_shapes or piece.origin is None:
-            raise ValueError
+            raise ValueError("Player has already played a piece with this shape")
         r, c = piece.origin
         if (r < 0 or r >= self.size) or (c < 0 or c >= self.size):
-            raise ValueError
+            raise ValueError("Anchor of the piece is None or not a valid position on the board")
         
         for point in piece.squares():
             r, c = point
@@ -456,10 +467,10 @@ class BlokusFake(BlokusBase):
         is None or not a valid position on the board.
         """
         if piece not in self.remaining_shapes or piece.origin is None:
-            raise ValueError
+            raise ValueError("Player has already played a piece with this shape")
         r, c = piece.origin
         if (r < 0 or r >= self.size) or (c < 0 or c >= self.size):
-            raise ValueError
+            raise ValueError("Anchor of the piece is None or not a valid position on the board")
         
         for point in piece.squares():
             r, c = point
@@ -484,10 +495,26 @@ class BlokusFake(BlokusBase):
         Raises ValueError if the player has already
         played a piece with this shape.
         """
+        pos_requirement = False
+        corner = False
+
         if piece not in self.remaining_shapes:
-            raise ValueError
-        if len(self.available_moves) == 21:
-            piece.
+            raise ValueError("Player has already played a piece with this shape")
+        
+        if not self.any_collisions(piece):
+            return False
+        for point in piece.squares():
+            if len(self.remaining_shapes) == 21:
+                if point in self.start_positions:
+                    pos_requirement = True
+            r, c = point
+            for i in range(9):
+                if i != 4 and i % 2 == 0:
+                    if self.grid[r - 1 + (i//3)][(c-1) + i % 3][0] == self.curr_player:
+                        corner = True
+                elif self.grid[r - 1 + (i//3)][(c-1) + i % 3][0] == self.curr_player:
+                    return False
+        return pos_requirement and self.any_collisions(piece) and corner
 
     def maybe_place(self, piece: Piece) -> bool:
         """
@@ -507,7 +534,15 @@ class BlokusFake(BlokusBase):
         Raises ValueError if the player has already
         played a piece with this shape.
         """
-        raise NotImplementedError
+        if piece not in self.remaining_shapes:
+            raise ValueError("Player has already played a piece with this shape")
+        
+        if self.legal_to_place(piece):
+            for point in piece.squares():
+                r, c = point
+                self.grid[r][c] = (self.curr_player, piece.kind)
+            return True
+        return False
 
     def retire(self) -> None:
         """
@@ -524,13 +559,12 @@ class BlokusFake(BlokusBase):
         completion of a game.
         """
         # score = total number of squares - square on pieces they have not played
-        remaining = 0
-
-        for piece in self.available_moves():
-            num_squares = len(piece.squares())
-            remaining += num_squares
-        print("remaining", remaining)
-        return -(remaining)
+        total: int = 0
+        remaining = self.remaining_shapes(player)
+        for shape in remaining:
+            total += len(shape)
+        print("remaining", total)
+        return -(total)
 
     def available_moves(self) -> set[Piece]:
         """
