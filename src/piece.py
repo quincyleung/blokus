@@ -108,7 +108,6 @@ class Shape:
         square_row: int = 0
         has_origin = False
 
-        print("shape def list:", shape_def_list)
         if "O" in shape_def_list:
             origin_index = shape_def_list.index("O")
             prev_rows = shape_def_list[:origin_index].count("\n")
@@ -135,75 +134,10 @@ class Shape:
                 square_col = 0
                 shape_squares.append((square_row, square_col))
                 origin = (square_row, square_col)
-        print("shape:", shape_squares)
+
         if not has_origin:
             return Shape(kind, (0, 0), False, shape_squares)
         return Shape(kind, origin, True, shape_squares)
-
-        # note: coordinates are in the form (row, column)
-        if kind == ShapeKind.ONE:
-            return Shape(kind, (0, 0), False, [(0, 0)])
-        
-        elif kind == ShapeKind.TWO:
-            return Shape(kind, (0, 0), True, [(0, 0), (0, 1)])
-        
-        elif kind == ShapeKind.THREE:
-            return Shape(kind, (0, 1), True, [(-1, 0), (0, 0), (0, 1)])
-        
-        elif kind == ShapeKind.C:
-            return Shape(kind, (0, 0), True, [(0, 0), (0, 1), (1, 0)])
-
-        elif kind == ShapeKind.FOUR:
-            return Shape(kind, (0, 1), True, [(0, -1), (0, 0), (0, 1), (0, 2)])
-
-        elif kind == ShapeKind.SEVEN:
-            return Shape(kind, (1, 1), True, [(-1, -1), (-1, 0), (0, 0), (1, 0)])
-
-        elif kind == ShapeKind.S:
-            return Shape(kind, (0, 1), True, [(0, 0), (0, 1), (1, -1), (1, 0)])
-
-        elif kind == ShapeKind.LETTER_O:
-            return Shape(kind, (0, 0), False, [(0, 0), (0, 1), (1, 0), (1, 1)])
-
-        elif kind == ShapeKind.A:
-            return Shape(kind, (1, 1), True, [(-1, 0), (0, -1), (0, 0), (0, 1)])
-
-        elif kind == ShapeKind.F:
-            return Shape(kind, (1, 1), True, [(-1, 0), (-1, 1), (0, -1), (0, 0), (1, 0)])
-
-        elif kind == ShapeKind.FIVE:
-            return Shape(kind, (2, 0), True, [(-2, 0), (-1, 0), (0, 0), (1, 0), (2, 0)])
-
-        elif kind == ShapeKind.L:
-            return Shape(kind, (2, 0), True, [(-2, 0), (-1, 0), (0, 0), (1, 0), (1, 1)])
-
-        elif kind == ShapeKind.N:
-            return Shape(kind, (0, 1), True, [(-1, 1), (0, 1), (0, 0), (1, 0), (2, 0)])
-
-        elif kind == ShapeKind.P:
-            return Shape(kind, (1, 1), True, [(-1, -1), (0, -1), (1, -1), (-1, 0), (0, 0)])
-
-        elif kind == ShapeKind.T:
-            return Shape(kind, (1, 1), True, [(-1, -1), (-1, 0), (-1, 1), (0, 0), (1, 0)])
-
-        elif kind == ShapeKind.U:
-            return Shape(kind, (1, 1), True, [(-1, -1), (0, -1), (0, 0), (-1, 1), (0, 1)])
-
-        elif kind == ShapeKind.V:
-            return Shape(kind, (1, 1), True, [(-1, 1), (0, 1), (1, -1), (1, 0), (1, 1)])
-
-        elif kind == ShapeKind.W:
-            return Shape(kind, (1, 1), True, [(1, -1), (1, 0), (0, 0), (0, 1), (-1, 1)])
-
-        elif kind == ShapeKind.X:
-            return Shape(kind, (1, 1), True, [(-1, 0), (0, -1), (0, 0), (1, 0), (0, 1)])
-
-        elif kind == ShapeKind.Y:
-            return Shape(kind, (1, 1), True, [(0, -1), (-1, 0), (0, 0), (1, 0), (2, 0)])
-
-        elif kind == ShapeKind.Z:
-            return Shape(kind, (1, 1), True, [(-1, -1), (-1, 0), (0, 0), (1, 0), (1, 1)])
-
 
     def flip_horizontally(self) -> None:
         """
