@@ -107,11 +107,20 @@ class Shape:
         square_col: int = 0
         square_row: int = 0
         has_origin = False
+        origin_index = 0
 
-        if "O" in shape_def_list:
-            origin_index = shape_def_list.index("O")
+        if "O" in shape_def_list or "@" in shape_def_list:
+            if "O" in shape_def_list:
+                origin_index = shape_def_list.index("O")
+            if "@" in shape_def_list:
+                origin_index = shape_def_list.index("@")
             prev_rows = shape_def_list[:origin_index].count("\n")
-            prev_cols = shape_def_list[:origin_index].count(" ")
+            prev_cols = shape_def_list[:origin_index].count(" ") + shape_def_list[:origin_index].count("@")
+            for prev in shape_def_list[:origin_index]:
+                if prev == "\n":
+                    prev_cols = 0
+                else:
+                    prev_cols += 1
             square_row = -prev_rows
             square_col: int = -prev_cols
             origin = tuple()
@@ -124,7 +133,7 @@ class Shape:
             elif square == "\n" and not has_origin:
                 square_row += 1
                 square_col = 0
-            elif square == " ":
+            elif square == " " or square == "@":
                 square_col += 1
             elif square == "X":
                 shape_squares.append((square_row, square_col))
@@ -134,6 +143,7 @@ class Shape:
                 square_col = 0
                 shape_squares.append((square_row, square_col))
                 origin = (square_row, square_col)
+                square_col += 1
 
         if not has_origin:
             return Shape(kind, (0, 0), False, shape_squares)
