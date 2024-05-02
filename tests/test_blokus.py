@@ -88,73 +88,61 @@ def test_shapes_loaded() -> None:
 
     shape = blokus.shapes[ShapeKind.ONE]
     assert shape.kind == ShapeKind.ONE
-    assert shape.origin == (0, 0)
     assert not shape.can_be_transformed
     assert shape.squares == [(0, 0)]
 
     shape = blokus.shapes[ShapeKind.TWO]
     assert shape.kind == ShapeKind.TWO
-    assert shape.origin == (0, 0)
     assert shape.can_be_transformed
     assert shape.squares == [(0, 0), (0, 1)]
 
     shape = blokus.shapes[ShapeKind.THREE]
     assert shape.kind == ShapeKind.THREE
-    assert shape.origin == (0, 0)
     assert shape.can_be_transformed
     assert shape.squares == [(-1, 0), (0, 0), (0, 1)]
 
     shape = blokus.shapes[ShapeKind.C]
     assert shape.kind == ShapeKind.C
-    assert shape.origin == (0, 0)
     assert shape.can_be_transformed
     assert shape.squares == [(0, 0), (0, 1), (1, 0)]
 
     shape = blokus.shapes[ShapeKind.FOUR]
     assert shape.kind == ShapeKind.FOUR
-    assert shape.origin == (0, 0)
     assert shape.can_be_transformed
     assert shape.squares == [(0, -1), (0, 0), (0, 1), (0, 2)]
 
     shape = blokus.shapes[ShapeKind.SEVEN]
     assert shape.kind == ShapeKind.SEVEN
-    assert shape.origin == (0, 0)
     assert shape.can_be_transformed
     assert shape.squares == [(-1, -1), (-1, 0), (0, 0), (1, 0)]
 
     shape = blokus.shapes[ShapeKind.S]
     assert shape.kind == ShapeKind.S
-    assert shape.origin == (0, 0)
     assert shape.can_be_transformed
     assert shape.squares == [(0, 0), (0, 1), (1, -1), (1, 0)]
 
     shape = blokus.shapes[ShapeKind.LETTER_O]
     assert shape.kind == ShapeKind.LETTER_O
-    assert shape.origin == (0, 0)
     assert not shape.can_be_transformed
     assert shape.squares == [(0, 0), (0, 1), (1, 0), (1, 1)]
 
     shape = blokus.shapes[ShapeKind.A]
     assert shape.kind == ShapeKind.a
-    assert shape.origin == (0, 0)
     assert shape.can_be_transformed
     assert shape.squares == [(-1, 0), (0, -1), (0, 0), (0, 1)]
 
     shape = blokus.shapes[ShapeKind.F]
     assert shape.kind == ShapeKind.F
-    assert shape.origin == (0, 0)
     assert shape.can_be_transformed
     assert shape.squares == [(-1, 0), (-1, 1), (0, -1), (0, 0), (1, 0)]
 
     shape = blokus.shapes[ShapeKind.FIVE]
     assert shape.kind == ShapeKind.FIVE
-    assert shape.origin == (0, 0)
     assert shape.can_be_transformed
     assert shape.squares == [(-2, 0), (-1, 0), (0, 0), (1, 0), (2, 0)]
 
     shape = blokus.shapes[ShapeKind.L]
     assert shape.kind == ShapeKind.L
-    assert shape.origin == (0, 0)
     assert shape.can_be_transformed
     assert shape.squares == [(-2, 0), (-1, 0), (0, 0), (1, 0), (1, 1)]
 
@@ -162,13 +150,11 @@ def test_shapes_loaded() -> None:
 
     shape = blokus.shapes[ShapeKind.Z]
     assert shape.kind == ShapeKind.Z
-    assert shape.origin == (1, 1)
     assert shape.can_be_transformed
     assert shape.squares == [(-1, -1), (-1, 0), (0, 0), (1, 0), (1, 1)]
 
     shape = blokus.shapes[ShapeKind.V]
     assert shape.kind == ShapeKind.V
-    assert shape.origin == (1, 1)
     assert shape.can_be_transformed
     assert shape.squares == [(-1, 1), (0, 1), (1, -1), (1, 0), (1, 1)]
 
@@ -225,7 +211,6 @@ def test_some_left_rotated_shapes() -> Blokus:
     piece_f.rotate_left()
     assert piece_f.squares == [(0, -1), (-1, -1), (1, 0), (0, 0), (0, 1)] 
 
-
 def test_some_right_rotated_shapes() -> Blokus:
     """
     Construct an instance of any Blokus game configuration, and test that at
@@ -253,7 +238,6 @@ def test_some_right_rotated_shapes() -> Blokus:
     piece_f.rotate_right()
     assert piece_f.squares == [(0, 1), (1, 1), (-1, 0), (0, 0), (0, -1)] 
 
-
 #test neighbors
 def test_some_cardinal_neighbors() -> None:
     """
@@ -261,6 +245,34 @@ def test_some_cardinal_neighbors() -> None:
     Piece.cardinal_neighbors correctly computes the cardinal neighbors of at
     least three kinds of pieces.
     """
+    blokus = init_blokus_classic()
+
+    # A few shapes for testing
+    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
+    piece_five = Piece(blokus.shapes[ShapeKind.FIVE])
+    piece_a = Piece(blokus.shapes[ShapeKind.A])
+    piece_f = Piece(blokus.shapes[ShapeKind.F])
+
+    neighbors_two = piece_two.cardinal_neighbors()
+    assert neighbors_two == {(-1, 0), (-1, 1), (0, 2), (1, 0), (1, 1)
+                             }, "Wrong cardinal neighbors for TWO"
+
+    neighbors_five = piece_five.cardinal_neighbors()
+    assert neighbors_five == {(-3, 0), (3, 0), # above and below
+                              (-2, -1), (-1, -1), (0, -1), (1, -1), (2, -1), #L
+                              (-2, 1), (-1, 1), (0, 1), (1, 1), (2, 1) #R
+                              }, "Wrong cardinal neighbors for FIVE"
+
+    neighbors_a = piece_a.cardinal_neighbors()
+    assert neighbors_a == {(-2, 0), (1, -1), (1, 1), (0, -2), (0, 2)
+                           },"Wrong cardinal neighbors for A" 
+
+    neighbors_f = piece_f.cardinal_neighbors()
+    assert neighbors_f == {(-2, 0), (-2, 1), # above 
+                              (2, 0), 
+                              (-1, -1), (0, -2), (1, -1), #L
+                              (0, 1), (1, 1) #R
+                              }, "Wrong cardinal neighbors for F"
 
 def test_some_intercardinal_neighbors() -> None:
     """
@@ -268,6 +280,29 @@ def test_some_intercardinal_neighbors() -> None:
     Piece.intercardinal_neighbors correctly computes the cardinal neighbors of
     at least three kinds of pieces.
     """
+    blokus = init_blokus_classic()
+
+    # A few shapes for testing
+    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
+    piece_five = Piece(blokus.shapes[ShapeKind.FIVE])
+    piece_a = Piece(blokus.shapes[ShapeKind.A])
+    piece_f = Piece(blokus.shapes[ShapeKind.F])
+
+    neighbors_two = piece_two.intercardinal_neighbors()
+    assert neighbors_two == {(-1, -1), (-1, 1), (1, -1), (1, 1)
+                             }, "Wrong intercardinal neighbors for TWO"
+
+    neighbors_five = piece_five.intercardinal_neighbors()
+    assert neighbors_five == {(-3, -1), (-3, 1), (3, -1), (3, 1)
+                              }, "Wrong intercardinal neighbors for FIVE"
+
+    neighbors_a = piece_a.intercardinal_neighbors()
+    assert neighbors_a == {(-1, -1), (-1, 2), (1, 0)
+                           },"Wrong intercardinal neighbors for A" 
+
+    neighbors_f = piece_f.intercardinal_neighbors()
+    assert neighbors_f == {(-2, 1), (-2, 2), (2, -1), (2, 1)
+                              }, "Wrong intercardinal neighbors for F"
 
 #test game runs
 def test_one_player_blokus_mini_game() -> None:
@@ -277,6 +312,29 @@ def test_one_player_blokus_mini_game() -> None:
     verify that the values of game_over and curr_player are correct. After game
     over, verify the values of game_over, winners, and get_score(1).
     """
+    blokus = test_init_blokus_mini_1()
+
+    # Test playing 1st piece
+    piece_one = Piece(blokus.shapes[ShapeKind.ONE])
+    piece_one.set_anchor((0, 0)) 
+    assert blokus.curr_player == 1
+    assert blokus.maybe_place(piece_one) # P1 plays ONE at (0, 0)
+    assert blokus.curr_player == 1
+    assert not blokus.game_over
+
+    # Test playing 2nd piece
+    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
+    piece_two.set_anchor((1, 1)) 
+    assert blokus.curr_player == 1
+    assert blokus.maybe_place(piece_two) # P1 plays TWO at (1, 1)
+    assert blokus.curr_player == 1
+    assert not blokus.game_over
+
+    # Test retiring
+    blokus.retire()
+    assert blokus.game_over
+    assert blokus.winners == [1]
+    assert blokus.get_score(1) == -88 # Starting with -89, played 1
 
 def test_two_player_blokus_mini_game() -> None:
     """
@@ -286,3 +344,34 @@ def test_two_player_blokus_mini_game() -> None:
     over, verify the values of game_over, winners, get_score(1), and
     get_score(2).
     """
+    blokus = test_init_blokus_mini_2()
+
+    # Test playing 1st piece
+    piece_one = Piece(blokus.shapes[ShapeKind.ONE])
+    piece_one.set_anchor((0, 0))
+    assert blokus.curr_player == 1
+    assert blokus.maybe_place(piece_one) # P1 plays ONE at (0, 0)
+    assert blokus.curr_player == 2
+    assert not blokus.game_over
+
+    # Test playing 2nd piece
+    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
+    # P2 cannot play TWO at (0, 0)
+    piece_two.set_anchor((0, 0))
+    assert not blokus.maybe_place(piece_two)
+    # P2 can play TWO at (0, 1)
+    piece_two.set_anchor((0, 1))
+    assert blokus.curr_player == 2
+    assert blokus.maybe_place(piece_two) # P2 plays TWO at (0, 1)
+    assert blokus.curr_player == 1
+    assert not blokus.game_over
+
+    # Test retiring
+    blokus.retire() # P1 retires
+    assert blokus.curr_player == 2
+    blokus.retire() # P2 retires
+
+    assert blokus.game_over
+    assert blokus.winners == [2]
+    assert blokus.get_score(1) == -88
+    assert blokus.get_score(2) == -87

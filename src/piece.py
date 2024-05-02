@@ -81,10 +81,10 @@ class Shape:
         Create a Shape based on its string representation
         in shape_definitions.py. See that file for details.
         """
-        #check that entering legal shape
-        assert kind in definitions, "kind not in definitions :("
-    
-        #remember to keep track of origin as anchor
+        # Check that entering legal shape
+        assert kind in definitions, f"kind: {kind} not in definitions :("
+
+        # note: coordinates are in the form (row, column)
         if kind == ShapeKind.ONE:
             return Shape(kind, (0, 0), False, [(0,0)])
         
@@ -94,7 +94,6 @@ class Shape:
         elif kind == ShapeKind.THREE:
             return Shape(kind, (0, 0), True, [(-1, 0), (0, 0), (0, 1)])
         
-        #grace
         elif kind == ShapeKind.C:
             return Shape(kind, (0, 0), True, [(0, 0), (0, 1), (1, 0)])
 
@@ -121,7 +120,34 @@ class Shape:
 
         elif kind == ShapeKind.L:
             return Shape(kind, (0, 0), True, [(-2, 0), (-1, 0), (0, 0), (1, 0), (1, 1)])
-    
+
+        elif kind == ShapeKind.N:
+            return Shape(kind, (0, 0), True, [(-1, 1), (0, 1), (0, 0), (0, 1), (0, 2)])
+
+        elif kind == ShapeKind.P:
+            return Shape(kind, (0, 0), True, [(-1, -1), (0, -1), (1, -1), (-1, 0), (0, 0)])
+
+        elif kind == ShapeKind.T:
+            return Shape(kind, (0, 0), True, [(-1, -1), (-1, 0), (-1, 1), (0, 0), (1, 0)])
+
+        elif kind == ShapeKind.U:
+            return Shape(kind, (0, 0), True, [(-1, -1), (0, -1), (0, 0), (-1, 1), (0, 1)])
+
+        elif kind == ShapeKind.V:
+            return Shape(kind, (0, 0), True, [(1, -1), (1, 0), (-1, 1), (0, 1), (1, 1)])
+
+        elif kind == ShapeKind.W:
+            return Shape(kind, (0, 0), True, [(1, -1), (1, 0), (0, 0), (0, 1), (-1, 1)])
+
+        elif kind == ShapeKind.X:
+            return Shape(kind, (0, 0), True, [(-1, 0), (0, -1), (0, 0), (1, 0), (0, 1)])
+
+        elif kind == ShapeKind.Y:
+            return Shape(kind, (0, 0), True, [(0, -1), (-1, 0), (0, 0), (1, 0), (2, 0)])
+
+        elif kind == ShapeKind.Z:
+            return Shape(kind, (0, 0), True, [(-1, -1), (-1, 0), (0, 0), (1, 0), (1, 1)])
+
 
     def flip_horizontally(self) -> None:
         """
@@ -129,16 +155,9 @@ class Shape:
         (across the vertical axis through its origin),
         by modifying the squares in place.
         """
-        _, o_col = self.origin
-    
         for i, point in enumerate(self.squares):
             row, col = point
-            if col < o_col:
-                self.squares[i] = (row, o_col+(o_col-col))
-                #update col value to origin col + diff in col vals
-            elif col > o_col:
-                self.squares[i] = (row, o_col-(o_col-col))
-                #update col value to origin col - diff in col vals
+            self.squares[i] = (row, -col)
 
     def rotate_left(self) -> None:
         """
@@ -260,8 +279,7 @@ class Piece:
 
         Raises ValueError if anchor is not set.
         """
-        if self.anchor is None:
-            raise ValueError("anchor is not set")
+        self._check_anchor()
 
         card_nbs = set()
         for (r,c) in self.squares:
