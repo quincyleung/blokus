@@ -122,7 +122,7 @@ class Shape:
             return Shape(kind, (0, 0), True, [(-2, 0), (-1, 0), (0, 0), (1, 0), (1, 1)])
 
         elif kind == ShapeKind.N:
-            return Shape(kind, (0, 0), True, [(-1, 1), (0, 1), (0, 0), (0, 1), (0, 2)])
+            return Shape(kind, (0, 0), True, [(-1, 1), (0, 1), (0, 0), (1, 0), (2, 0)])
 
         elif kind == ShapeKind.P:
             return Shape(kind, (0, 0), True, [(-1, -1), (0, -1), (1, -1), (-1, 0), (0, 0)])
