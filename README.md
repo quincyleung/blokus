@@ -1,7 +1,7 @@
 # CMSC 14200 Course Project
 
 Team members:
-- Sean Choi (schoi12)
-- Minseo Kim (mkim27)
-- Grace Lu (ggracelu)
-- Quincy Leung (quincyleung)
+- GUI: Sean Choi (schoi12)
+- TUI: Minseo Kim (mkim27)
+- Bot: Quincy Leung (quincyleung)
+- QA: Grace Lu (ggracelu)
