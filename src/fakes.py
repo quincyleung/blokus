@@ -290,12 +290,12 @@ class BlokusFake(BlokusBase):
 
         # load 21 shapes
         for kind, definition in definitions.items():
-            definition_list = list(textwrap.dedent(definition))
-            print("kind:", kind, "definition", definition_list)
+            #definition_list = list(textwrap.dedent(definition))
+            #print("kind:", kind, "definition", definition_list)
             cur_shape = Shape.from_string(kind, definition)
-            print("cur shape:", cur_shape)
+            #print("cur shape:", cur_shape)
             self._shapes[kind] = cur_shape
-        #print("Shape dict:", self._shapes)
+        print("Shape dict:", self._shapes)
 
         Shape(ShapeKind.ONE, (0, 0), False, [(0, 0)])
 
@@ -420,9 +420,10 @@ class BlokusFake(BlokusBase):
 
         for row in self.grid:
             for cell in row:
-                p, shape = cell
-                if player == p:
-                    shape_kinds.remove(shape)
+                if cell is not None:
+                    p, shape = cell
+                    if player == p:
+                        shape_kinds.remove(shape)
         return shape_kinds
 
     def any_wall_collisions(self, piece: Piece) -> bool:
@@ -440,9 +441,9 @@ class BlokusFake(BlokusBase):
         Raises ValueError if the anchor of the piece
         is None or not a valid position on the board.
         """
-        if piece not in self.remaining_shapes or piece.origin is None:
+        if piece not in self.remaining_shapes or piece.anchor is None:
             raise ValueError("Player has already played a piece with this shape")
-        r, c = piece.origin
+        r, c = piece.anchor
         if (r < 0 or r >= self.size) or (c < 0 or c >= self.size):
             raise ValueError("Anchor of the piece is None or not a valid position on the board")
         
@@ -466,9 +467,9 @@ class BlokusFake(BlokusBase):
         Raises ValueError if the anchor of the piece
         is None or not a valid position on the board.
         """
-        if piece not in self.remaining_shapes or piece.origin is None:
+        if piece not in self.remaining_shapes or piece.anchor is None:
             raise ValueError("Player has already played a piece with this shape")
-        r, c = piece.origin
+        r, c = piece.anchor
         if (r < 0 or r >= self.size) or (c < 0 or c >= self.size):
             raise ValueError("Anchor of the piece is None or not a valid position on the board")
         
@@ -541,6 +542,12 @@ class BlokusFake(BlokusBase):
             for point in piece.squares():
                 r, c = point
                 self.grid[r][c] = (self.curr_player, piece.kind)
+            
+
+            if self.curr_player != self.num_players:
+                self.curr_player += 1
+            else:
+                self.curr_player = 0
             return True
         return False
 
