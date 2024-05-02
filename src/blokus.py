@@ -7,6 +7,9 @@ from shape_definitions import ShapeKind
 
 
 class Blokus(BlokusBase):
+    """
+    Base class for Blokus game logic.
+    """
     @property
     @abstractmethod
     def shapes(self) -> dict[ShapeKind, Shape]:
