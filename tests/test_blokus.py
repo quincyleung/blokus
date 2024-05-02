@@ -26,6 +26,8 @@ def test_init_blokus_mini_1() -> Blokus:
 
     assert blokus_mini_1.grid == [[None for _ in range(5)] for _ in range(5)]
 
+    return blokus_mini_1
+
 def test_init_blokus_mini_2() -> Blokus:
     """
     Construct an instance of a 2-player Blokus Mini game configuration. Verify
@@ -41,6 +43,8 @@ def test_init_blokus_mini_2() -> Blokus:
 
     assert blokus_mini_2.grid == [[None for _ in range(5)] for _ in range(5)]
 
+    return blokus_mini_2
+
 def test_init_blokus_mono() -> Blokus:
     """
     Construct an instance of a Blokus Mono game configuration. Verify
@@ -55,6 +59,8 @@ def test_init_blokus_mono() -> Blokus:
 
     assert blokus_mono.grid == [[None for _ in range(11)] for _ in range(11)]
 
+    return blokus_mono
+
 def test_init_blokus_duo_2() -> Blokus:
     """
     Construct an instance of a Blokus Duo game configuration. Verify
@@ -68,6 +74,8 @@ def test_init_blokus_duo_2() -> Blokus:
     assert blokus_duo.curr_player == 1
 
     assert blokus_duo.grid == [[None for _ in range(14)] for _ in range(14)]
+
+    return blokus_duo
 
 #for testing purposes
 def init_blokus_classic() -> Blokus:
