@@ -92,58 +92,58 @@ class Shape:
             return Shape(kind, (0, 0), True, [(0, 0), (0, 1)])
         
         elif kind == ShapeKind.THREE:
-            return Shape(kind, (0, 0), True, [(-1, 0), (0, 0), (0, 1)])
+            return Shape(kind, (0, 1), True, [(-1, 0), (0, 0), (0, 1)])
         
         elif kind == ShapeKind.C:
             return Shape(kind, (0, 0), True, [(0, 0), (0, 1), (1, 0)])
 
         elif kind == ShapeKind.FOUR:
-            return Shape(kind, (0, 0), True, [(0, -1), (0, 0), (0, 1), (0, 2)])
+            return Shape(kind, (0, 1), True, [(0, -1), (0, 0), (0, 1), (0, 2)])
 
         elif kind == ShapeKind.SEVEN:
-            return Shape(kind, (0, 0), True, [(-1, -1), (-1, 0), (0, 0), (1, 0)])
+            return Shape(kind, (1, 1), True, [(-1, -1), (-1, 0), (0, 0), (1, 0)])
 
         elif kind == ShapeKind.S:
-            return Shape(kind, (0, 0), True, [(0, 0), (0, 1), (1, -1), (1, 0)])
+            return Shape(kind, (0, 1), True, [(0, 0), (0, 1), (1, -1), (1, 0)])
 
         elif kind == ShapeKind.LETTER_O:
             return Shape(kind, (0, 0), False, [(0, 0), (0, 1), (1, 0), (1, 1)])
 
         elif kind == ShapeKind.A:
-            return Shape(kind, (0, 0), True, [(-1, 0), (0, -1), (0, 0), (0, 1)])
+            return Shape(kind, (1, 1), True, [(-1, 0), (0, -1), (0, 0), (0, 1)])
 
         elif kind == ShapeKind.F:
-            return Shape(kind, (0, 0), True, [(-1, 0), (-1, 1), (0, -1), (0, 0), (1, 0)])
+            return Shape(kind, (1, 1), True, [(-1, 0), (-1, 1), (0, -1), (0, 0), (1, 0)])
 
         elif kind == ShapeKind.FIVE:
             return Shape(kind, (2, 0), True, [(-2, 0), (-1, 0), (0, 0), (1, 0), (2, 0)])
 
         elif kind == ShapeKind.L:
-            return Shape(kind, (0, 0), True, [(-2, 0), (-1, 0), (0, 0), (1, 0), (1, 1)])
+            return Shape(kind, (2, 0), True, [(-2, 0), (-1, 0), (0, 0), (1, 0), (1, 1)])
 
         elif kind == ShapeKind.N:
-            return Shape(kind, (0, 0), True, [(-1, 1), (0, 1), (0, 0), (1, 0), (2, 0)])
+            return Shape(kind, (0, 1), True, [(-1, 1), (0, 1), (0, 0), (1, 0), (2, 0)])
 
         elif kind == ShapeKind.P:
-            return Shape(kind, (0, 0), True, [(-1, -1), (0, -1), (1, -1), (-1, 0), (0, 0)])
+            return Shape(kind, (1, 1), True, [(-1, -1), (0, -1), (1, -1), (-1, 0), (0, 0)])
 
         elif kind == ShapeKind.T:
-            return Shape(kind, (0, 0), True, [(-1, -1), (-1, 0), (-1, 1), (0, 0), (1, 0)])
+            return Shape(kind, (1, 1), True, [(-1, -1), (-1, 0), (-1, 1), (0, 0), (1, 0)])
 
         elif kind == ShapeKind.U:
-            return Shape(kind, (0, 0), True, [(-1, -1), (0, -1), (0, 0), (-1, 1), (0, 1)])
+            return Shape(kind, (1, 1), True, [(-1, -1), (0, -1), (0, 0), (-1, 1), (0, 1)])
 
         elif kind == ShapeKind.V:
             return Shape(kind, (1, 1), True, [(-1, 1), (0, 1), (1, -1), (1, 0), (1, 1)])
 
         elif kind == ShapeKind.W:
-            return Shape(kind, (0, 0), True, [(1, -1), (1, 0), (0, 0), (0, 1), (-1, 1)])
+            return Shape(kind, (1, 1), True, [(1, -1), (1, 0), (0, 0), (0, 1), (-1, 1)])
 
         elif kind == ShapeKind.X:
-            return Shape(kind, (0, 0), True, [(-1, 0), (0, -1), (0, 0), (1, 0), (0, 1)])
+            return Shape(kind, (1, 1), True, [(-1, 0), (0, -1), (0, 0), (1, 0), (0, 1)])
 
         elif kind == ShapeKind.Y:
-            return Shape(kind, (0, 0), True, [(0, -1), (-1, 0), (0, 0), (1, 0), (2, 0)])
+            return Shape(kind, (1, 1), True, [(0, -1), (-1, 0), (0, 0), (1, 0), (2, 0)])
 
         elif kind == ShapeKind.Z:
             return Shape(kind, (1, 1), True, [(-1, -1), (-1, 0), (0, 0), (1, 0), (1, 1)])
