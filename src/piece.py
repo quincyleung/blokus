@@ -4,6 +4,7 @@ Blokus shapes and pieces.
 Modify only the methods marked as TODO.
 """
 import copy
+import textwrap
 from typing import Optional
 
 from shape_definitions import ShapeKind, definitions
@@ -40,6 +41,22 @@ class Shape:
     representation of the shape.
 
     See shape_definitions.py for more details.
+
+    NOTE: The presence of the origin attribute in this class
+    is a design bug. All points in the squares list, which define
+    the shape, should be relative to an implicit origin of (0, 0).
+    Most string representations in shape_definitions refer to
+    origins explicitly (using the 'O' and '@') characters: those
+    origins should be used by Shape.from_string to define the
+    squares of the shape (relative to an origin of (0, 0)). But
+    after doing so, the origin used in the string representation
+    is no longer needed anywhere in our design or implementation.
+    To remain backwards compatible with the original design, you
+    can implement the constructor and Shape.from_string to set the
+    Shape object's origin attribute to be the origin used in the
+    string representation. But don't refer to this attribute
+    elsewhere in your implementation; the information should not
+    be necessary.
     """
 
     kind: ShapeKind
@@ -84,9 +101,29 @@ class Shape:
         # Check that entering legal shape
         assert kind in definitions, f"kind: {kind} not in definitions :("
 
+        shape_def_list = list(textwrap.dedent(definition))
+        shape_def_list.remove("\n")
+        origin_index = shape_def_list.index("O")
+        shape_squares: list[tuple[int]] = []
+
+        print("Shape definition", shape_def_list)
+        print("origin:", origin_index)
+
+        square_row: int = 0
+        square_col: int = 0
+
+        for index, square in enumerate(shape_def_list):
+            if square == "\n":
+                square_col = index - origin_index
+                square_row = index
+            elif square == "X" or "O":
+                square_col += 1
+                shape_squares.append((square_row, square_col))
+        print("shape:", shape_squares)
+
         # note: coordinates are in the form (row, column)
         if kind == ShapeKind.ONE:
-            return Shape(kind, (0, 0), False, [(0,0)])
+            return Shape(kind, (0, 0), False, [(0, 0)])
         
         elif kind == ShapeKind.TWO:
             return Shape(kind, (0, 0), True, [(0, 0), (0, 1)])
