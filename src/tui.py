@@ -1,91 +1,61 @@
-import sys
-from typing import Optional
-import bot
-
-import click
+"""
+referred to connectm's tui.py implementation for inspiration
+"""
+import colorama
 from colorama import Fore, Style
 
 from blokus import BlokusBase, Blokus, ShapeKind
 from fakes import BlokusStub, BlokusFake
-from piece import Shape, Piece
-import base
 
-system: BlokusStub
-grid: list[list[Optional[tuple[int, ShapeKind]]]]
+grid: BlokusStub
+# grid: list[list[Optional[tuple[int, ShapeKind]]]]
 
 # printing board (visual display with gui)
-def print_board(system: BlokusStub):
-    
-    row = len(grid)
-    col = len(grid[0])
+def print_board(grid: BlokusStub):
+    colorama.init() # to color symbols
 
     # grid's top edge
-    print(Fore.BLACK + "┌" + ("─┬" * (col - 1)) + "─┐")
-
+    print(Fore.BLACK + "┎" + ("┮" * (grid.size - 1)) + "┑")
     # sides and inner sections (between spots)
-    for r in range(row):
-        base = "│"
-        for c in range(col):
-
-            player = grid[r][c][0]
-            piece = grid[r][c][1]
+    for x in range(grid.size):
+        base = Fore.BLACK + "│"
+        for y in range(grid.size):
+            player = grid[x][y][0]
+            piece = grid[x][y][1]
             # None: place empty space in it
-            if grid[r][c] is None:
+            if grid[x][y] is None:
                 base += " "
             # process per player (1 and 2)
             elif player == 1:
+                base += " "
                 for section in piece:
-
-                    base += Fore.BLUE + Style.BRIGHT + "█"
+                    base[x + section[0], y + section[1]] = Fore.BLUE + "█"
             elif player == 2:
-                base += Fore.RED + Style.BRIGHT + "█"
-            base += Fore.BLUE + Style.NORMAL + "│"
+                base += " "
+                for section in piece:
+                    base[x + section[0], y + section[1]] = Fore.RED + "█"
+            base += Fore.BLACK + "│"
         print(base)
 
         # middle sections or bottom edge
-        if r < row - 1:
-            print(Fore.BLUE + "├" + ("─┼" * (col - 1)) + "─┤")
-        else:
-            print(Fore.BLUE + "└" + ("─┴" * (col - 1)) + "─┘" + Style.RESET_ALL)
+        if x < grid.size - 1: # not at end yet
+            print(Fore.BLACK + "┡" + ("╁" * (grid.size - 1)) + "┥")
+        else: # at end (x == row)
+            print(Fore.BLACK + "┕" + ("┵" * (grid.size - 1)) + "┙") # symbols are too thin?
 
-# some features to implement moving forward:
-# settings for each player - to implement later
-class TUIPlayer:
-
-    name: str
-    blokus: BlokusBase
-    color: str
-    # to add: bot
-
-    def __init__(self, number: int, player_type: str, color: str):
-        # setting player
-        if player_type == "human":
-            self.name = f"Player {number}"
-        elif player_type == "bot":
-            self.name = f"Bot {number}"
-        # setting color to differentiate between players
-        self.color = color
-        # TODO: more attributes
-    
-    #TODO: functional methods for TUIPlayer
-
-# initiate playing the game
+# Future tasks
 def play_blokus(blokus: BlokusBase) -> None:
-    current = blokus.COLOR
-
     # game loop: ends when player/players win (all pieces are placed)
-    # U+258x: 8  full box character
     while True:
-        # print() ?
         print(blokus)
         # TODO: game process
-
         # If there is a winner, break out of the loop
         if BlokusFake.winners is not None:
             break
-
         # TODO: Update the player - switch between the different players
 
 if __name__ == "__main__":
-    #play_blokus(game)
-    NotImplementedError
+    #play_blokus()
+    #game = 
+    #print_board(game)
+    raise NotImplementedError
