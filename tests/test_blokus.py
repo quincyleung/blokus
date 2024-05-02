@@ -82,82 +82,56 @@ def test_shapes_loaded() -> None:
     """
     blokus = init_blokus_classic()
 
-    #or i can iterate through: for shape in blokus.shapes?
-    #actually that would construct an extra data structure, the dict of squares
-    #unless can directly import the one minseo makes for piece.py
+    expected_shapes = {
+        ShapeKind.ONE: {"can_be_transformed": False, "squares": [(0, 0)]},
+        ShapeKind.TWO: {"can_be_transformed": True, "squares": [(0, 0), 
+                                                                (0, 1)]},
+        ShapeKind.THREE: {"can_be_transformed": True, "squares": [(0, 0),
+                                                        (1, 0), (2, 0)]},
+        ShapeKind.C: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
+                                                                    (1, 0)]}, 
+        ShapeKind.FOUR: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
+                                                            (0, 2), (0, 3)]}, 
+        ShapeKind.SEVEN: {"can_be_transformed": True, "squares": [(0, 0),
+                                                    (0, 1), (1, 0), (1, 1)]}, 
+        ShapeKind.S: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
+                                                            (1, 1), (1, 2)]}, 
+        ShapeKind.LETTER_O: {"can_be_transformed": False, "squares": [(0, 0),
+                                                    (0, 1), (1, 0), (1, 1)]}, 
+        ShapeKind.A: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
+                                                            (1, 0), (2, 0)]}, 
+        ShapeKind.F: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
+                                                    (1, 0), (1, -1), (1, 1)]}, 
+        ShapeKind.FIVE: {"can_be_transformed": True, "squares": [(0, 0), (1, 0),
+                                                    (2, 0), (3, 0), (4, 0)]},
+        ShapeKind.L: {"can_be_transformed": True, "squares": [(0, 0), (1, 0),
+                                                    (2, 0), (2, 1), (2, 2)]}, 
+        ShapeKind.N: {"can_be_transformed": True, "squares": [(0, 0), (1, 0),
+                                                    (1, 1), (1, 2), (2, 2)]},                                                 
+        ShapeKind.P: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
+                                                    (1, 0), (1, 1), (2, 1)]}, 
+        ShapeKind.T: {"can_be_transformed": True, "squares": [(0, 0), (1, 0),
+                                                    (2, 0), (2, -1), (2, 1)]}, 
+        ShapeKind.U: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
+                                                    (0, 2), (1, 0), (1, 2)]}, 
+        ShapeKind.V: {"can_be_transformed": True, "squares": [(0, 0), (1, 0),
+                                                    (2, 0), (2, 1), (2, 2)]}, 
+        ShapeKind.W: {"can_be_transformed": True, "squares": [(0, 0), (1, 0),
+                                                    (1, 1), (2, 1), (2, 2)]},
+        ShapeKind.X: {"can_be_transformed": True, "squares": [(0, 1), (-1, 0),
+                                                    (0, 0), (1, 0), (0, -1)]}, 
+        ShapeKind.Y: {"can_be_transformed": True, "squares": [(0, 0), (1, 0),
+                                                    (2, 0), (3, 0), (2, 1)]}, 
+        ShapeKind.Z: {"can_be_transformed": True, "squares": [(0, 0), (0, 1),
+                                                    (1, 1), (1, 2), (2, 2)]}                                                                                                                                                                                                                                                                                                                                             
+    }
 
-    shape = blokus.shapes[ShapeKind.ONE]
-    assert shape.kind == ShapeKind.ONE
-    assert not shape.can_be_transformed
-    assert shape.squares == [(0, 0)]
-
-    shape = blokus.shapes[ShapeKind.TWO]
-    assert shape.kind == ShapeKind.TWO
-    assert shape.can_be_transformed
-    assert shape.squares == [(0, 0), (0, 1)]
-
-    shape = blokus.shapes[ShapeKind.THREE]
-    assert shape.kind == ShapeKind.THREE
-    assert shape.can_be_transformed
-    assert shape.squares == [(-1, 0), (0, 0), (0, 1)]
-
-    shape = blokus.shapes[ShapeKind.C]
-    assert shape.kind == ShapeKind.C
-    assert shape.can_be_transformed
-    assert shape.squares == [(0, 0), (0, 1), (1, 0)]
-
-    shape = blokus.shapes[ShapeKind.FOUR]
-    assert shape.kind == ShapeKind.FOUR
-    assert shape.can_be_transformed
-    assert shape.squares == [(0, -1), (0, 0), (0, 1), (0, 2)]
-
-    shape = blokus.shapes[ShapeKind.SEVEN]
-    assert shape.kind == ShapeKind.SEVEN
-    assert shape.can_be_transformed
-    assert shape.squares == [(-1, -1), (-1, 0), (0, 0), (1, 0)]
-
-    shape = blokus.shapes[ShapeKind.S]
-    assert shape.kind == ShapeKind.S
-    assert shape.can_be_transformed
-    assert shape.squares == [(0, 0), (0, 1), (1, -1), (1, 0)]
-
-    shape = blokus.shapes[ShapeKind.LETTER_O]
-    assert shape.kind == ShapeKind.LETTER_O
-    assert not shape.can_be_transformed
-    assert shape.squares == [(0, 0), (0, 1), (1, 0), (1, 1)]
-
-    shape = blokus.shapes[ShapeKind.A]
-    assert shape.kind == ShapeKind.a
-    assert shape.can_be_transformed
-    assert shape.squares == [(-1, 0), (0, -1), (0, 0), (0, 1)]
-
-    shape = blokus.shapes[ShapeKind.F]
-    assert shape.kind == ShapeKind.F
-    assert shape.can_be_transformed
-    assert shape.squares == [(-1, 0), (-1, 1), (0, -1), (0, 0), (1, 0)]
-
-    shape = blokus.shapes[ShapeKind.FIVE]
-    assert shape.kind == ShapeKind.FIVE
-    assert shape.can_be_transformed
-    assert shape.squares == [(-2, 0), (-1, 0), (0, 0), (1, 0), (2, 0)]
-
-    shape = blokus.shapes[ShapeKind.L]
-    assert shape.kind == ShapeKind.L
-    assert shape.can_be_transformed
-    assert shape.squares == [(-2, 0), (-1, 0), (0, 0), (1, 0), (1, 1)]
-
-    # Add minseo's 9 when she's done
-
-    shape = blokus.shapes[ShapeKind.Z]
-    assert shape.kind == ShapeKind.Z
-    assert shape.can_be_transformed
-    assert shape.squares == [(-1, -1), (-1, 0), (0, 0), (1, 0), (1, 1)]
-
-    shape = blokus.shapes[ShapeKind.V]
-    assert shape.kind == ShapeKind.V
-    assert shape.can_be_transformed
-    assert shape.squares == [(-1, 1), (0, 1), (1, -1), (1, 0), (1, 1)]
-
+    for kind, exp in expected_shapes.items():
+        shape = blokus.shapes[kind]
+        assert shape.kind == kind
+        assert shape.can_be_transformed == exp["can_be_transformed"]
+        assert shape.squares == exp["squares"]
+    
 def test_some_flipped_shapes() -> Blokus:
     """
     Construct an instance of any Blokus game configuration, and test that at
