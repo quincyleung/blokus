@@ -552,7 +552,7 @@ class BlokusFake(BlokusBase):
         is None.
         """
         if piece.shape.kind not in self.remaining_shapes(self.curr_player):
-            raise ValueError("Player has already played a piece with this shape")
+            raise ValueError("Player has already played piece with this shape")
         if piece.anchor is None:
             raise ValueError("Anchor of the piece is None")
         
@@ -606,4 +606,28 @@ class BlokusFake(BlokusBase):
         to a single Shape that are considered available moves
         (because they may differ in location and orientation).
         """
-        raise NotImplementedError
+        available_moves: set[Piece] = set()
+    
+        for remaining_shape in self.remaining_shapes(self.curr_player):
+            for r in range(self.size):
+                for c in range(self.size):
+                    piece = Piece(self.shapes[remaining_shape])
+                    piece.set_anchor((r, c)) # Testing different locations
+                    if self.legal_to_place(piece):
+                        available_moves.add(piece)
+                    # Check different orientations
+                    for _ in range(4):
+                        piece.rotate_left() 
+                        if self.legal_to_place(piece):
+                            available_moves.add(piece)
+
+                    # Now check mirrored version and different orientations
+                    piece.flip_horizontally() 
+                    if self.legal_to_place(piece):
+                        available_moves.add(piece)
+                    for _ in range(4):
+                        piece.rotate_left() 
+                        if self.legal_to_place(piece):
+                            available_moves.add(piece)
+
+        return available_moves
