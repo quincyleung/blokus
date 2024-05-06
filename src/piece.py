@@ -167,16 +167,18 @@ class Shape:
         Rotate the shape left by 90 degrees,
         by modifying the squares in place.
         """
-        # TODO
-        raise NotImplementedError
+        for i, point in enumerate(self.squares):
+            r, c = point
+            self.squares[i] = (-c, r)
 
     def rotate_right(self) -> None:
         """
         Rotate the shape right by 90 degrees,
         by modifying the squares in place.
         """
-        # TODO
-        raise NotImplementedError
+        for i, point in enumerate(self.squares):
+            r, c = point
+            self.squares[i] = (c, -r)
 
 
 class Piece:
@@ -286,8 +288,8 @@ class Piece:
 
         card_nbs = set()
         for (r,c) in self.squares:
-            n_s_e_w = {(r-1,c), (r+1,c), (r,c+1), (r,c-1)}
-            for neighbor in n_s_e_w:
+            c_directions = {(r - 1, c), (r + 1, c), (r, c + 1), (r, c - 1)}
+            for neighbor in c_directions:
                 if neighbor not in self.squares:
                     card_nbs.add(neighbor)
         return card_nbs
@@ -304,8 +306,8 @@ class Piece:
 
         card_int_nbs = set()
         for (r,c) in self.squares:
-            ne_se_sw_nw = {(r-1,c+1), (r+1,c+1), (r+1,c-1), (r-1,c-1)}
-            for neighbor in ne_se_sw_nw:
+            ic_directions = {(r - 1, c + 1), (r + 1, c + 1), (r + 1, c - 1), (r - 1, c - 1)}
+            for neighbor in ic_directions:
                 if neighbor not in self.squares:
                     card_int_nbs.add(neighbor)
         return card_int_nbs
