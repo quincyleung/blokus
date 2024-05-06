@@ -518,17 +518,18 @@ class BlokusFake(BlokusBase):
             print("row:", r, "col", c)
             for row_index in range(r - 1, r + 2):
                 for col_index in range(c - 1, r + 2):
-                    grid_value = self.grid[row_index][col_index]
-                    print("row index: ", row_index, "col index:", col_index)
-                    print("grid val:", grid_value)
-                    index = (row_index, col_index)
-                    if index == (0,0) or index == (0,2) or index == (2,0) or index == (2,2) and grid_value is not None:
-                        print("has corner case!", index)
-                        print("grid val", grid_value[0], "player:", self.curr_player)
-                        if grid_value[0] == self.curr_player:
-                            return True
-                    elif grid_value is not None and grid_value[0] == self.curr_player:
-                        return False
+                    if row_index >= 0 and col_index >= 0:
+                        grid_value = self.grid[row_index][col_index]
+                        print("row index: ", row_index, "col index:", col_index)
+                        print("grid val:", grid_value)
+                        index = (row_index, col_index)
+                        if index == (r-1, c-1) or index == (r-1, c+1) or index == (r+1, c-1) or index == (r+1, c+1) and grid_value is not None:
+                            print("has corner case!", index)
+                            print("grid val", grid_value[0], "player:", self.curr_player)
+                            if grid_value[0] == self.curr_player:
+                                return True
+                        elif grid_value is not None and grid_value[0] == self.curr_player:
+                            return False
 
     def maybe_place(self, piece: Piece) -> bool:
         """
