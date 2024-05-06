@@ -19,6 +19,8 @@ import pygame
 from fakes import BlokusStub
 from piece import Point, Shape, Piece
 
+BOARD_SIZE = int(sys.argv[1])
+
 class GUI:
     """
     Class for a GUI-based keypad
@@ -43,11 +45,10 @@ class GUI:
         """
 
         """
-        #self.grid = blokus.grid
         self.blokusS = blokusS
         self.square_size = 32
         self.spacer = 5
-        self.size = self.blokusS.size
+        self.size = BOARD_SIZE  
         self.width = ((self.size) + 2) * (self.square_size + self.spacer)
         self.height = ((self.size) + 2) * (self.square_size + self.spacer)
         self.player_colors = [(0, 252, 0), (128, 128, 255)]
@@ -58,7 +59,7 @@ class GUI:
         # initialize Pygame
         pygame.init()
         pygame.display.set_caption("")
-        self.font = pygame.font.Font(None, size= self.font_size)
+        #self.font = pygame.font.Font(None, size= self.font_size)
         self.surface = pygame.display.set_mode((self.width, self.height))
         self.clock = pygame.time.Clock()
         self.event_loop()
@@ -66,12 +67,12 @@ class GUI:
     def draw_board(self) -> None:
         """
         """
-        board_rect = (self.square_size, self.square_size, self.grid_size * (self.square_size + self.spacer) + self.spacer, self.grid_size * (self.square_size + self.spacer) + self.spacer)
+        board_rect = (self.square_size, self.square_size, self.size * (self.square_size + self.spacer) + self.spacer, self.size * (self.square_size + self.spacer) + self.spacer)
         pygame.draw.rect(self.surface, color=(0, 0, 0), rect=board_rect, width=0)
-        for row in range(self.grid_size):
-            for col in range(self.grid_size):
+        for row in range(self.size):
+            for col in range(self.size):
                 rect = ((1 + col) * (self.square_size + self.spacer), (1 + row) * (self.square_size + self.spacer), self.square_size, self.square_size)
-                if (row, col) in start_positions:
+                if (row, col) in self.start_positions:
                     pygame.draw.rect(self.surface, color=(128, 128, 128), rect=rect, width=0)
                 else:
                     pygame.draw.rect(self.surface, color=(255, 222, 173), rect=rect, width=0)
@@ -80,19 +81,19 @@ class GUI:
         """
         """
 
-        for row in range(self.grid_size):
-            for col in range(self.grid_size):
-                if self.grid[row][col] is not None:
+        for row in range(self.size):
+            for col in range(self.size):
+                if self.blokusS.grid[row][col] is not None:
                     rect = ((1 + col) * (self.square_size + self.spacer), (1 + row) * (self.square_size + self.spacer), self.square_size, self.square_size)
-                    pygame.draw.rect(self.surface, color = self.player_colors[self.grid[row][col][0]], rect=rect, width=0) #color dict[player]
+                    pygame.draw.rect(self.surface, color = self.player_colors[self.blokusS.grid[row][col][0]-1], rect=rect, width=0) #color dict[player
                     for i in range(2):
-                        if 0 < row + (-1) ** i < self.grid_size and self.grid[row + (-1) ** i][col] is not None and self.grid[row + (-1) ** i][col][0] == self.grid[row][col][0]:
+                        if 0 < row + (-1) ** i < self.size and self.blokusS.grid[row + (-1) ** i][col] is not None and self.blokusS.grid[row + (-1) ** i][col][0] == self.blokusS.grid[row][col][0]:
                             rect = ((1 + col) * (self.square_size + self.spacer), (2 + row - i) * (self.square_size + self.spacer) - self.spacer, self.square_size, self.spacer)
-                            pygame.draw.rect(self.surface, color = self.player_colors[self.grid[row][col][0]], rect=rect, width=0)
+                            pygame.draw.rect(self.surface, color = self.player_colors[self.blokusS.grid[row][col][0]-1], rect=rect, width=0)
                     for j in range(2):
-                        if 0 < col + (-1) ** j < self.grid_size and self.grid[row][col + (-1) ** j] is not None and self.grid[row][col + (-1) ** j][0] == self.grid[row][col][0]:
+                        if 0 < col + (-1) ** j < self.size and self.blokusS.grid[row][col + (-1) ** j] is not None and self.blokusS.grid[row][col + (-1) ** j][0] == self.blokusS.grid[row][col][0]:
                             rect = ((2 + col - j) * (self.square_size + self.spacer) - self.spacer, (1 + row) * (self.square_size + self.spacer), self.spacer, self.square_size)
-                            pygame.draw.rect(self.surface, color = self.player_colors[self.grid[row][col][0]], rect=rect, width=0)
+                            pygame.draw.rect(self.surface, color = self.player_colors[self.blokusS.grid[row][col][0]-1], rect=rect, width=0)
 
     def draw_window(self) -> None:
         """
@@ -132,4 +133,5 @@ class GUI:
         """
 
 if __name__ == "__main__":
-    GUI(BlokusStub)
+    blokus = BlokusStub(num_players=0, size=BOARD_SIZE, start_positions=set())
+    GUI(blokus)

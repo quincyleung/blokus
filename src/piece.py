@@ -159,8 +159,8 @@ class Shape:
         by modifying the squares in place.
         """
         for i, point in enumerate(self.squares):
-            row, col = point
-            self.squares[i] = (row, -col)
+            r, c = point
+            self.squares[i] = (r, -c)
 
     def rotate_left(self) -> None:
         """
@@ -282,8 +282,15 @@ class Piece:
 
         Raises ValueError if anchor is not set.
         """
-        # TODO
-        raise NotImplementedError
+        self._check_anchor()
+
+        card_nbs = set()
+        for (r,c) in self.squares:
+            n_s_e_w = {(r-1,c), (r+1,c), (r,c+1), (r,c-1)}
+            for neighbor in n_s_e_w:
+                if neighbor not in self.squares:
+                    card_nbs.add(neighbor)
+        return card_nbs
 
     def intercardinal_neighbors(self) -> set[Point]:
         """
@@ -293,5 +300,12 @@ class Piece:
 
         Raises ValueError if anchor is not set.
         """
-        # TODO
-        raise NotImplementedError
+        self._check_anchor()
+
+        card_int_nbs = set()
+        for (r,c) in self.squares:
+            ne_se_sw_nw = {(r-1,c+1), (r+1,c+1), (r+1,c-1), (r-1,c-1)}
+            for neighbor in ne_se_sw_nw:
+                if neighbor not in self.squares:
+                    card_int_nbs.add(neighbor)
+        return card_int_nbs
