@@ -93,7 +93,7 @@ def test_shapes_loaded() -> None:
     # Creating dict to track expected attributes of each shape
     # Expected squares based on origin (0, 0) and string representations
     expected_shapes: dict[ShapeKind, 
-                    dict[str, bool | set[tuple[int, int]]]] = {
+                    dict[str, bool | set[Point]]] = {
         ShapeKind.ONE: {"can_be_transformed": False, "squares": {(0, 0)}},
         ShapeKind.TWO: {"can_be_transformed": True, "squares": {(0, 0), 
                                                                 (0, 1)}},
@@ -361,3 +361,158 @@ def test_two_player_blokus_mini_game() -> None:
     assert blokus.winners == [2]
     assert blokus.get_score(1) == -88
     assert blokus.get_score(2) == -87
+
+##### Milestone 2 #####
+
+def test_exception_init():
+    """
+    Verify that four calls to the Blokus constructor each raise a ValueError,
+    one for each of the four situations described in the docstring
+    """
+
+def test_exception_place_already_played():
+    """
+    Create an instance of any Blokus game configuration. Verify that maybe_place
+    raises a ValueError when trying to place an already played piece.
+    """
+
+def test_exception_place_without_anchor():
+    """
+    Create an instance of any Blokus game configuration. Verify that maybe_place
+    raises a ValueError when trying to place a piece without an anchor.
+    """
+
+def test_start_positions_1():
+    """
+    Create an instance of any 1-player Blokus game configuration with one start
+    position. Verify that maybe_place will not place a piece that does not cover
+    the start position. Then verify that maybe_place will place a piece that
+    does cover the start position, and that the player can place a second piece
+    on the board.
+    """
+
+def test_start_positions_2():
+    """
+    Create an instance of any 2-player Blokus game configuration with two start
+    positions. Verify that Player 1 cannot place a piece which does not cover a
+    start position, before then playing a piece which does. Then verify that
+    Player 2 cannot place a piece that does not cover a start position nor one
+    that covers only the already covered start position. Then verify that Player
+    2 can cover the remaining start position. After all that, verify that Player
+    1 and Player 2 can each play another piece.
+    (This sequence involves four placed pieces in total.)
+    """
+
+def test_start_positions_3():
+    """
+    Same as the previous test, except the game board has four start positions
+    rather than two.
+    """
+
+def test_place_flipped_shape_1():
+    """
+    Create an instance of any 1-player Blokus game config. Choose a piece,
+    anchor it somewhere, flip it, and verify that its squares() are correct.
+    Then place the piece, and verify that grid stores the correct values for
+    every cell in the matrix.
+    """
+
+def test_rotated_shape_1():
+    """
+    Same as the previous, except for a shape that is rotated once (90 degrees)
+    to the right.
+    """
+
+def test_rotated_shape_2():
+    """
+    Same as the previous, except for a shape that is rotated twice (180 degrees)
+    to the right.
+    """
+
+def test_flipped_and_rotated_shape_1():
+    """
+    Same as the previous, except for a shape that is flipped and then rotated
+    three times (270 degrees) to the right.
+    """
+
+def test_flipped_and_rotated_shape_2():
+    """
+    Same as the previous, except for a shape that is flipped twice and then
+    rotated four times (360 degrees) to the right.
+    """
+
+def test_prevent_own_edges_1():
+    """
+    Create an instance of any 1-player Blokus game configuration. After placing
+    a piece, verify that the player cannot place another piece that shares an
+    edge with their first played piece.
+    """
+
+def test_prevent_own_edges_2():
+    """
+    Create an instance of any 2-player Blokus game configuration. After Player 1
+    and Player 2 each play a piece, verify that Player 1 cannot play a piece
+    that shares an edge with their first played piece; Player 1 should then play
+    a legal piece. Verify that Player 2 cannot play a piece that shares an edge
+    with their first played piece; Player 2 should then play a legal piece.
+    Verify that Player 1 can play a piece that shares one or more edges with
+    Player 2s pieces, and vice versa. (This sequence involves six placed pieces
+    in total.)
+    """
+
+def test_require_own_corners_1():
+    """
+    Analogous to above but requiring own-corners rather than preventing
+    own-edges:
+    Create an instance of any 1-player Blokus game configuration. After placing
+    a piece, verify that the player cannot place another piece that shares zero
+    corners with their first played piece.
+    """
+
+def test_require_own_corners_2():
+    """
+    Analogous to above but requiring own-corners rather than preventing
+    own-edges:
+    Create an instance of any 2-player Blokus game configuration. After Player 1
+    and Player 2 each play a piece, verify that Player 1 cannot play a piece
+    that shares zero corners with their first played piece; Player 1 should then
+    play a legal piece. Verify that Player 2 cannot play a piece that shares
+    zero corners with their first played piece; Player 2 should then play a
+    legal piece. Verify that Player 1 can play a piece that shares zero corners
+    with Player 2s pieces, and vice versa. (In sum, this sequence involves six
+    placed pieces.)
+    """
+
+def test_some_available_moves():
+    """
+    Create an instance of any Blokus game configuration. Verify that
+    available_moves is non-empty. Play a few pieces, and verify that the number
+    of available_moves decreases after each step.
+    """
+
+def test_no_available_moves():
+    """
+    Create an instance of any Blokus game configuration. Play pieces until there
+    are no more available moves, and verify that available_moves is empty.
+    """
+
+def test_15_points():
+    """
+    Simulate a game where a player scores 15 points, that is, plays all 21 of
+    their pieces! You can do this for any game configuration you like. After all
+    21 pieces are played, then — either right away, or after other players, if
+    any, continue playing — verify the expected values for get_score(),
+    game_over, winners, and remaining_shapes.
+
+    Note: The last three tests in test_fake.py may provide some inspiration for
+    strategizing how to test such long sequences of moves.
+    """
+
+def test_20_points():
+    """
+    Same as above, but where a player scores 20 points, that is, plays all 21
+    pieces with ONE as the last piece played.
+    Note: The sequence of moves in this test can be very similar to the previous
+    test. If so, factor your code in a way that avoids a giant amount of
+    copy-pasted code.
+    """
