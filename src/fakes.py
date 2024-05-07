@@ -378,8 +378,10 @@ class BlokusFake(BlokusBase):
         """
         if len(self.retired_players) == self.num_players:
             return True
+
         for i in range(self.num_players):
-            if len(self.remaining_shapes(i)) != 0:
+            if i not in self.retired_players and len(self.remaining_shapes(i)) != 0:
+                print("player", i, "has retired:", i in self.retired_players, "and has", self.remaining_shapes(i), "shapes left")
                 return False
         return True
 
@@ -430,8 +432,10 @@ class BlokusFake(BlokusBase):
         for row in self.grid:
             for cell in row:
                 if cell is not None:
+                    print("Cell", cell)
                     p, shape = cell
                     if player == p:
+                        print("DISCARD SHAPE", shape)
                         shape_kinds.discard(shape)
         return shape_kinds
 
@@ -481,13 +485,17 @@ class BlokusFake(BlokusBase):
         if piece.anchor is None:
             raise ValueError("Anchor of the piece is None")
         
+        if self.any_wall_collisions(piece):
+            return True
+        
         for point in piece.squares():
+            #print("Cur square", point)
             r, c = point
             if self.grid[r][c] is not None:
                 print("piece already exists at ", "(", r, c, ")")
                 return True
-        print("wall collision:", self.any_wall_collisions(piece))
-        return self.any_wall_collisions(piece)
+        #print("wall collision:", self.any_wall_collisions(piece))
+        return False
 
     def legal_to_place(self, piece: Piece) -> bool:
         """
@@ -577,7 +585,7 @@ class BlokusFake(BlokusBase):
             raise ValueError("Anchor of the piece is None")
         
         if self.legal_to_place(piece):
-            print("---legal to place!---")
+            #print("---legal to place!---")
             for point in piece.squares():
                 r, c = point
                 self.grid[r][c] = (self.curr_player, piece.shape.kind)
