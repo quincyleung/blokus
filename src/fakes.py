@@ -458,6 +458,7 @@ class BlokusFake(BlokusBase):
         for point in piece.squares():
             r, c = point
             if (r < 0 or r >= self.size) or (c < 0 or c >= self.size):
+                print("WALL COLLISION! r:", r, "c:", c )
                 return True
         return False
 
@@ -483,7 +484,9 @@ class BlokusFake(BlokusBase):
         for point in piece.squares():
             r, c = point
             if self.grid[r][c] is not None:
+                print("piece already exists at ", "(", r, c, ")")
                 return True
+        print("wall collision:", self.any_wall_collisions(piece))
         return self.any_wall_collisions(piece)
 
     def legal_to_place(self, piece: Piece) -> bool:
@@ -506,7 +509,7 @@ class BlokusFake(BlokusBase):
         Raises ValueError if the anchor of the piece
         is None.
         """
-        print("anchor:", piece.anchor)
+        print("piece anchor:", piece.anchor)
 
         if piece.shape.kind not in self.remaining_shapes(self.curr_player):
             raise ValueError("Player has already played a piece with this shape")
@@ -518,7 +521,7 @@ class BlokusFake(BlokusBase):
         
         if len(self.remaining_shapes(self.curr_player)) == 21:
             for point in piece.squares():
-                print("start positions:", self.start_positions)
+                #print("start positions:", self.start_positions)
                 #if point in self.start_positions:
                 return True
         return True
@@ -574,13 +577,14 @@ class BlokusFake(BlokusBase):
             raise ValueError("Anchor of the piece is None")
         
         if self.legal_to_place(piece):
+            print("---legal to place!---")
             for point in piece.squares():
                 r, c = point
                 self.grid[r][c] = (self.curr_player, piece.shape.kind)
 
             if self.curr_player == self.num_players:
                 if 1 not in self.retired_players:
-                    self.set_curr_player(1)
+                    self.set_curr_player(1) 
             else:
                 if (self.curr_player + 1) not in self.retired_players:
                     self.set_curr_player(self.curr_player + 1)
