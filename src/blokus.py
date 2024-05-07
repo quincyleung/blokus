@@ -153,18 +153,15 @@ class Blokus(BlokusBase):
         highest_player: list[int] = []
 
         for i in range(1, self.num_players + 1):
-            print("player", i, "score:", self.get_score(i))
             if self.get_score(i) > highest_score and len(highest_player) == 0:
-                print("append", i)
-                highest_score = self.get_score(i)
                 highest_player.append(i)
+                highest_score = self.get_score(i)
             elif self.get_score(i) > highest_score:
                 highest_player.pop()
                 highest_player.append(i)
                 highest_score = self.get_score(i)
             elif self.get_score(i) == highest_score:
                 highest_player.append(i)
-        print("highest player:", highest_player)
         return highest_player
 
     #
@@ -335,13 +332,21 @@ class Blokus(BlokusBase):
                 r, c = point
                 self.grid[r][c] = (self.curr_player, piece.shape.kind)
 
-            if self.curr_player == self.num_players:
-                if 1 not in self.retired_players:
-                    self.set_curr_player(1)
-            else:
-                if (self.curr_player + 1) not in self.retired_players:
-                    self.set_curr_player(self.curr_player + 1)
-            return True
+            # next player
+            all_players = list(range(1, self.num_players + 1))
+
+            while True:
+                cur_index = self.curr_player % len(all_players)
+                if all_players[cur_index] not in self.retired_players:
+                    self.set_curr_player(all_players[cur_index])
+                
+                # if self.curr_player == self.num_players:
+                #     if 1 not in self.retired_players:
+                #         self.set_curr_player(1)
+                # else:
+                #     if (self.curr_player + 1) not in self.retired_players:
+                #         self.set_curr_player(self.curr_player + 1)
+                return True
         return False
 
     def retire(self) -> None:
