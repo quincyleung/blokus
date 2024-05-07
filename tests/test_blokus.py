@@ -303,24 +303,24 @@ def test_one_player_blokus_mini_game() -> None:
     # Test playing 1st piece
     piece_one = Piece(blokus.shapes[ShapeKind.ONE])
     piece_one.set_anchor((0, 0)) 
-    assert blokus.curr_player == 1
+    assert blokus.curr_player == 1, "curr_player should be 1"
     assert blokus.maybe_place(piece_one) # P1 plays ONE at (0, 0)
-    assert blokus.curr_player == 1
-    assert not blokus.game_over
+    assert blokus.curr_player == 1, "curr_player should be 1" 
+    assert not blokus.game_over, "game should not be over"
 
     # Test playing 2nd piece
     piece_two = Piece(blokus.shapes[ShapeKind.TWO])
     piece_two.set_anchor((1, 1)) 
-    assert blokus.curr_player == 1
+    assert blokus.curr_player == 1, "curr_player should be 1"
     assert blokus.maybe_place(piece_two) # P1 plays TWO at (1, 1)
-    assert blokus.curr_player == 1
-    assert not blokus.game_over
+    assert blokus.curr_player == 1, "curr_player should be 1"
+    assert not blokus.game_over, "game should not be over"
 
     # Test retiring
     blokus.retire()
-    assert blokus.game_over
-    assert blokus.winners == [1]
-    assert blokus.get_score(1) == -88 # Starting with -89, played 1
+    assert blokus.game_over, "game should be over"
+    assert blokus.winners == [1], "P1 should've won"
+    assert blokus.get_score(1) == -88, "Score should be -88 for P1"
 
 def test_two_player_blokus_mini_game() -> None:
     """
@@ -335,32 +335,32 @@ def test_two_player_blokus_mini_game() -> None:
     # Test playing 1st piece
     piece_one = Piece(blokus.shapes[ShapeKind.ONE])
     piece_one.set_anchor((0, 0))
-    assert blokus.curr_player == 1
+    assert blokus.curr_player == 1, "curr_player should be 1"
     assert blokus.maybe_place(piece_one) # P1 plays ONE at (0, 0)
-    assert blokus.curr_player == 2
-    assert not blokus.game_over
+    assert blokus.curr_player == 2, "curr_player should be 2"
+    assert not blokus.game_over, "game should not be over"
 
     # Test playing 2nd piece
     piece_two = Piece(blokus.shapes[ShapeKind.TWO])
     # P2 cannot play TWO at (0, 0)
     piece_two.set_anchor((0, 0))
-    assert not blokus.maybe_place(piece_two)
+    assert not blokus.maybe_place(piece_two), "P2 cannot play TWO at (0, 0)"
     # P2 can play TWO at (0, 1)
     piece_two.set_anchor((0, 1))
-    assert blokus.curr_player == 2
+    assert blokus.curr_player == 2, "curr_player should be 2"
     assert blokus.maybe_place(piece_two) # P2 plays TWO at (0, 1)
-    assert blokus.curr_player == 1
-    assert not blokus.game_over
+    assert blokus.curr_player == 1, "curr_player should be 1"
+    assert not blokus.game_over, "game should not be over"
 
     # Test retiring
     blokus.retire() # P1 retires
-    assert blokus.curr_player == 2
+    assert blokus.curr_player == 2, "curr_player should be 2"
     blokus.retire() # P2 retires
 
-    assert blokus.game_over
-    assert blokus.winners == [2]
-    assert blokus.get_score(1) == -88
-    assert blokus.get_score(2) == -87
+    assert blokus.game_over, "game should be over"
+    assert blokus.winners == [2], "winner should be P2"
+    assert blokus.get_score(1) == -88, "P1 score should be -88"
+    assert blokus.get_score(2) == -87, "P2 score should be -87"
 
 ##### Milestone 2 #####
 
@@ -368,19 +368,46 @@ def test_exception_init():
     """
     Verify that four calls to the Blokus constructor each raise a ValueError,
     one for each of the four situations described in the docstring
-    """
+    """ 
+    with pytest.raises(ValueError):
+        Blokus(0, 11, {(5,5)})  # num_players is less than 1
+    with pytest.raises(ValueError):
+        Blokus(5, 11, {(5,5)})  # num_players is more than 4
+
+    with pytest.raises(ValueError):
+        Blokus(1, 4, {(5,5)})  # size is less than 5
+    
+    with pytest.raises(ValueError):
+        Blokus(1, 11, {(12,12)})  # not all start_positions are on the board
+
+    with pytest.raises(ValueError):
+        Blokus(2, 11, {(5,5)})  # fewer start_positions than num_players
 
 def test_exception_place_already_played():
     """
     Create an instance of any Blokus game configuration. Verify that maybe_place
     raises a ValueError when trying to place an already played piece.
     """
+    blokus = init_blokus_classic()
+    piece_one = Piece(blokus.shapes[ShapeKind.ONE])
+    piece_one.set_anchor((0, 0)) 
+    blokus.maybe_place(piece_one) # P1 places ONE at (0, 0)
+
+    piece_one.set_anchor((19, 19))
+    blokus.maybe_place(piece_one) # P2 places ONE at (19, 19)
+
+    piece_one.set_anchor((1, 1)) 
+    with pytest.raises(ValueError): # P1 can't place ONE again
+       blokus.maybe_place(piece_one) 
 
 def test_exception_place_without_anchor():
     """
     Create an instance of any Blokus game configuration. Verify that maybe_place
     raises a ValueError when trying to place a piece without an anchor.
     """
+    blokus = init_blokus_classic()
+    with pytest.raises(ValueError): # no call to set_anchor
+       blokus.maybe_place(Piece(blokus.shapes[ShapeKind.THREE])) 
 
 def test_start_positions_1():
     """
@@ -390,6 +417,17 @@ def test_start_positions_1():
     does cover the start position, and that the player can place a second piece
     on the board.
     """
+    blokus = test_init_blokus_mono() # (5, 5) is the only start position
+    piece_one = Piece(blokus.shapes[ShapeKind.ONE])
+    piece_one.set_anchor((0, 0)) # not valid start position
+    assert not blokus.maybe_place(piece_one), "Can't play piece not at start"
+    
+    piece_one.set_anchor((5, 5))
+    assert blokus.maybe_place(piece_one), "Should be able to play piece at strt"
+
+    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
+    piece_two.set_anchor((1, 1))
+    assert blokus.maybe_place(piece_two), "Should be able to play 2nd piece"
 
 def test_start_positions_2():
     """
