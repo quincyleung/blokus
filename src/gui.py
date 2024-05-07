@@ -18,6 +18,7 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 from fakes import BlokusStub
 from piece import Point, Shape, Piece
+from shape_definitions import definitions, ShapeKind
 
 BOARD_SIZE = int(sys.argv[1])
 
@@ -31,7 +32,7 @@ class GUI:
     number:  int
     buttons: dict[str, tuple[int, int]]
     most_recent: str
-    button_side: int
+    square_size: int
     spacer: int
     duration: int
     font_size: int
@@ -45,12 +46,13 @@ class GUI:
         """
 
         """
+        self.font_size = 30
         self.blokusS = blokusS
         self.square_size = 32
         self.spacer = 5
         self.size = BOARD_SIZE  
         self.width = ((self.size) + 2) * (self.square_size + self.spacer)
-        self.height = ((self.size) + 2) * (self.square_size + self.spacer)
+        self.height = ((self.size) + 4) * (self.square_size + self.spacer)
         self.player_colors = [(0, 252, 0), (128, 128, 255)]
         self.start_positions = set()
         self.start_positions.add(((self.size//4), self.size//4))
@@ -59,7 +61,7 @@ class GUI:
         # initialize Pygame
         pygame.init()
         pygame.display.set_caption("")
-        #self.font = pygame.font.Font(None, size= self.font_size)
+        self.font = pygame.font.Font(None, size= self.font_size)
         self.surface = pygame.display.set_mode((self.width, self.height))
         self.clock = pygame.time.Clock()
         self.event_loop()
@@ -76,6 +78,16 @@ class GUI:
                     pygame.draw.rect(self.surface, color=(128, 128, 128), rect=rect, width=0)
                 else:
                     pygame.draw.rect(self.surface, color=(255, 222, 173), rect=rect, width=0)
+        remaining_1 = ""
+        for i in range(2):
+            for j in self.blokusS.remaining_shapes(i+1):
+                remaining_1 += str(ShapeKind(j))
+        remaining_2 = (self.square_size, (self.size + 1) * (self.square_size + self.spacer) + self.spacer, self.size * (self.square_size + self.spacer) + self.spacer, self.square_size * 2)
+        pygame.draw.rect(self.surface, color=(0, 0, 0), rect=remaining_2, width=0)
+        pieces_remaining_text_1 = self.font.render(remaining_1, True, (255,255,255))
+        pieces_remaining_text_2 = self.font.render(remaining_1, True, (255,255,255))
+        self.surface.blit(pieces_remaining_text_1, (self.square_size, (self.size + 1) * (self.square_size + self.spacer) + self.spacer))
+        self.surface.blit(pieces_remaining_text_2, (self.square_size, (self.size + 2) * (self.square_size + self.spacer) + self.spacer))
 
     def draw_pieces(self) -> None:
         """
@@ -133,5 +145,5 @@ class GUI:
         """
 
 if __name__ == "__main__":
-    blokus = BlokusStub(num_players=0, size=BOARD_SIZE, start_positions=set())
+    blokus : BlokusStub = BlokusStub(num_players=0, size=BOARD_SIZE, start_positions=set())
     GUI(blokus)

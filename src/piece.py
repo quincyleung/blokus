@@ -114,16 +114,26 @@ class Shape:
         if "O" in shape_def_list or "@" in shape_def_list:
             if "O" in shape_def_list:
                 origin_index = shape_def_list.index("O")
+                #print("origin index:", origin_index)
             if "@" in shape_def_list:
                 origin_index = shape_def_list.index("@")
-            prev_rows = shape_def_list[:origin_index].count("\n")
-            prev_cols = (shape_def_list[:origin_index].count(" ")
-                        + shape_def_list[:origin_index].count("@"))
-            for prev in shape_def_list[:origin_index]:
-                if prev == "\n":
-                    prev_cols = 0
-                else:
-                    prev_cols += 1
+            
+            prev_rows: int = shape_def_list[:origin_index].count("\n")
+            prev_cols: int = 0
+            #print("Number of spaces", shape_def_list[:origin_index].count(" "))
+            #print("Number of @", shape_def_list[:origin_index].count("@"))
+            if prev_rows == 0:
+                prev_cols = (shape_def_list[:origin_index].count(" ")
+                        + shape_def_list[:origin_index].count("@") + shape_def_list[:origin_index].count("X"))
+                #print("Prev col:", prev_cols)
+            else:
+                for prev in shape_def_list[:origin_index]:
+                    if prev == "\n":
+                        prev_cols = 0
+                    else:
+                        prev_cols += 1
+                        #print("prev:", prev, "ADDING ONE TO COL!")
+            #print("FINAL: prev col", prev_cols)
             square_row = -prev_rows
             square_col: int = -prev_cols
             origin = tuple()
@@ -167,16 +177,18 @@ class Shape:
         Rotate the shape left by 90 degrees,
         by modifying the squares in place.
         """
-        # TODO
-        raise NotImplementedError
+        for i, point in enumerate(self.squares):
+            r, c = point
+            self.squares[i] = (-c, r)
 
     def rotate_right(self) -> None:
         """
         Rotate the shape right by 90 degrees,
         by modifying the squares in place.
         """
-        # TODO
-        raise NotImplementedError
+        for i, point in enumerate(self.squares):
+            r, c = point
+            self.squares[i] = (c, -r)
 
 
 class Piece:
@@ -286,8 +298,8 @@ class Piece:
 
         card_nbs = set()
         for (r,c) in self.squares:
-            n_s_e_w = {(r-1,c), (r+1,c), (r,c+1), (r,c-1)}
-            for neighbor in n_s_e_w:
+            c_directions = {(r - 1, c), (r + 1, c), (r, c + 1), (r, c - 1)}
+            for neighbor in c_directions:
                 if neighbor not in self.squares:
                     card_nbs.add(neighbor)
         return card_nbs
@@ -304,8 +316,8 @@ class Piece:
 
         card_int_nbs = set()
         for (r,c) in self.squares:
-            ne_se_sw_nw = {(r-1,c+1), (r+1,c+1), (r+1,c-1), (r-1,c-1)}
-            for neighbor in ne_se_sw_nw:
+            ic_directions = {(r - 1, c + 1), (r + 1, c + 1), (r + 1, c - 1), (r - 1, c - 1)}
+            for neighbor in ic_directions:
                 if neighbor not in self.squares:
                     card_int_nbs.add(neighbor)
         return card_int_nbs

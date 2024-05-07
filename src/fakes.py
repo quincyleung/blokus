@@ -378,8 +378,10 @@ class BlokusFake(BlokusBase):
         """
         if len(self.retired_players) == self.num_players:
             return True
-        for i in range(self.num_players):
-            if len(self.remaining_shapes(i)) != 0:
+
+        for i in range(1, self.num_players + 1):
+            if i not in self.retired_players and len(self.remaining_shapes(i)) != 0:
+                print("player", i, "has retired:", i in self.retired_players, "and has", self.remaining_shapes(i), "shapes left")
                 return False
         return True
 
@@ -393,12 +395,18 @@ class BlokusFake(BlokusBase):
         highest_player: list[int] = []
 
         for i in range(1, self.num_players + 1):
-            # if greater than tracker
-            if self.get_score(i) > highest_score:
+            print("player", i, "score:", self.get_score(i))
+            if self.get_score(i) > highest_score and len(highest_player) == 0:
+                print("append", i)
                 highest_score = self.get_score(i)
                 highest_player.append(i)
+            elif self.get_score(i) > highest_score:
+                highest_player.pop()
+                highest_player.append(i)
+                highest_score = self.get_score(i)
             elif self.get_score(i) == highest_score:
                 highest_player.append(i)
+        print("highest player:", highest_player)
         return highest_player
 
     #
@@ -424,9 +432,11 @@ class BlokusFake(BlokusBase):
         for row in self.grid:
             for cell in row:
                 if cell is not None:
+                    print("Cell", cell)
                     p, shape = cell
                     if player == p:
                         shape_kinds.discard(shape)
+                        print("DISCARD SHAPE", shape, "UPDATED LIST", shape_kinds)
         return shape_kinds
 
     def any_wall_collisions(self, piece: Piece) -> bool:
@@ -452,6 +462,7 @@ class BlokusFake(BlokusBase):
         for point in piece.squares():
             r, c = point
             if (r < 0 or r >= self.size) or (c < 0 or c >= self.size):
+                print("WALL COLLISION! r:", r, "c:", c )
                 return True
         return False
 
@@ -474,11 +485,17 @@ class BlokusFake(BlokusBase):
         if piece.anchor is None:
             raise ValueError("Anchor of the piece is None")
         
+        if self.any_wall_collisions(piece):
+            return True
+        
         for point in piece.squares():
+            #print("Cur square", point)
             r, c = point
             if self.grid[r][c] is not None:
+                print("piece already exists at ", "(", r, c, ")")
                 return True
-        return self.any_wall_collisions(piece)
+        #print("wall collision:", self.any_wall_collisions(piece))
+        return False
 
     def legal_to_place(self, piece: Piece) -> bool:
         """
@@ -509,26 +526,37 @@ class BlokusFake(BlokusBase):
 
         if self.any_collisions(piece):
             return False
-        for point in piece.squares():
-            if len(self.remaining_shapes(self.curr_player)) == 21:
-                print("start positions:", self.start_positions)
+        
+        #if len(self.remaining_shapes(self.curr_player)) == 21:
+            #for point in piece.squares():
+                #print("start positions:", self.start_positions)
                 #if point in self.start_positions:
-                return True
-            r, c = point
-            print("row:", r, "col", c)
-            for row_index in range(r - 1, r + 2):
-                for col_index in range(c - 1, r + 2):
-                    grid_value = self.grid[row_index][col_index]
-                    print("row index: ", row_index, "col index:", col_index)
-                    print("grid val:", grid_value)
-                    index = (row_index, col_index)
-                    if index == (0,0) or index == (0,2) or index == (2,0) or index == (2,2) and grid_value is not None:
-                        print("has corner case!", index)
-                        print("grid val", grid_value[0], "player:", self.curr_player)
-                        if grid_value[0] == self.curr_player:
-                            return True
-                    elif grid_value is not None and grid_value[0] == self.curr_player:
-                        return False
+                #return True
+        return True
+    """
+    else:
+            for point in piece.squares():
+                r, c = point
+                print("point row:", r, "point col:", c)
+                for row_index in range(r - 1, r + 2):
+                    for col_index in range(c - 1, r + 2):
+                        if row_index >= 0 and col_index >= 0:
+                            grid_value = self.grid[row_index][col_index]
+                            print("checking row index: ", row_index, "checking col index:", col_index)
+                            print("grid val:", grid_value)
+                            index = (row_index, col_index)
+                            
+                            if grid_value is not None:
+                                if index == (r-1, c-1) or index == (r-1, c+1) or index == (r+1, c-1) or index == (r+1, c+1):
+                                    print("has corner case!", index)
+                                    print("grid val", grid_value[0], "player:", self.curr_player)
+                                    if grid_value[0] == self.curr_player:
+                                        return True
+                                elif grid_value[0] == self.curr_player:
+                                    print("index:", index, "return false!")
+                                    return False
+        return False
+    """
 
     def maybe_place(self, piece: Piece) -> bool:
         """
@@ -557,6 +585,7 @@ class BlokusFake(BlokusBase):
             raise ValueError("Anchor of the piece is None")
         
         if self.legal_to_place(piece):
+            #print("---legal to place!---")
             for point in piece.squares():
                 r, c = point
                 self.grid[r][c] = (self.curr_player, piece.shape.kind)
