@@ -3,8 +3,9 @@ from typing import Optional
 
 from base import BlokusBase, Grid
 from piece import Point, Shape, Piece
-from shape_definitions import ShapeKind
+from shape_definitions import ShapeKind, definitions
 
+# Can remove docstrings for methods defined in BlokusBase
 
 class Blokus(BlokusBase):
     """
@@ -34,7 +35,7 @@ class Blokus(BlokusBase):
         if there are fewer start_positions than num_players.    
         """
 
-        if not (1 <= num_players <= 2) or size < 5 or len(start_positions) < num_players:
+        if not (1 <= num_players <= 4) or size < 5 or len(start_positions) < num_players:
             raise ValueError
         for x, y in start_positions:
             if not (0 <= x < size) or not (0 <= y < size):
@@ -139,7 +140,6 @@ class Blokus(BlokusBase):
 
         for i in range(1, self.num_players + 1):
             if i not in self.retired_players and len(self.remaining_shapes(i)) != 0:
-                print("player", i, "has retired:", i in self.retired_players, "and has", self.remaining_shapes(i), "shapes left")
                 return False
         return True
 
@@ -190,11 +190,9 @@ class Blokus(BlokusBase):
         for row in self.grid:
             for cell in row:
                 if cell is not None:
-                    print("Cell", cell)
                     p, shape = cell
                     if player == p:
                         shape_kinds.discard(shape)
-                        print("DISCARD SHAPE", shape, "UPDATED LIST", shape_kinds)
         return shape_kinds
 
     def any_wall_collisions(self, piece: Piece) -> bool:
@@ -220,7 +218,6 @@ class Blokus(BlokusBase):
         for point in piece.squares():
             r, c = point
             if (r < 0 or r >= self.size) or (c < 0 or c >= self.size):
-                print("WALL COLLISION! r:", r, "c:", c )
                 return True
         return False
 
@@ -247,12 +244,9 @@ class Blokus(BlokusBase):
             return True
         
         for point in piece.squares():
-            #print("Cur square", point)
             r, c = point
             if self.grid[r][c] is not None:
-                print("piece already exists at ", "(", r, c, ")")
                 return True
-        #print("wall collision:", self.any_wall_collisions(piece))
         return False
 
     def legal_to_place(self, piece: Piece) -> bool:
@@ -275,8 +269,6 @@ class Blokus(BlokusBase):
         Raises ValueError if the anchor of the piece
         is None.
         """
-        print("anchor:", piece.anchor)
-
         if piece.shape.kind not in self.remaining_shapes(self.curr_player):
             raise ValueError("Player has already played a piece with this shape")
         if piece.anchor is None:
@@ -285,14 +277,11 @@ class Blokus(BlokusBase):
         if self.any_collisions(piece):
             return False
         
-        #if len(self.remaining_shapes(self.curr_player)) == 21:
-            #for point in piece.squares():
-                #print("start positions:", self.start_positions)
-                #if point in self.start_positions:
-                #return True
-        return True
-    """
-    else:
+        if len(self.remaining_shapes(self.curr_player)) == 21:
+            for point in piece.squares():
+                if point in self.start_positions:
+                    return True
+        else:
             for point in piece.squares():
                 r, c = point
                 print("point row:", r, "point col:", c)
@@ -314,7 +303,6 @@ class Blokus(BlokusBase):
                                     print("index:", index, "return false!")
                                     return False
         return False
-    """
 
     def maybe_place(self, piece: Piece) -> bool:
         """
@@ -343,7 +331,6 @@ class Blokus(BlokusBase):
             raise ValueError("Anchor of the piece is None")
         
         if self.legal_to_place(piece):
-            #print("---legal to place!---")
             for point in piece.squares():
                 r, c = point
                 self.grid[r][c] = (self.curr_player, piece.shape.kind)
@@ -411,5 +398,4 @@ class Blokus(BlokusBase):
                         piece.rotate_left() 
                         if self.legal_to_place(piece):
                             available_moves.add(piece)
-
         return available_moves
