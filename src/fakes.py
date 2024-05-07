@@ -393,12 +393,18 @@ class BlokusFake(BlokusBase):
         highest_player: list[int] = []
 
         for i in range(1, self.num_players + 1):
-            # if greater than tracker
-            if self.get_score(i) > highest_score:
+            print("player", i, "score:", self.get_score(i))
+            if self.get_score(i) > highest_score and len(highest_player) == 0:
+                print("append", i)
                 highest_score = self.get_score(i)
                 highest_player.append(i)
+            elif self.get_score(i) > highest_score:
+                highest_player.pop()
+                highest_player.append(i)
+                highest_score = self.get_score(i)
             elif self.get_score(i) == highest_score:
                 highest_player.append(i)
+        print("highest player:", highest_player)
         return highest_player
 
     #
@@ -503,7 +509,7 @@ class BlokusFake(BlokusBase):
         Raises ValueError if the anchor of the piece
         is None.
         """
-        print("piece anchor:", piece.anchor)
+        print("anchor:", piece.anchor)
 
         if piece.shape.kind not in self.remaining_shapes(self.curr_player):
             raise ValueError("Player has already played a piece with this shape")
@@ -513,11 +519,36 @@ class BlokusFake(BlokusBase):
         if self.any_collisions(piece):
             return False
         
-        if len(self.remaining_shapes(self.curr_player)) == 21:
-            for point in piece.squares():
+        #if len(self.remaining_shapes(self.curr_player)) == 21:
+            #for point in piece.squares():
                 #print("start positions:", self.start_positions)
                 #if point in self.start_positions:
-                return True
+                #return True
+        return True
+    """
+    else:
+            for point in piece.squares():
+                r, c = point
+                print("point row:", r, "point col:", c)
+                for row_index in range(r - 1, r + 2):
+                    for col_index in range(c - 1, r + 2):
+                        if row_index >= 0 and col_index >= 0:
+                            grid_value = self.grid[row_index][col_index]
+                            print("checking row index: ", row_index, "checking col index:", col_index)
+                            print("grid val:", grid_value)
+                            index = (row_index, col_index)
+                            
+                            if grid_value is not None:
+                                if index == (r-1, c-1) or index == (r-1, c+1) or index == (r+1, c-1) or index == (r+1, c+1):
+                                    print("has corner case!", index)
+                                    print("grid val", grid_value[0], "player:", self.curr_player)
+                                    if grid_value[0] == self.curr_player:
+                                        return True
+                                elif grid_value[0] == self.curr_player:
+                                    print("index:", index, "return false!")
+                                    return False
+        return False
+    """
 
     def maybe_place(self, piece: Piece) -> bool:
         """
@@ -553,7 +584,7 @@ class BlokusFake(BlokusBase):
 
             if self.curr_player == self.num_players:
                 if 1 not in self.retired_players:
-                    self.set_curr_player(1) 
+                    self.set_curr_player(1)
             else:
                 if (self.curr_player + 1) not in self.retired_players:
                     self.set_curr_player(self.curr_player + 1)
@@ -616,23 +647,3 @@ class BlokusFake(BlokusBase):
                             available_moves.add(piece)
 
         return available_moves
-    
-"""
-FOR CHECKING CORNERS AND EDGES
-        for point in piece.squares():
-            r, c = point
-            print("row:", r, "col", c)
-            for row_index in range(r - 1, r + 2):
-                for col_index in range(c - 1, r + 2):
-                    grid_value = self.grid[row_index][col_index]
-                    print("row index: ", row_index, "col index:", col_index)
-                    print("grid val:", grid_value)
-                    index = (row_index, col_index)
-                    if index == (0,0) or index == (0,2) or index == (2,0) or index == (2,2) and grid_value is not None:
-                        print("has corner case!", index)
-                        print("grid val", grid_value[0], "player:", self.curr_player)
-                        if grid_value[0] == self.curr_player:
-                            return True
-                    elif grid_value is not None and grid_value[0] == self.curr_player:
-                        return False
-""" 
