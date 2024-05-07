@@ -379,7 +379,7 @@ class BlokusFake(BlokusBase):
         if len(self.retired_players) == self.num_players:
             return True
 
-        for i in range(self.num_players):
+        for i in range(1, self.num_players + 1):
             if i not in self.retired_players and len(self.remaining_shapes(i)) != 0:
                 print("player", i, "has retired:", i in self.retired_players, "and has", self.remaining_shapes(i), "shapes left")
                 return False
@@ -435,8 +435,8 @@ class BlokusFake(BlokusBase):
                     print("Cell", cell)
                     p, shape = cell
                     if player == p:
-                        print("DISCARD SHAPE", shape)
                         shape_kinds.discard(shape)
+                        print("DISCARD SHAPE", shape, "UPDATED LIST", shape_kinds)
         return shape_kinds
 
     def any_wall_collisions(self, piece: Piece) -> bool:
