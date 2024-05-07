@@ -393,12 +393,18 @@ class BlokusFake(BlokusBase):
         highest_player: list[int] = []
 
         for i in range(1, self.num_players + 1):
-            # if greater than tracker
-            if self.get_score(i) > highest_score:
+            print("player", i, "score:", self.get_score(i))
+            if self.get_score(i) > highest_score and len(highest_player) == 0:
+                print("append", i)
                 highest_score = self.get_score(i)
                 highest_player.append(i)
+            elif self.get_score(i) > highest_score:
+                highest_player.pop()
+                highest_player.append(i)
+                highest_score = self.get_score(i)
             elif self.get_score(i) == highest_score:
                 highest_player.append(i)
+        print("highest player:", highest_player)
         return highest_player
 
     #
@@ -515,7 +521,9 @@ class BlokusFake(BlokusBase):
                 print("start positions:", self.start_positions)
                 #if point in self.start_positions:
                 return True
-        else:
+        return True
+    """
+    else:
             for point in piece.squares():
                 r, c = point
                 print("point row:", r, "point col:", c)
@@ -537,6 +545,7 @@ class BlokusFake(BlokusBase):
                                     print("index:", index, "return false!")
                                     return False
         return False
+    """
 
     def maybe_place(self, piece: Piece) -> bool:
         """
