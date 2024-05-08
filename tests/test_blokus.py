@@ -152,8 +152,8 @@ def test_shapes_loaded() -> None:
         )
         for square in shape.squares:
             assert square in exp["squares"], (
-                f"square: {square} should be in expected squares:
-                {exp['squares']}"
+                f"square: {square} should be in expected squares:"
+                f"{exp['squares']}"
             )
 
 # Test 6  
