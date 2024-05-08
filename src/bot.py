@@ -4,13 +4,9 @@ Bots for Blokus
 import sys
 import random
 
-from abc import ABC, abstractmethod
-from typing import Optional
-
-from base import BlokusBase, Grid
 from piece import Point, Shape, Piece
-from shape_definitions import ShapeKind, definitions
 from blokus import Blokus
+from fakes import BlokusFake
 
 #
 # BOTS
@@ -77,11 +73,10 @@ class SBot:
         # Places larger ones over smaller ones
 
         for piece in board.available_moves():
-            #print("Squares:", piece.squares(), "largest length", largest_length)
             if len(piece.squares()) > largest_length:
                 largest_piece = piece
                 largest_length = len(piece.squares())
-        print("largest piece has length", largest_length)
+        #print("largest piece has length", largest_length)
         return largest_piece
 
 #
@@ -96,7 +91,7 @@ tie: int = 0
 for i in range(NUM_GAMES):
     # Create a Blokus object with two players, board size 11x11 and two start
     # positions in the upper-left (0,0) and bottom-right (10,10) corners
-    board = Blokus(num_players=2, size=11, start_positions={(0,0), (10,10)})
+    board = BlokusFake(num_players=2, size=11, start_positions={(0,0), (10,10)})
 
     bot1 = NBot(board, 1)
     bot2 = SBot(board, 2)
