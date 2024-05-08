@@ -17,6 +17,9 @@ class NBot:
     Needs Improvement Bot that just picks a move at random.
     """
 
+    _blokus: Blokus
+    _player_num: int
+
     def __init__(self, blokus: Blokus, player_num: int):
         """
         Constructor.
@@ -45,6 +48,9 @@ class SBot:
     - Otherwise, place larger pieces over smaller ones
     """
 
+    _blokus: Blokus
+    _player_num: int
+
     def __init__(self, blokus: Blokus, player_num: int):
         """
         Constructor.
@@ -65,18 +71,14 @@ class SBot:
         largest_length: int = 0
         largest_piece: Piece = None
 
-        #print("--- AVAIL MOVES:", board.available_moves())
-
         # --- NEED TO IMPLEMENT ---
         # If possible, block other players' corners
 
         # Places larger ones over smaller ones
-
         for piece in board.available_moves():
             if len(piece.squares()) > largest_length:
                 largest_piece = piece
                 largest_length = len(piece.squares())
-        #print("largest piece has length", largest_length)
         return largest_piece
 
 #
@@ -107,10 +109,13 @@ for i in range(NUM_GAMES):
     if len(board.winners) == 1:
         if 1 in board.winners:
             bot1_wins += 1
+            print("Game", i, "bot 1 wins!")
         elif 2 in board.winners:
             bot2_wins += 1
+            print("Game", i, "bot 2 wins!")
     elif len(board.winners) == 2:
         tie += 1
+        print("Game", i, "tie!")
 
 print("Bot 1 Wins |  ", bot1_wins/NUM_GAMES * 100, "%")
 print("Bot 2 Wins |  ", bot2_wins/NUM_GAMES * 100, "%")
