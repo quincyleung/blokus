@@ -333,7 +333,7 @@ class Blokus(BlokusBase):
                 self.grid[r][c] = (self.curr_player, piece.shape.kind)
 
             # updates current player to next player
-            all_players = list(range(1, self.num_players + 1))
+            all_players: list[int] = list(range(1, self.num_players + 1))
 
             while True:
                 cur_index = self.curr_player % len(all_players) - 1
@@ -362,7 +362,7 @@ class Blokus(BlokusBase):
         completion of a game.
         """
         total: int = 0
-        remaining = self.remaining_shapes(player)
+        remaining: list[ShapeKind] = self.remaining_shapes(player)
         for shapekind in remaining:
             cur_shape = Shape.from_string(shapekind, definitions[shapekind])
             total += len(cur_shape.squares)
