@@ -45,7 +45,7 @@ class SBot:
     Satisfactory Bot that incorporates simple Blokus-specific heuristics. 
     Will do the following:
 
-    - If there is a larger piece, it will select it.
+    - If there is a larger piece, it will select it over smaller pieces.
     - Otherwise, pick a piece at random.
     """
 
@@ -66,7 +66,7 @@ class SBot:
 
         Returns: None
         """
-        raise NotImplementedError
+        return random.choice(list(board.available_moves()))
 
 #
 # SIMULATION CODE
@@ -103,4 +103,4 @@ for i in range(NUM_GAMES):
 
 print("Bot 1 Wins |  ", bot1_wins/NUM_GAMES * 100, "%")
 print("Bot 2 Wins |  ", bot2_wins/NUM_GAMES * 100, "%")
-print("Ties       | ", tie/NUM_GAMES * 100, "%")
+print("Ties       |  ", tie/NUM_GAMES * 100, "%")
