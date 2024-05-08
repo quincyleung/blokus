@@ -45,8 +45,8 @@ class SBot:
     Satisfactory Bot that incorporates simple Blokus-specific heuristics. 
     Will do the following:
 
-    - If there is a larger piece, it will select it over smaller pieces.
-    - Otherwise, pick a piece at random.
+    - If possible, block other players' corners
+    - Otherwise, place larger pieces over smaller ones
     """
 
     def __init__(self, blokus: Blokus, player_num: int):
@@ -66,7 +66,23 @@ class SBot:
 
         Returns: None
         """
-        return random.choice(list(board.available_moves()))
+        largest_length: int = 0
+        largest_piece: Piece = None
+
+        #print("--- AVAIL MOVES:", board.available_moves())
+
+        # --- NEED TO IMPLEMENT ---
+        # If possible, block other players' corners
+
+        # Places larger ones over smaller ones
+
+        for piece in board.available_moves():
+            #print("Squares:", piece.squares(), "largest length", largest_length)
+            if len(piece.squares()) > largest_length:
+                largest_piece = piece
+                largest_length = len(piece.squares())
+        print("largest piece has length", largest_length)
+        return largest_piece
 
 #
 # SIMULATION CODE
