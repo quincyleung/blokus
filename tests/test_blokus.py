@@ -132,10 +132,10 @@ def test_shapes_loaded() -> None:
                                                     (0, 0), (0, 1), (-1, 1)}}, 
         ShapeKind.V: {"can_be_transformed": True, "squares": {(-1, 1), (0, 1),
                                                     (1, -1), (1, 0), (1, 1)}}, 
-        ShapeKind.W: {"can_be_transformed": True, "squares": {(0, 2), (1, 1),
-                                                    (1, 2), (2, 0), (2, 1)}},
-        ShapeKind.X: {"can_be_transformed": True, "squares": {(-1, 1), (0, 0),
-                                                    (0, 1), (1, -1), (1, 0)}}, 
+        ShapeKind.W: {"can_be_transformed": True, "squares": {(-1, 1), (0, 0),
+                                                    (0, 1), (1, -1), (1, 0)}},
+        ShapeKind.X: {"can_be_transformed": True, "squares": {(-1, 0), (0, 0),
+                                                    (1, 0), (0, -1), (0, 1)}}, 
         ShapeKind.Y: {"can_be_transformed": True, "squares": {(-1, 0), (0, -1),
                                                     (0, 0), (1, 0), (2, 0)}}, 
         ShapeKind.Z: {"can_be_transformed": True, "squares": {(-1, -1), (-1, 0),
@@ -152,6 +152,7 @@ def test_shapes_loaded() -> None:
         )
         for square in shape.squares:
             assert square in exp["squares"], (
+                f"for shape.kind: {shape.kind}"
                 f"square: {square} should be in expected squares:"
                 f"{exp['squares']}"
             )
