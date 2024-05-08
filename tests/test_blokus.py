@@ -22,8 +22,7 @@ def test_init_blokus_mini_1() -> Blokus:
     blokus_mini_1 = Blokus(1, 5, {(0, 0), (4, 4)})
 
     assert blokus_mini_1.size == 5
-    assert blokus_mini_1.start_positions == {(0, 0), (0, 4), (2, 2), (4, 0),
-                                             (4, 4)}
+    assert blokus_mini_1.start_positions == {(0, 0), (4, 4)}
     assert blokus_mini_1.num_players == 1
     assert blokus_mini_1.curr_player == 1
 
@@ -40,8 +39,7 @@ def test_init_blokus_mini_2() -> Blokus:
     blokus_mini_2 = Blokus(2, 5, {(0, 0), (4, 4)})
 
     assert blokus_mini_2.size == 5
-    assert blokus_mini_2.start_positions == {(0, 0), (0, 4), (2, 2), (4, 0),
-                                             (4, 4)}
+    assert blokus_mini_2.start_positions == {(0, 0), (4, 4)}
     assert blokus_mini_2.num_players == 2
     assert blokus_mini_2.curr_player == 1
 
@@ -146,10 +144,17 @@ def test_shapes_loaded() -> None:
 
     for kind, exp in expected_shapes.items():
         shape = blokus.shapes[kind]
-        assert shape.kind == kind
-        assert shape.can_be_transformed == exp["can_be_transformed"]
+        assert shape.kind == kind, (
+            f"shape.kind: {shape.kind} should be same as kind: [{kind}]"
+        )
+        assert shape.can_be_transformed == exp["can_be_transformed"], (
+            f"{shape.can_be_transformed} should be {exp['can_be_transformed']}"
+        )
         for square in shape.squares:
-            assert square in exp["squares"]
+            assert square in exp["squares"], (
+                f"square: {square} should be in expected squares:
+                {exp['squares']}"
+            )
 
 # Test 6  
 def test_some_flipped_shapes() -> Blokus:
