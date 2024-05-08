@@ -550,7 +550,6 @@ def test_place_flipped_shape_1():
     assert piece_four.squares() == expected_squares, (
         "Squares of piece_four incorrect after flipping"
     )
-    # Need to double check this is the correct expected squares
 
     blokus.maybe_place(piece_four)
     # Check grid stores correct values for cells filled by FOUR
@@ -572,6 +571,28 @@ def test_rotated_shape_1():
     Same as the previous, except for a shape that is rotated once (90 degrees)
     to the right.
     """
+    blokus = test_init_blokus_mono()
+    piece_four = Piece(blokus.shapes[ShapeKind.FOUR])
+    piece_four.set_anchor(5, 5)
+    piece_four.rotate_right()
+    expected_squares = [(4, 5), (5, 5), (6, 5), (7, 5)]
+    assert piece_four.squares() == expected_squares, (
+        "Squares of piece_four incorrect after rotating R once"
+    )
+
+    blokus.maybe_place(piece_four)
+    # Check grid stores correct values for cells filled by FOUR
+    for r, c in expected_squares:
+        assert blokus.grid[r][c] == (1, ShapeKind.FOUR), (
+            f"Grid at ({r}, {c}) should be (1, ShapeKind.FOUR)"
+        )
+    # Check grid correctly stores None for all other cells
+    for r in range(len(blokus.grid)):
+        for c in range(len(blokus.grid[0])):
+            if (r, c) not in expected_squares:
+                assert blokus.grid[r][c] is None, (
+                    f"Grid at ({r}, {c}) should be empty"
+                )
 
 # Test 21
 def test_rotated_shape_2():
@@ -579,6 +600,29 @@ def test_rotated_shape_2():
     Same as the previous, except for a shape that is rotated twice (180 degrees)
     to the right.
     """
+    blokus = test_init_blokus_mono()
+    piece_four = Piece(blokus.shapes[ShapeKind.FOUR])
+    piece_four.set_anchor(5, 5)
+    piece_four.rotate_right()
+    piece_four.rotate_right() # Rotate R twice
+    expected_squares = [(5, 3), (5, 4), (5, 5), (5, 6)]
+    assert piece_four.squares() == expected_squares, (
+        "Squares of piece_four incorrect after rotating R twice"
+    )
+
+    blokus.maybe_place(piece_four)
+    # Check grid stores correct values for cells filled by FOUR
+    for r, c in expected_squares:
+        assert blokus.grid[r][c] == (1, ShapeKind.FOUR), (
+            f"Grid at ({r}, {c}) should be (1, ShapeKind.FOUR)"
+        )
+    # Check grid correctly stores None for all other cells
+    for r in range(len(blokus.grid)):
+        for c in range(len(blokus.grid[0])):
+            if (r, c) not in expected_squares:
+                assert blokus.grid[r][c] is None, (
+                    f"Grid at ({r}, {c}) should be empty"
+                )
 
 # Test 22
 def test_flipped_and_rotated_shape_1():
@@ -586,6 +630,30 @@ def test_flipped_and_rotated_shape_1():
     Same as the previous, except for a shape that is flipped and then rotated
     three times (270 degrees) to the right.
     """
+    blokus = test_init_blokus_mono()
+    piece_four = Piece(blokus.shapes[ShapeKind.FOUR])
+    piece_four.set_anchor(5, 5)
+    piece_four.flip_horizontally() # Flip first
+    for _ in range(3): # Then rotate R three times
+        piece_four.rotate_right()
+    expected_squares = [(4, 5), (5, 5), (6, 5), (7, 5)]
+    assert piece_four.squares() == expected_squares, (
+        "Squares of piece_four incorrect after flipping and rotating R 3 times"
+    )
+
+    blokus.maybe_place(piece_four)
+    # Check grid stores correct values for cells filled by FOUR
+    for r, c in expected_squares:
+        assert blokus.grid[r][c] == (1, ShapeKind.FOUR), (
+            f"Grid at ({r}, {c}) should be (1, ShapeKind.FOUR)"
+        )
+    # Check grid correctly stores None for all other cells
+    for r in range(len(blokus.grid)):
+        for c in range(len(blokus.grid[0])):
+            if (r, c) not in expected_squares:
+                assert blokus.grid[r][c] is None, (
+                    f"Grid at ({r}, {c}) should be empty"
+                )
 
 # Test 23
 def test_flipped_and_rotated_shape_2():
@@ -593,7 +661,34 @@ def test_flipped_and_rotated_shape_2():
     Same as the previous, except for a shape that is flipped twice and then
     rotated four times (360 degrees) to the right.
     """
+    blokus = test_init_blokus_mono()
+    piece_four = Piece(blokus.shapes[ShapeKind.FOUR])
+    piece_four.set_anchor(5, 5)
+    piece_four.flip_horizontally()
+    piece_four.flip_horizontally() # Flipping twice will go back to OG
+    for _ in range(4): # Rotate R four times will go back to OG
+        piece_four.rotate_right()
+    expected_squares = [(5, 4), (5, 5), (5, 6), (5, 7)] #same as OG
+    assert piece_four.squares() == expected_squares, (
+        "Squares of piece_four incorrect after flipping twice and rotating R"
+        "four times"
+    )
 
+    blokus.maybe_place(piece_four)
+    # Check grid stores correct values for cells filled by FOUR
+    for r, c in expected_squares:
+        assert blokus.grid[r][c] == (1, ShapeKind.FOUR), (
+            f"Grid at ({r}, {c}) should be (1, ShapeKind.FOUR)"
+        )
+    # Check grid correctly stores None for all other cells
+    for r in range(len(blokus.grid)):
+        for c in range(len(blokus.grid[0])):
+            if (r, c) not in expected_squares:
+                assert blokus.grid[r][c] is None, (
+                    f"Grid at ({r}, {c}) should be empty"
+                )
+
+### Test edges and corners ###
 # Test 24
 def test_prevent_own_edges_1():
     """
@@ -601,8 +696,21 @@ def test_prevent_own_edges_1():
     a piece, verify that the player cannot place another piece that shares an
     edge with their first played piece.
     """
+    blokus = test_init_blokus_mono()
 
-### Test edges and corners ###
+    assert blokus.curr_player == 1
+    piece_one = Piece(blokus.shapes[ShapeKind.ONE])
+    piece_one.set_anchor((5, 5))
+    assert blokus.maybe_place(piece_one), (
+        "P1 should be able to play ONE at (5, 5)"
+    )
+
+    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
+    piece_two.set_anchor((5, 6)) # Touching edge of ONE
+    assert not blokus.maybe_place(piece_two), (
+        "P1 should not be able to play TWO touching edge of ONE"
+    )
+
 # Test 25
 def test_prevent_own_edges_2():
     """
@@ -615,6 +723,64 @@ def test_prevent_own_edges_2():
     Player 2s pieces, and vice versa. (This sequence involves six placed pieces
     in total.)
     """
+    blokus = test_init_blokus_duo_2()
+
+    # Piece 1: P1 plays ONE at (4, 4)
+    assert blokus.curr_player == 1
+    piece_one = Piece(blokus.shapes[ShapeKind.ONE])
+    piece_one.set_anchor((4, 4))
+    assert blokus.maybe_place(piece_one), (
+        "P1 should be able to play ONE at (4, 4)"
+    )
+
+    # Piece 2: P2 plays ONE at (9, 9)
+    assert blokus.curr_player == 2
+    piece_one.set_anchor((9, 9))
+    assert blokus.maybe_place(piece_one), (
+        "P2 should be able to play ONE at (9, 9)"
+    )
+
+    # P1 cannot play TWO at (4, 5)
+    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
+    piece_two.set_anchor((4, 5)) # Touching edge of ONE
+    assert not blokus.maybe_place(piece_two), (
+        "P1 should not be able to play TWO touching edge of ONE"
+    )
+
+    # Piece 3: P1 plays TWO at (5, 5)
+    piece_two.set_anchor((5, 5)) # Touching edge of ONE
+    assert blokus.maybe_place(piece_two), (
+        "P1 should be able to play TWO at (5, 5)"
+    )
+
+    # P2 cannot play TWO at (8, 8)
+    assert blokus.curr_player == 2
+    piece_two.set_anchor((8, 8))
+    assert not blokus.maybe_place(piece_two), (
+        "P2 should not be able to play TWO touching edge of ONE"
+    )
+
+    # Piece 4: P2 plays TWO at (8, 7)
+    piece_two.set_anchor((8, 7)) # Touching edge of ONE
+    assert blokus.maybe_place(piece_two), (
+        "P1 should be able to play TWO at (8, 7)"
+    )
+
+    # Piece 5: P1 plays U at (7, 8) touching P2's TWO
+    assert blokus.curr_player == 1
+    piece_u = Piece(blokus.shapes[ShapeKind.U])
+    piece_u.set_anchor((7, 8))
+    assert blokus.maybe_place(piece_u), (
+        "P1 should be able to play U at (7, 8) touching P2's TWO"
+    )
+
+    # Piece 6: P2 plays FIVE at (6, 10) touching P1's U
+    assert blokus.curr_player == 2
+    piece_five = Piece(blokus.shapes[ShapeKind.FIVE])
+    piece_five.set_anchor((6, 10))
+    assert blokus.maybe_place(piece_five), (
+        "P2 should be able to play U at (6, 10) touching P1's U"
+    )
 
 # Test 26
 def test_require_own_corners_1():
@@ -625,6 +791,19 @@ def test_require_own_corners_1():
     a piece, verify that the player cannot place another piece that shares zero
     corners with their first played piece.
     """
+    blokus = test_init_blokus_mono()
+
+    piece_one = Piece(blokus.shapes[ShapeKind.ONE])
+    piece_one.set_anchor((5, 5))
+    assert blokus.maybe_place(piece_one), (
+        "P1 should be able to play ONE at (5, 5)"
+    )
+
+    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
+    piece_two.set_anchor((7, 7))
+    assert not blokus.maybe_place(piece_two), (
+        "P1 cannot play TWO that shares zero corners with ONE"
+    )
 
 # Test 27
 def test_require_own_corners_2():
@@ -640,6 +819,63 @@ def test_require_own_corners_2():
     with Player 2s pieces, and vice versa. (In sum, this sequence involves six
     placed pieces.)
     """
+    blokus = test_init_blokus_duo_2()
+
+    # Piece 1: P1 plays ONE at (4, 4)
+    assert blokus.curr_player == 1
+    piece_one = Piece(blokus.shapes[ShapeKind.ONE])
+    piece_one.set_anchor((4, 4))
+    assert blokus.maybe_place(piece_one), (
+        "P1 should be able to play ONE at (4, 4)"
+    )
+
+    # Piece 2: P2 plays ONE at (9, 9)
+    assert blokus.curr_player == 2
+    piece_one.set_anchor((9, 9))
+    assert blokus.maybe_place(piece_one), (
+        "P2 should be able to play ONE at (9, 9)"
+    )
+
+    # P1 cannot play TWO at (6, 6)
+    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
+    piece_two.set_anchor((6, 6)) # No corners with ONE
+    assert not blokus.maybe_place(piece_two), (
+        "P1 should not be able to play TWO sharing zero corners with ONE"
+    )
+
+    # Piece 3: P1 plays TWO at (5, 5)
+    piece_two.set_anchor((5, 5)) # Touching edge of ONE
+    assert blokus.maybe_place(piece_two), (
+        "P1 should be able to play TWO at (5, 5)"
+    )
+
+    # P2 cannot play TWO at (7, 7)
+    assert blokus.curr_player == 2
+    piece_two.set_anchor((7, 7))
+    assert not blokus.maybe_place(piece_two), (
+        "P2 should not be able to play TWO sharing zero corners with ONE"
+    )
+
+    # Piece 4: P2 plays TWO at (8, 7)
+    piece_two.set_anchor((8, 7)) # Touching edge of ONE
+    assert blokus.maybe_place(piece_two), (
+        "P1 should be able to play TWO at (8, 7)"
+    )
+
+    # Piece 5: P1 plays T at (3, 7), no corners with P2
+    assert blokus.curr_player == 1
+    piece_t = Piece(blokus.shapes[ShapeKind.T])
+    piece_t.set_anchor((3, 7))
+    assert blokus.maybe_place(piece_t), (
+        "P1 should be able to play T at (3, 7) w/o sharing corners w/ P2"
+    )
+
+    # Piece 6: P2 plays T at (9, 11), no corners with P1
+    assert blokus.curr_player == 2
+    piece_t.set_anchor((9, 11))
+    assert blokus.maybe_place(piece_t), (
+        "P2 should be able to play T at (9, 11)w/o sharing corners w/ P1"
+    )
 
 ### Test available moves ###
 # Test 28
@@ -649,6 +885,41 @@ def test_some_available_moves():
     available_moves is non-empty. Play a few pieces, and verify that the number
     of available_moves decreases after each step.
     """
+    blokus = test_init_blokus_mono()
+    assert blokus.available_moves != {}, "available_moves should not be empty"
+    cur_length = len(blokus.available_moves) #initialize cur_length
+
+    # Piece 1: P1 plays ONE at (5, 5)
+    piece_one = Piece(blokus.shapes[ShapeKind.ONE])
+    piece_one.set_anchor((5, 5))
+    assert blokus.maybe_place(piece_one), (
+        "P1 should be able to play ONE at (5, 5)"
+    )
+    assert len(blokus.available_moves) < cur_length, (
+        "available_moves should be decreasing after playing piece ONE"
+    )
+    cur_length = len(blokus.available_moves) #update cur_length
+
+    # Piece 2: P1 plays TWO at (6, 6)
+    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
+    piece_two.set_anchor((6, 6))
+    assert blokus.maybe_place(piece_two), (
+        "P1 should be able to play TWO at (6, 6)"
+    )
+    assert len(blokus.available_moves) < cur_length, (
+        "available_moves should be decreasing after playing piece TWO"
+    )
+    cur_length = len(blokus.available_moves) #update cur_length
+
+    # Piece 3: P1 plays THREE at (7, 8)
+    piece_three = Piece(blokus.shapes[ShapeKind.THREE])
+    piece_three.set_anchor((7, 8))
+    assert blokus.maybe_place(piece_three), (
+        "P1 should be able to play THREE at (7, 8)"
+    )
+    assert len(blokus.available_moves) < cur_length, (
+        "available_moves should be decreasing after playing piece THREE"
+    )
 
 # Test 29
 def test_no_available_moves():
@@ -656,6 +927,42 @@ def test_no_available_moves():
     Create an instance of any Blokus game configuration. Play pieces until there
     are no more available moves, and verify that available_moves is empty.
     """
+    blokus = test_init_blokus_mini_1()
+    assert blokus.available_moves(), (
+        "available_moves should not be empty at game start"
+    )
+    # P1 places Z at (1, 1)
+    piece_z = Piece(blokus.shapes[ShapeKind.Z])
+    piece_z.set_anchor((1, 1))
+    assert blokus.maybe_place(piece_z), (
+        "P1 should be able to play Z at (1, 1)"
+    )
+
+    # P1 places C at (0, 3)
+    piece_c = Piece(blokus.shapes[ShapeKind.C])
+    piece_c.set_anchor((0, 3))
+    assert blokus.maybe_place(piece_c), (
+        "P1 should be able to play C at (0, 3)"
+    )
+
+    # Rotate R THREE then P1 places THREE at (3, 4)
+    piece_three = Piece(blokus.shapes[ShapeKind.THREE])
+    piece_three.rotate_right()
+    piece_three.set_anchor((3, 4))
+    assert blokus.maybe_place(piece_three), (
+        "P1 should be able to play rotated R THREE at (3, 4)"
+    )
+
+    # Rotate R TWO then P1 places TWO at (3, 0)
+    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
+    piece_two.rotate_right()
+    piece_two.set_anchor((3, 0))
+    assert blokus.maybe_place(piece_two), (
+        "P1 should be able to play rotated R TWO at (3, 0)"
+    )
+
+    # There should be no more legal moves logically
+    assert not blokus.available_moves(), "Should be no available moves left"
 
 ### Test X points ###
 # Test 30
