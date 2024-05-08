@@ -2,6 +2,7 @@
 referred to connectm's tui.py implementation for inspiration 
 on constructing the grid and utilizing colorama
 """
+import curses
 import colorama
 from colorama import Fore
 import sys
