@@ -6,11 +6,14 @@ from piece import Point, Shape, Piece
 from shape_definitions import ShapeKind
 from blokus import Blokus
 
+########## Milestone 1 #########
+# Test 0
 def test_inheritance() -> None:
     """Test that Blokus inherits from BlokusBase."""
     assert issubclass(Blokus, BlokusBase), "Blokus must inherit from BlokusBase"
 
-#test initializations
+### Test initializations ###
+# Test 1
 def test_init_blokus_mini_1() -> Blokus:
     """
     Construct an instance of a 1-player Blokus Mini game configuration. Verify
@@ -28,6 +31,7 @@ def test_init_blokus_mini_1() -> Blokus:
 
     return blokus_mini_1
 
+# Test 2
 def test_init_blokus_mini_2() -> Blokus:
     """
     Construct an instance of a 2-player Blokus Mini game configuration. Verify
@@ -45,6 +49,7 @@ def test_init_blokus_mini_2() -> Blokus:
 
     return blokus_mini_2
 
+# Test 3
 def test_init_blokus_mono() -> Blokus:
     """
     Construct an instance of a Blokus Mono game configuration. Verify
@@ -61,6 +66,7 @@ def test_init_blokus_mono() -> Blokus:
 
     return blokus_mono
 
+# Test 4
 def test_init_blokus_duo_2() -> Blokus:
     """
     Construct an instance of a Blokus Duo game configuration. Verify
@@ -77,12 +83,13 @@ def test_init_blokus_duo_2() -> Blokus:
 
     return blokus_duo
 
-#for testing purposes
+## For testing purposes
 def init_blokus_classic() -> Blokus:
     """"Initialize a 2-player Blokus Classic game configuration."""
     return Blokus(2, 20, {(0, 0), (0, 19), (19, 0), (19, 19)})
 
-#test shape loading, flipping, rotating
+### Test shape loading, flipping, rotating ###
+# Test 5
 def test_shapes_loaded() -> None:
     """
     Construct an instance of any Blokus game configuration, and test that the
@@ -143,7 +150,8 @@ def test_shapes_loaded() -> None:
         assert shape.can_be_transformed == exp["can_be_transformed"]
         for square in shape.squares:
             assert square in exp["squares"]
-    
+
+# Test 6  
 def test_some_flipped_shapes() -> Blokus:
     """
     Construct an instance of any Blokus game configuration, and test that at
@@ -170,6 +178,7 @@ def test_some_flipped_shapes() -> Blokus:
     piece_f.flip_horizontally()
     assert piece_f.squares == [(-1, -1), (-1, 0), (0, 0), (0, 1), (1, 0)] 
 
+# Test 7
 def test_some_left_rotated_shapes() -> Blokus:
     """
     Construct an instance of any Blokus game configuration, and test that at
@@ -197,6 +206,7 @@ def test_some_left_rotated_shapes() -> Blokus:
     piece_f.rotate_left()
     assert piece_f.squares == [(0, -1), (-1, -1), (1, 0), (0, 0), (0, 1)] 
 
+# Test 8
 def test_some_right_rotated_shapes() -> Blokus:
     """
     Construct an instance of any Blokus game configuration, and test that at
@@ -224,7 +234,8 @@ def test_some_right_rotated_shapes() -> Blokus:
     piece_f.rotate_right()
     assert piece_f.squares == [(0, 1), (1, 1), (-1, 0), (0, 0), (0, -1)] 
 
-#test neighbors
+### Test neighbors ###
+# Test 9
 def test_some_cardinal_neighbors() -> None:
     """
     Construct an instance of any Blokus game configuration, and test that
@@ -260,6 +271,7 @@ def test_some_cardinal_neighbors() -> None:
                               (0, 1), (1, 1) #R
                               }, "Wrong cardinal neighbors for F"
 
+# Test 10
 def test_some_intercardinal_neighbors() -> None:
     """
     Construct an instance of any Blokus game configuration, and test that
@@ -290,7 +302,8 @@ def test_some_intercardinal_neighbors() -> None:
     assert neighbors_f == {(-2, 1), (-2, 2), (2, -1), (2, 1)
                               }, "Wrong intercardinal neighbors for F"
 
-#test game runs
+### Test game runs ###
+# Test 11
 def test_one_player_blokus_mini_game() -> None:
     """
     Construct a 1-player Blokus mini game configuration. Test that the player
@@ -303,25 +316,26 @@ def test_one_player_blokus_mini_game() -> None:
     # Test playing 1st piece
     piece_one = Piece(blokus.shapes[ShapeKind.ONE])
     piece_one.set_anchor((0, 0)) 
-    assert blokus.curr_player == 1
+    assert blokus.curr_player == 1, "curr_player should be 1"
     assert blokus.maybe_place(piece_one) # P1 plays ONE at (0, 0)
-    assert blokus.curr_player == 1
-    assert not blokus.game_over
+    assert blokus.curr_player == 1, "curr_player should be 1" 
+    assert not blokus.game_over, "game should not be over"
 
     # Test playing 2nd piece
     piece_two = Piece(blokus.shapes[ShapeKind.TWO])
     piece_two.set_anchor((1, 1)) 
-    assert blokus.curr_player == 1
+    assert blokus.curr_player == 1, "curr_player should be 1"
     assert blokus.maybe_place(piece_two) # P1 plays TWO at (1, 1)
-    assert blokus.curr_player == 1
-    assert not blokus.game_over
+    assert blokus.curr_player == 1, "curr_player should be 1"
+    assert not blokus.game_over, "game should not be over"
 
     # Test retiring
     blokus.retire()
-    assert blokus.game_over
-    assert blokus.winners == [1]
-    assert blokus.get_score(1) == -88 # Starting with -89, played 1
+    assert blokus.game_over, "game should be over"
+    assert blokus.winners == [1], "P1 should've won"
+    assert blokus.get_score(1) == -88, "Score should be -88 for P1"
 
+# Test 12
 def test_two_player_blokus_mini_game() -> None:
     """
     Construct a 2-player Blokus mini game configuration. Test that each player
@@ -335,53 +349,86 @@ def test_two_player_blokus_mini_game() -> None:
     # Test playing 1st piece
     piece_one = Piece(blokus.shapes[ShapeKind.ONE])
     piece_one.set_anchor((0, 0))
-    assert blokus.curr_player == 1
+    assert blokus.curr_player == 1, "curr_player should be 1"
     assert blokus.maybe_place(piece_one) # P1 plays ONE at (0, 0)
-    assert blokus.curr_player == 2
-    assert not blokus.game_over
+    assert blokus.curr_player == 2, "curr_player should be 2"
+    assert not blokus.game_over, "game should not be over"
 
     # Test playing 2nd piece
     piece_two = Piece(blokus.shapes[ShapeKind.TWO])
     # P2 cannot play TWO at (0, 0)
     piece_two.set_anchor((0, 0))
-    assert not blokus.maybe_place(piece_two)
+    assert not blokus.maybe_place(piece_two), "P2 cannot play TWO at (0, 0)"
     # P2 can play TWO at (0, 1)
     piece_two.set_anchor((0, 1))
-    assert blokus.curr_player == 2
+    assert blokus.curr_player == 2, "curr_player should be 2"
     assert blokus.maybe_place(piece_two) # P2 plays TWO at (0, 1)
-    assert blokus.curr_player == 1
-    assert not blokus.game_over
+    assert blokus.curr_player == 1, "curr_player should be 1"
+    assert not blokus.game_over, "game should not be over"
 
     # Test retiring
     blokus.retire() # P1 retires
-    assert blokus.curr_player == 2
+    assert blokus.curr_player == 2, "curr_player should be 2"
     blokus.retire() # P2 retires
 
-    assert blokus.game_over
-    assert blokus.winners == [2]
-    assert blokus.get_score(1) == -88
-    assert blokus.get_score(2) == -87
+    assert blokus.game_over, "game should be over"
+    assert blokus.winners == [2], "winner should be P2"
+    assert blokus.get_score(1) == -88, "P1 score should be -88"
+    assert blokus.get_score(2) == -87, "P2 score should be -87"
 
-##### Milestone 2 #####
+######### Milestone 2 #########
 
+### Test exceptions ###
+# Test 13
 def test_exception_init():
     """
     Verify that four calls to the Blokus constructor each raise a ValueError,
     one for each of the four situations described in the docstring
-    """
+    """ 
+    with pytest.raises(ValueError):
+        Blokus(0, 11, {(5,5)})  # num_players is less than 1
+    with pytest.raises(ValueError):
+        Blokus(5, 11, {(5,5)})  # num_players is more than 4
 
+    with pytest.raises(ValueError):
+        Blokus(1, 4, {(5,5)})  # size is less than 5
+    
+    with pytest.raises(ValueError):
+        Blokus(1, 11, {(12,12)})  # not all start_positions are on the board
+
+    with pytest.raises(ValueError):
+        Blokus(2, 11, {(5,5)})  # fewer start_positions than num_players
+
+# Test 14
 def test_exception_place_already_played():
     """
     Create an instance of any Blokus game configuration. Verify that maybe_place
     raises a ValueError when trying to place an already played piece.
     """
+    blokus = init_blokus_classic()
+    piece_one = Piece(blokus.shapes[ShapeKind.ONE])
+    piece_one.set_anchor((0, 0)) 
+    blokus.maybe_place(piece_one) # P1 places ONE at (0, 0)
 
+    piece_one.set_anchor((19, 19))
+    blokus.maybe_place(piece_one) # P2 places ONE at (19, 19)
+
+    piece_one.set_anchor((1, 1)) 
+    with pytest.raises(ValueError): # P1 can't place ONE again
+       blokus.maybe_place(piece_one) 
+
+# Test 15
 def test_exception_place_without_anchor():
     """
     Create an instance of any Blokus game configuration. Verify that maybe_place
     raises a ValueError when trying to place a piece without an anchor.
     """
+    blokus = init_blokus_classic()
+    with pytest.raises(ValueError): # no call to set_anchor
+       blokus.maybe_place(Piece(blokus.shapes[ShapeKind.THREE])) 
 
+### Test start positions ###
+# Test 16
 def test_start_positions_1():
     """
     Create an instance of any 1-player Blokus game configuration with one start
@@ -390,7 +437,19 @@ def test_start_positions_1():
     does cover the start position, and that the player can place a second piece
     on the board.
     """
+    blokus = test_init_blokus_mono() # (5, 5) is the only start position
+    piece_one = Piece(blokus.shapes[ShapeKind.ONE])
+    piece_one.set_anchor((0, 0)) # not valid start position
+    assert not blokus.maybe_place(piece_one), "Can't play piece not at start"
+    
+    piece_one.set_anchor((5, 5))
+    assert blokus.maybe_place(piece_one), "Should be able to play piece at strt"
 
+    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
+    piece_two.set_anchor((6, 6))
+    assert blokus.maybe_place(piece_two), "Should be able to play 2nd piece"
+
+# Test 17
 def test_start_positions_2():
     """
     Create an instance of any 2-player Blokus game configuration with two start
@@ -402,13 +461,80 @@ def test_start_positions_2():
     1 and Player 2 can each play another piece.
     (This sequence involves four placed pieces in total.)
     """
+    blokus = test_init_blokus_duo_2()
+    piece_one = Piece(blokus.shapes[ShapeKind.ONE])
+    piece_one.set_anchor((1, 1)) # Not valid start position
+    assert blokus.curr_player == 1
+    assert not blokus.maybe_place(piece_one), "P1 can't play piece not at start"
+    
+    piece_one.set_anchor((4, 4))
+    assert blokus.maybe_place(piece_one), (
+        "P1 should be able to play piece at start position (4, 4)"
+    )
+    # P1 played ONE at (4, 4)
+    
+    assert blokus.curr_player == 2
+    assert not blokus.maybe_place(piece_one), "P2 can't cover alr covered strt"
+    piece_one.set_anchor((1, 1))
+    assert not blokus.maybe_place(piece_one), "P2 can't play piece not at start"
 
+    piece_one.set_anchor((9, 9))
+    assert blokus.maybe_place(piece_one), (
+        "P2 should be able to play piece at start position (9, 9)"
+    )
+    # P2 played ONE at (9, 9)
+    assert blokus.curr_player == 1 
+    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
+    piece_two.set_anchor((5, 5))
+    assert blokus.maybe_place(piece_two), "P1 should be able to play 2nd piece"
+    # P1 played TWO at (5, 5)
+
+    assert blokus.curr_player == 2
+    piece_two.set_anchor((8, 7))
+    assert blokus.maybe_place(piece_two), "P2 should be able to play 2nd piece"
+    # P2 played TWO at (8, 7)
+
+# Test 18
 def test_start_positions_3():
     """
     Same as the previous test, except the game board has four start positions
     rather than two.
     """
+    blokus = init_blokus_classic()
+    piece_one = Piece(blokus.shapes[ShapeKind.ONE])
+    piece_one.set_anchor((1, 1)) # Not valid start position
+    assert blokus.curr_player == 1
+    assert not blokus.maybe_place(piece_one), "P1 can't play piece not at start"
+    
+    piece_one.set_anchor((0, 0))
+    assert blokus.maybe_place(piece_one), (
+        "P1 should be able to play piece at start position (0, 0)"
+    )
+    # P1 played ONE at (0, 0)
+    
+    assert blokus.curr_player == 2
+    assert not blokus.maybe_place(piece_one), "P2 can't cover alr covered strt"
+    piece_one.set_anchor((1, 1))
+    assert not blokus.maybe_place(piece_one), "P2 can't play piece not at start"
 
+    piece_one.set_anchor((19, 19))
+    assert blokus.maybe_place(piece_one), (
+        "P2 should be able to play piece at start position (19, 19)"
+    )
+    # P2 played ONE at (19, 19)
+    assert blokus.curr_player == 1 
+    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
+    piece_two.set_anchor((1, 1))
+    assert blokus.maybe_place(piece_two), "P1 should be able to play 2nd piece"
+    # P1 played TWO at (1, 1)
+
+    assert blokus.curr_player == 2
+    piece_two.set_anchor((18, 17))
+    assert blokus.maybe_place(piece_two), "P2 should be able to play 2nd piece"
+    # P2 played TWO at (18, 17)
+
+### Test shape flips and rotations ###
+# Test 19
 def test_place_flipped_shape_1():
     """
     Create an instance of any 1-player Blokus game config. Choose a piece,
@@ -416,31 +542,59 @@ def test_place_flipped_shape_1():
     Then place the piece, and verify that grid stores the correct values for
     every cell in the matrix.
     """
+    blokus = test_init_blokus_mono()
+    piece_four = Piece(blokus.shapes[ShapeKind.FOUR])
+    piece_four.set_anchor(5, 5)
+    piece_four.flip_horizontally()
+    expected_squares = [(5, 3), (5, 4), (5, 5), (5, 6)]
+    assert piece_four.squares() == expected_squares, (
+        "Squares of piece_four incorrect after flipping"
+    )
+    # Need to double check this is the correct expected squares
 
+    blokus.maybe_place(piece_four)
+    # Check grid stores correct values for cells filled by FOUR
+    for r, c in expected_squares:
+        assert blokus.grid[r][c] == (1, ShapeKind.FOUR), (
+            f"Grid at ({r}, {c}) should be (1, ShapeKind.FOUR)"
+        )
+    # Check grid correctly stores None for all other cells
+    for r in range(len(blokus.grid)):
+        for c in range(len(blokus.grid[0])):
+            if (r, c) not in expected_squares:
+                assert blokus.grid[r][c] is None, (
+                    f"Grid at ({r}, {c}) should be empty"
+                )
+
+# Test 20
 def test_rotated_shape_1():
     """
     Same as the previous, except for a shape that is rotated once (90 degrees)
     to the right.
     """
 
+# Test 21
 def test_rotated_shape_2():
     """
     Same as the previous, except for a shape that is rotated twice (180 degrees)
     to the right.
     """
 
+# Test 22
 def test_flipped_and_rotated_shape_1():
     """
     Same as the previous, except for a shape that is flipped and then rotated
     three times (270 degrees) to the right.
     """
 
+# Test 23
 def test_flipped_and_rotated_shape_2():
     """
     Same as the previous, except for a shape that is flipped twice and then
     rotated four times (360 degrees) to the right.
     """
 
+# Test 24
 def test_prevent_own_edges_1():
     """
     Create an instance of any 1-player Blokus game configuration. After placing
@@ -448,6 +602,8 @@ def test_prevent_own_edges_1():
     edge with their first played piece.
     """
 
+### Test edges and corners ###
+# Test 25
 def test_prevent_own_edges_2():
     """
     Create an instance of any 2-player Blokus game configuration. After Player 1
@@ -460,6 +616,7 @@ def test_prevent_own_edges_2():
     in total.)
     """
 
+# Test 26
 def test_require_own_corners_1():
     """
     Analogous to above but requiring own-corners rather than preventing
@@ -469,6 +626,7 @@ def test_require_own_corners_1():
     corners with their first played piece.
     """
 
+# Test 27
 def test_require_own_corners_2():
     """
     Analogous to above but requiring own-corners rather than preventing
@@ -483,6 +641,8 @@ def test_require_own_corners_2():
     placed pieces.)
     """
 
+### Test available moves ###
+# Test 28
 def test_some_available_moves():
     """
     Create an instance of any Blokus game configuration. Verify that
@@ -490,12 +650,15 @@ def test_some_available_moves():
     of available_moves decreases after each step.
     """
 
+# Test 29
 def test_no_available_moves():
     """
     Create an instance of any Blokus game configuration. Play pieces until there
     are no more available moves, and verify that available_moves is empty.
     """
 
+### Test X points ###
+# Test 30
 def test_15_points():
     """
     Simulate a game where a player scores 15 points, that is, plays all 21 of
@@ -508,6 +671,7 @@ def test_15_points():
     strategizing how to test such long sequences of moves.
     """
 
+# Test 31
 def test_20_points():
     """
     Same as above, but where a player scores 20 points, that is, plays all 21

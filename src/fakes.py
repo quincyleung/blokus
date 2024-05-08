@@ -5,7 +5,6 @@ We provide a BlokusStub implementation, and
 you must provide a BlokusFake implementation.
 """
 from typing import Optional
-import textwrap
 
 from shape_definitions import ShapeKind, definitions
 from piece import Point, Shape, Piece
@@ -255,16 +254,6 @@ class BlokusStub(BlokusBase):
 class BlokusFake(BlokusBase):
     """
     Class for Fake Blokus game logic.
-    
-    num_players: Number of players
-    size: Number of squares on each side of the board
-    start_positions: Positions for players' first moves
-
-    Raises ValueError...
-    if num_players is less than 1 or more than 4,
-    if the size is less than 5,
-    if not all start_positions are on the board, or
-    if there are fewer start_positions than num_players.    
     """
 
     _shapes: dict[ShapeKind, Shape]
@@ -276,6 +265,20 @@ class BlokusFake(BlokusBase):
     _retired_players: set[int]
 
     def __init__(self, num_players: int, size: int, start_positions: set[tuple[int, int]]) -> None:
+        """
+        Constructor
+
+        num_players: Number of players
+        size: Number of squares on each side of the board
+        start_positions: Positions for players' first moves
+
+        Raises ValueError...
+        if num_players is less than 1 or more than 4,
+        if the size is less than 5,
+        if not all start_positions are on the board, or
+        if there are fewer start_positions than num_players.    
+        """
+
         if not (1 <= num_players <= 2) or size < 5 or len(start_positions) < num_players:
             raise ValueError
         for x, y in start_positions:
@@ -378,8 +381,9 @@ class BlokusFake(BlokusBase):
         """
         if len(self.retired_players) == self.num_players:
             return True
-        for i in range(self.num_players):
-            if len(self.remaining_shapes(i)) != 0:
+
+        for i in range(1, self.num_players + 1):
+            if i not in self.retired_players and len(self.remaining_shapes(i)) != 0:
                 return False
         return True
 
@@ -393,10 +397,13 @@ class BlokusFake(BlokusBase):
         highest_player: list[int] = []
 
         for i in range(1, self.num_players + 1):
-            # if greater than tracker
-            if self.get_score(i) > highest_score:
+            if self.get_score(i) > highest_score and len(highest_player) == 0:
                 highest_score = self.get_score(i)
                 highest_player.append(i)
+            elif self.get_score(i) > highest_score:
+                highest_player.pop()
+                highest_player.append(i)
+                highest_score = self.get_score(i)
             elif self.get_score(i) == highest_score:
                 highest_player.append(i)
         return highest_player
@@ -474,11 +481,14 @@ class BlokusFake(BlokusBase):
         if piece.anchor is None:
             raise ValueError("Anchor of the piece is None")
         
+        if self.any_wall_collisions(piece):
+            return True
+        
         for point in piece.squares():
             r, c = point
             if self.grid[r][c] is not None:
                 return True
-        return self.any_wall_collisions(piece)
+        return False
 
     def legal_to_place(self, piece: Piece) -> bool:
         """
@@ -500,7 +510,6 @@ class BlokusFake(BlokusBase):
         Raises ValueError if the anchor of the piece
         is None.
         """
-        print("anchor:", piece.anchor)
 
         if piece.shape.kind not in self.remaining_shapes(self.curr_player):
             raise ValueError("Player has already played a piece with this shape")
@@ -509,26 +518,7 @@ class BlokusFake(BlokusBase):
 
         if self.any_collisions(piece):
             return False
-        for point in piece.squares():
-            if len(self.remaining_shapes(self.curr_player)) == 21:
-                print("start positions:", self.start_positions)
-                #if point in self.start_positions:
-                return True
-            r, c = point
-            print("row:", r, "col", c)
-            for row_index in range(r - 1, r + 2):
-                for col_index in range(c - 1, r + 2):
-                    grid_value = self.grid[row_index][col_index]
-                    print("row index: ", row_index, "col index:", col_index)
-                    print("grid val:", grid_value)
-                    index = (row_index, col_index)
-                    if index == (0,0) or index == (0,2) or index == (2,0) or index == (2,2) and grid_value is not None:
-                        print("has corner case!", index)
-                        print("grid val", grid_value[0], "player:", self.curr_player)
-                        if grid_value[0] == self.curr_player:
-                            return True
-                    elif grid_value is not None and grid_value[0] == self.curr_player:
-                        return False
+        return True
 
     def maybe_place(self, piece: Piece) -> bool:
         """
