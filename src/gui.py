@@ -14,9 +14,10 @@ Online resources consulted:
 """
 import os
 import sys
+import random
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
-from fakes import BlokusStub
+from fakes import BlokusStub, BlokusFake
 from piece import Point, Shape, Piece
 from shape_definitions import definitions, ShapeKind
 
@@ -42,7 +43,7 @@ class GUI:
     most_recent_timer: str
 
     #replace with BLOKUS
-    def __init__(self, blokusS: BlokusStub):
+    def __init__(self, blokusS: BlokusFake):
         """
 
         """
@@ -53,10 +54,12 @@ class GUI:
         self.size = BOARD_SIZE  
         self.width = ((self.size) + 2) * (self.square_size + self.spacer)
         self.height = ((self.size) + 4) * (self.square_size + self.spacer)
-        self.player_colors = [(0, 252, 0), (128, 128, 255)]
+        self.player_colors = [(0, 252, 0), (128, 128, 255), (252, 0, 0)]
         self.start_positions = set()
         self.start_positions.add(((self.size//4), self.size//4))
         self.start_positions.add((3 * (self.size//4), 3 * (self.size//4)))
+        self.hovering = list(self.blokusS.available_moves())[0]
+        self.hovering.shape.squares = [(0,0),(0,1)]
 
         # initialize Pygame
         pygame.init()
@@ -65,6 +68,7 @@ class GUI:
         self.surface = pygame.display.set_mode((self.width, self.height))
         self.clock = pygame.time.Clock()
         self.event_loop()
+        
 
     def draw_board(self) -> None:
         """
@@ -88,6 +92,74 @@ class GUI:
         pieces_remaining_text_2 = self.font.render(remaining_1, True, (255,255,255))
         self.surface.blit(pieces_remaining_text_1, (self.square_size, (self.size + 1) * (self.square_size + self.spacer) + self.spacer))
         self.surface.blit(pieces_remaining_text_2, (self.square_size, (self.size + 2) * (self.square_size + self.spacer) + self.spacer))
+
+    def hovering_piece(self, direction, switch) -> None:
+        for r in range(self.size):
+            for c in range(self.size):
+                if self.blokusS.grid[r][c] is not None:
+                    if self.blokusS.grid[r][c][0] == 3:
+                        self.blokusS.grid[r][c] = None
+        if switch:
+            self.hovering = random.choice(list(self.blokusS.available_moves()))
+        else:
+            print("available:", list(self.blokusS.available_moves()))
+            new_squares = []
+            if direction == "up":
+                for temp in self.hovering.shape.squares:
+                    r, c = temp
+                    new_squares.append((r-1,c))
+            elif direction == "down":
+                for temp in self.hovering.shape.squares:
+                    r, c = temp
+                    new_squares.append((r+1,c))
+            elif direction == "right":
+                for temp in self.hovering.shape.squares:
+                    r, c = temp
+                    new_squares.append((r,c+1))
+            elif direction == "left":
+                for temp in self.hovering.shape.squares:
+                    r, c = temp
+                    new_squares.append((r,c-1))
+            self.hovering.shape.squares = new_squares
+        for square in self.hovering.shape.squares:
+            r, c = square
+            self.blokusS.grid[r][c] = (3, self.hovering.shape.kind)
+        print(self.hovering.shape)
+        print(self.blokusS.grid)
+        """
+            self.hovering.face_up = face_up
+            self.hovering.rotation = rotation
+            self.hovering.shape.kind = kind
+            self.hovering.shape.origin = origin
+            self.hovering.shape.can_be_transformed = can_be_transformed
+            self.hovering.shape.squares = squares
+            if direction == "up":
+                print(self.hovering)
+                valid = True
+                new_squares = []
+                for i in squares:
+                    r , c = i
+                    new_squares.append((r-1, c))
+                    if r - 1 < 0 or self.blokusS.grid[r-1][c] != None:
+                        valid = False
+                if valid:
+                    self.hovering = Piece(Shape(kind, origin, can_be_transformed, new_squares), rotation, face_up)
+                    for square in new_squares:
+                        r, c = square
+                        self.blokusS.grid[r][c] = (3, kind)
+        """
+                
+
+        """
+        events = pygame.event.get()
+            for event in events:
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    pos = event.pos
+                    self.click(pos)
+        """
 
     def draw_pieces(self) -> None:
         """
@@ -124,18 +196,24 @@ class GUI:
         """
         while True:
             # process Pygame events
+            self.draw_window()
+            self.draw_board()
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                elif event.type == pygame.MOUSEBUTTONUP:
-                    pos = event.pos
-                    self.click(pos)
-
-            # update the display
-            self.draw_window()
-            self.draw_board()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        self.hovering_piece("up", False)
+                    if event.key == pygame.K_DOWN:
+                        self.hovering_piece("down", False)
+                    if event.key == pygame.K_LEFT:
+                        self.hovering_piece("left", False)
+                    if event.key == pygame.K_RIGHT:
+                        self.hovering_piece("right", False)
+                    if event.key == pygame.K_SPACE:
+                        self.hovering_piece("right", True)
             self.draw_pieces()
             pygame.display.update()
             self.clock.tick(24)
