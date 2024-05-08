@@ -603,16 +603,6 @@ class BlokusFake(BlokusBase):
                 for c in range(self.size):
                     piece = Piece(self.shapes[remaining_shape])
                     piece.set_anchor((r, c)) # Testing different locations
-                    # Check different orientations
-                    for _ in range(4):
-                        piece.rotate_left() 
-                        if self.legal_to_place(piece):
-                            available_moves.add(piece)
-                    # Now check mirrored version and different orientations
-                    piece.flip_horizontally() 
-                    for _ in range(4):
-                        piece.rotate_left() 
-                        if self.legal_to_place(piece):
-                            available_moves.add(piece)
-
+                    if self.legal_to_place(piece):
+                        available_moves.add(piece)
         return available_moves
