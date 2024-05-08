@@ -19,7 +19,7 @@ def test_init_blokus_mini_1() -> Blokus:
     Construct an instance of a 1-player Blokus Mini game configuration. Verify
     that properties have been initialized correctly
     """
-    blokus_mini_1 = Blokus(1, 5, {(0, 0), (0, 4), (2, 2), (4, 0), (4, 4)})
+    blokus_mini_1 = Blokus(1, 5, {(0, 0), (4, 4)})
 
     assert blokus_mini_1.size == 5
     assert blokus_mini_1.start_positions == {(0, 0), (0, 4), (2, 2), (4, 0),
@@ -37,7 +37,7 @@ def test_init_blokus_mini_2() -> Blokus:
     Construct an instance of a 2-player Blokus Mini game configuration. Verify
     that properties have been initialized correctly
     """
-    blokus_mini_2 = Blokus(2, 5, {(0, 0), (0, 4), (2, 2), (4, 0), (4, 4)})
+    blokus_mini_2 = Blokus(2, 5, {(0, 0), (4, 4)})
 
     assert blokus_mini_2.size == 5
     assert blokus_mini_2.start_positions == {(0, 0), (0, 4), (2, 2), (4, 0),
@@ -167,16 +167,16 @@ def test_some_flipped_shapes() -> Blokus:
     piece_f = Piece(blokus.shapes[ShapeKind.F])
 
     piece_two.flip_horizontally()
-    assert piece_two.squares == [(0, -1), (0, 0)]
+    assert piece_two.squares() == [(0, -1), (0, 0)]
 
     piece_five.flip_horizontally()
-    assert piece_five.squares == [(-2, 0), (-1, 0), (0, 0), (1, 0), (2, 0)]
+    assert piece_five.squares() == [(-2, 0), (-1, 0), (0, 0), (1, 0), (2, 0)]
 
     piece_a.flip_horizontally()
-    assert piece_a.squares == [(-1, 0), (0, -1), (0, 0), (0, 1)]
+    assert piece_a.squares() == [(-1, 0), (0, -1), (0, 0), (0, 1)]
 
     piece_f.flip_horizontally()
-    assert piece_f.squares == [(-1, -1), (-1, 0), (0, 0), (0, 1), (1, 0)] 
+    assert piece_f.squares() == [(-1, -1), (-1, 0), (0, 0), (0, 1), (1, 0)] 
 
 # Test 7
 def test_some_left_rotated_shapes() -> Blokus:
@@ -195,16 +195,16 @@ def test_some_left_rotated_shapes() -> Blokus:
 
     # Order assumes rotate_left rotates each (r,c)->(-c,r) in original order
     piece_two.rotate_left()
-    assert piece_two.squares == [(0, 0), (-1, 0)]
+    assert piece_two.squares() == [(0, 0), (-1, 0)]
 
     piece_five.rotate_left()
-    assert piece_five.squares == [(0, 2), (0, 1), (0, 0), (0, -1), (0, -2)]
+    assert piece_five.squares() == [(0, 2), (0, 1), (0, 0), (0, -1), (0, -2)]
 
     piece_a.rotate_left()
-    assert piece_a.squares == [(0, -1), (1, 0), (0, 0), (-1, 0)]
+    assert piece_a.squares() == [(0, -1), (1, 0), (0, 0), (-1, 0)]
 
     piece_f.rotate_left()
-    assert piece_f.squares == [(0, -1), (-1, -1), (1, 0), (0, 0), (0, 1)] 
+    assert piece_f.squares() == [(0, -1), (-1, -1), (1, 0), (0, 0), (0, 1)] 
 
 # Test 8
 def test_some_right_rotated_shapes() -> Blokus:
@@ -223,16 +223,16 @@ def test_some_right_rotated_shapes() -> Blokus:
 
     # Order assumes rotate_right rotates each (r,c)->(c,-r) in original order
     piece_two.rotate_right()
-    assert piece_two.squares == [(0, 0), (1, 0)]
+    assert piece_two.squares() == [(0, 0), (1, 0)]
 
     piece_five.rotate_right()
-    assert piece_five.squares == [(0, -2), (0, -1), (0, 0), (0, 1), (0, 2)]
+    assert piece_five.squares() == [(0, -2), (0, -1), (0, 0), (0, 1), (0, 2)]
 
     piece_a.rotate_right()
-    assert piece_a.squares == [(0, -1), (-1, 0), (0, 0), (1, 0)]
+    assert piece_a.squares() == [(0, -1), (-1, 0), (0, 0), (1, 0)]
 
     piece_f.rotate_right()
-    assert piece_f.squares == [(0, 1), (1, 1), (-1, 0), (0, 0), (0, -1)] 
+    assert piece_f.squares() == [(0, 1), (1, 1), (-1, 0), (0, 0), (0, -1)] 
 
 ### Test neighbors ###
 # Test 9
@@ -544,7 +544,7 @@ def test_place_flipped_shape_1():
     """
     blokus = test_init_blokus_mono()
     piece_four = Piece(blokus.shapes[ShapeKind.FOUR])
-    piece_four.set_anchor(5, 5)
+    piece_four.set_anchor((5, 5))
     piece_four.flip_horizontally()
     expected_squares = [(5, 3), (5, 4), (5, 5), (5, 6)]
     assert piece_four.squares() == expected_squares, (
@@ -573,7 +573,7 @@ def test_rotated_shape_1():
     """
     blokus = test_init_blokus_mono()
     piece_four = Piece(blokus.shapes[ShapeKind.FOUR])
-    piece_four.set_anchor(5, 5)
+    piece_four.set_anchor((5, 5))
     piece_four.rotate_right()
     expected_squares = [(4, 5), (5, 5), (6, 5), (7, 5)]
     assert piece_four.squares() == expected_squares, (
@@ -602,7 +602,7 @@ def test_rotated_shape_2():
     """
     blokus = test_init_blokus_mono()
     piece_four = Piece(blokus.shapes[ShapeKind.FOUR])
-    piece_four.set_anchor(5, 5)
+    piece_four.set_anchor((5, 5))
     piece_four.rotate_right()
     piece_four.rotate_right() # Rotate R twice
     expected_squares = [(5, 3), (5, 4), (5, 5), (5, 6)]
@@ -632,7 +632,7 @@ def test_flipped_and_rotated_shape_1():
     """
     blokus = test_init_blokus_mono()
     piece_four = Piece(blokus.shapes[ShapeKind.FOUR])
-    piece_four.set_anchor(5, 5)
+    piece_four.set_anchor((5, 5))
     piece_four.flip_horizontally() # Flip first
     for _ in range(3): # Then rotate R three times
         piece_four.rotate_right()
@@ -663,7 +663,7 @@ def test_flipped_and_rotated_shape_2():
     """
     blokus = test_init_blokus_mono()
     piece_four = Piece(blokus.shapes[ShapeKind.FOUR])
-    piece_four.set_anchor(5, 5)
+    piece_four.set_anchor((5, 5))
     piece_four.flip_horizontally()
     piece_four.flip_horizontally() # Flipping twice will go back to OG
     for _ in range(4): # Rotate R four times will go back to OG
@@ -886,7 +886,7 @@ def test_some_available_moves():
     of available_moves decreases after each step.
     """
     blokus = test_init_blokus_mono()
-    assert blokus.available_moves != {}, "available_moves should not be empty"
+    assert blokus.available_moves() != {}, "available_moves should not be empty"
     cur_length = len(blokus.available_moves) #initialize cur_length
 
     # Piece 1: P1 plays ONE at (5, 5)
@@ -895,10 +895,10 @@ def test_some_available_moves():
     assert blokus.maybe_place(piece_one), (
         "P1 should be able to play ONE at (5, 5)"
     )
-    assert len(blokus.available_moves) < cur_length, (
+    assert len(blokus.available_moves()) < cur_length, (
         "available_moves should be decreasing after playing piece ONE"
     )
-    cur_length = len(blokus.available_moves) #update cur_length
+    cur_length = len(blokus.available_moves()) #update cur_length
 
     # Piece 2: P1 plays TWO at (6, 6)
     piece_two = Piece(blokus.shapes[ShapeKind.TWO])
@@ -906,10 +906,10 @@ def test_some_available_moves():
     assert blokus.maybe_place(piece_two), (
         "P1 should be able to play TWO at (6, 6)"
     )
-    assert len(blokus.available_moves) < cur_length, (
+    assert len(blokus.available_moves()) < cur_length, (
         "available_moves should be decreasing after playing piece TWO"
     )
-    cur_length = len(blokus.available_moves) #update cur_length
+    cur_length = len(blokus.available_moves()) #update cur_length
 
     # Piece 3: P1 plays THREE at (7, 8)
     piece_three = Piece(blokus.shapes[ShapeKind.THREE])
@@ -917,7 +917,7 @@ def test_some_available_moves():
     assert blokus.maybe_place(piece_three), (
         "P1 should be able to play THREE at (7, 8)"
     )
-    assert len(blokus.available_moves) < cur_length, (
+    assert len(blokus.available_moves()) < cur_length, (
         "available_moves should be decreasing after playing piece THREE"
     )
 
@@ -947,16 +947,16 @@ def test_no_available_moves():
 
     # Rotate R THREE then P1 places THREE at (3, 4)
     piece_three = Piece(blokus.shapes[ShapeKind.THREE])
-    piece_three.rotate_right()
     piece_three.set_anchor((3, 4))
+    piece_three.rotate_right()
     assert blokus.maybe_place(piece_three), (
         "P1 should be able to play rotated R THREE at (3, 4)"
     )
 
     # Rotate R TWO then P1 places TWO at (3, 0)
     piece_two = Piece(blokus.shapes[ShapeKind.TWO])
-    piece_two.rotate_right()
     piece_two.set_anchor((3, 0))
+    piece_two.rotate_right()
     assert blokus.maybe_place(piece_two), (
         "P1 should be able to play rotated R TWO at (3, 0)"
     )
@@ -965,6 +965,249 @@ def test_no_available_moves():
     assert not blokus.available_moves(), "Should be no available moves left"
 
 ### Test X points ###
+## Helper to avoid repeated code for Tests 30 and 31
+def fill_grid_except_last_two() -> Blokus:
+    """
+    Constructs an instance of Blokus Duo. Each player places pieces until P1 has
+    placed 19 pieces and is about to play their last two pieces and win.
+    """
+    blokus = test_init_blokus_duo_2()
+
+    # Piece 1: P1 plays flipped F at (4, 4)
+    assert blokus.curr_player == 1
+    piece_f = Piece(blokus.shapes[ShapeKind.F])
+    piece_f.set_anchor((4, 4))
+    piece_f.flip_horizontally()
+    assert blokus.maybe_place(piece_f)
+
+    # Piece 2: P2 plays flipped W at (8, 9)
+    assert blokus.curr_player == 2
+    piece_w = Piece(blokus.shapes[ShapeKind.W])
+    piece_w.set_anchor((8, 9))
+    piece_w.flip_horizontally()
+    assert blokus.maybe_place(piece_w)
+
+    # Piece 3: P1 plays rotated R twice + flipped N at (7, 6)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 6))
+    piece_n.rotate_right()
+    piece_n.rotate_right()
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 4: P2 plays Y at (4, 7)
+    assert blokus.curr_player == 2
+    piece_y = Piece(blokus.shapes[ShapeKind.Y])
+    piece_y.set_anchor((4, 7))
+    assert blokus.maybe_place(piece_y)
+
+    # Piece 5: P1 plays X at (2, 6)
+    assert blokus.curr_player == 1
+    piece_x = Piece(blokus.shapes[ShapeKind.X])
+    piece_x.set_anchor((2, 6))
+    assert blokus.maybe_place(piece_x)
+
+    # Piece 6: P2 plays rotated L + flipped S at (6, 5)
+    assert blokus.curr_player == 2
+    piece_s = Piece(blokus.shapes[ShapeKind.S])
+    piece_s.set_anchor((6, 5))
+    piece_s.rotate_left()
+    piece_s.flip_horizontally()
+    assert blokus.maybe_place(piece_s)
+
+    # Piece 7: P1 plays rotated L T at (8, 4)
+    assert blokus.curr_player == 1
+    piece_t = Piece(blokus.shapes[ShapeKind.T])
+    piece_t.set_anchor((8, 4))
+    piece_t.rotate_left()
+    assert blokus.maybe_place(piece_t)
+
+    # Piece 8: P2 plays X at (9, 6)
+    assert blokus.curr_player == 2
+    piece_x = Piece(blokus.shapes[ShapeKind.X]) #Not essential to re-initialize
+    piece_x.set_anchor((9, 6))
+    assert blokus.maybe_place(piece_x)
+
+    # Piece 9: P1 plays rotated R twice + flipped L at (4, 8)
+    assert blokus.curr_player == 1
+    piece_l = Piece(blokus.shapes[ShapeKind.L])
+    piece_l.set_anchor((4, 8))
+    piece_l.rotate_right()
+    piece_l.rotate_right()
+    piece_l.flip_horizontally() 
+    assert blokus.maybe_place(piece_l)
+
+    # Piece 10: P2 plays rotated R THREE at (5, 9)
+    assert blokus.curr_player == 2
+    piece_three = Piece(blokus.shapes[ShapeKind.THREE])
+    piece_three.set_anchor((5, 9))
+    piece_three.rotate_right()
+    assert blokus.maybe_place(piece_three)
+
+    # Piece 11: P1 plays rotated R twice Y at (6, 10)
+    assert blokus.curr_player == 1
+    piece_y = Piece(blokus.shapes[ShapeKind.Y])
+    piece_y.set_anchor((6, 10))
+    piece_y.rotate_right()
+    piece_y.rotate_right()
+    assert blokus.maybe_place(piece_y)
+
+    # Piece 12: P2 plays rotated L SEVEN at (11, 8)
+    assert blokus.curr_player == 2
+    piece_seven = Piece(blokus.shapes[ShapeKind.SEVEN])
+    piece_seven.set_anchor((11, 8))
+    piece_seven.rotate_left()
+    assert blokus.maybe_place(piece_seven)
+
+    # Piece 13: P1 plays rotated R U at (11, 1)
+    assert blokus.curr_player == 1
+    piece_u = Piece(blokus.shapes[ShapeKind.U])
+    piece_u.set_anchor((11, 1))
+    piece_u.rotate_right()
+    assert blokus.maybe_place(piece_u)
+
+    # Piece 14: P2 plays rotated L U at (11, 4)
+    assert blokus.curr_player == 2
+    piece_u = Piece(blokus.shapes[ShapeKind.U])
+    piece_u.set_anchor((11, 4))
+    piece_u.rotate_left()
+    assert blokus.maybe_place(piece_u)
+
+    # Piece 15: P1 plays LETTER O at (11, 5)
+    assert blokus.curr_player == 1
+    piece_letter_o = Piece(blokus.shapes[ShapeKind.LETTER_O])
+    piece_letter_o.set_anchor((11, 5))
+    assert blokus.maybe_place(piece_t)
+
+    # Piece 16: P2 plays flipped N at (7, 2)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 2))
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 17: P1 plays FIVE at (7, 0)
+    assert blokus.curr_player == 1
+    piece_five = Piece(blokus.shapes[ShapeKind.FIVE])
+    piece_five.set_anchor((7, 0))
+    assert blokus.maybe_place(piece_five)
+
+    # Piece 18: P2 plays rotated R F at (8, 12)
+    assert blokus.curr_player == 2
+    piece_f = Piece(blokus.shapes[ShapeKind.F])
+    piece_f.set_anchor((8, 12))
+    piece_f.rotate_right()
+    assert blokus.maybe_place(piece_f)
+
+    # Piece 19: P1 plays rotated L N at (10, 12)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((10, 12))
+    piece_n.rotate_left()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 20: P2 plays flipped N at (7, 2)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 2))
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 16: P2 plays flipped N at (7, 2)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 2))
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 16: P2 plays flipped N at (7, 2)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 2))
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 16: P2 plays flipped N at (7, 2)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 2))
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 16: P2 plays flipped N at (7, 2)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 2))
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 16: P2 plays flipped N at (7, 2)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 2))
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 16: P2 plays flipped N at (7, 2)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 2))
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 16: P2 plays flipped N at (7, 2)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 2))
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 16: P2 plays flipped N at (7, 2)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 2))
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 16: P2 plays flipped N at (7, 2)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 2))
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 16: P2 plays flipped N at (7, 2)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 2))
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 16: P2 plays flipped N at (7, 2)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 2))
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 16: P2 plays flipped N at (7, 2)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 2))
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+    # Piece 16: P2 plays flipped N at (7, 2)
+    assert blokus.curr_player == 1
+    piece_n = Piece(blokus.shapes[ShapeKind.N])
+    piece_n.set_anchor((7, 2))
+    piece_n.flip_horizontally()
+    assert blokus.maybe_place(piece_n)
+
+
+    return blokus
+
 # Test 30
 def test_15_points():
     """
