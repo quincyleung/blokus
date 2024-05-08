@@ -14,6 +14,7 @@ Online resources consulted:
 """
 import os
 import sys
+import random
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 from fakes import BlokusStub, BlokusFake
@@ -53,11 +54,12 @@ class GUI:
         self.size = BOARD_SIZE  
         self.width = ((self.size) + 2) * (self.square_size + self.spacer)
         self.height = ((self.size) + 4) * (self.square_size + self.spacer)
-        self.player_colors = [(0, 252, 0), (128, 128, 255), (0, 252, 0)]
+        self.player_colors = [(0, 252, 0), (128, 128, 255), (252, 0, 0)]
         self.start_positions = set()
         self.start_positions.add(((self.size//4), self.size//4))
         self.start_positions.add((3 * (self.size//4), 3 * (self.size//4)))
-        self.hovering = None
+        self.hovering = list(self.blokusS.available_moves())[0]
+        self.hovering.shape.squares = [(0,0),(0,1)]
 
         # initialize Pygame
         pygame.init()
@@ -80,9 +82,6 @@ class GUI:
                     pygame.draw.rect(self.surface, color=(128, 128, 128), rect=rect, width=0)
                 else:
                     pygame.draw.rect(self.surface, color=(255, 222, 173), rect=rect, width=0)
-                if self.blokusS.grid[row][col] is not None:
-                    if self.blokusS.grid[row][col][0] == 3:
-                        self.blokusS.grid[row][col] = None
         remaining_1 = ""
         for i in range(2):
             for j in self.blokusS.remaining_shapes(i+1):
@@ -95,25 +94,38 @@ class GUI:
         self.surface.blit(pieces_remaining_text_2, (self.square_size, (self.size + 2) * (self.square_size + self.spacer) + self.spacer))
 
     def hovering_piece(self, direction, switch) -> None:
-        if self.hovering == None:
-            self.hovering = list(self.blokusS.available_moves())[0]
-        elif switch:
-            return None
+        for r in range(self.size):
+            for c in range(self.size):
+                if self.blokusS.grid[r][c] is not None:
+                    if self.blokusS.grid[r][c][0] == 3:
+                        self.blokusS.grid[r][c] = None
+        if switch:
+            self.hovering = random.choice(list(self.blokusS.available_moves()))
         else:
+            print("available:", list(self.blokusS.available_moves()))
             new_squares = []
-            for temp in self.hovering.shape.squares:
-                r, c = temp
-                new_squares.append((r,c+1))
+            if direction == "up":
+                for temp in self.hovering.shape.squares:
+                    r, c = temp
+                    new_squares.append((r-1,c))
+            elif direction == "down":
+                for temp in self.hovering.shape.squares:
+                    r, c = temp
+                    new_squares.append((r+1,c))
+            elif direction == "right":
+                for temp in self.hovering.shape.squares:
+                    r, c = temp
+                    new_squares.append((r,c+1))
+            elif direction == "left":
+                for temp in self.hovering.shape.squares:
+                    r, c = temp
+                    new_squares.append((r,c-1))
             self.hovering.shape.squares = new_squares
-        if self.hovering in self.blokusS.available_moves():
-            self.blokusS.maybe_place(self.hovering)
-            for square in self.hovering.shape.squares:
-                r, c = square
-                self.grid[r][c][0] = 3
+        for square in self.hovering.shape.squares:
+            r, c = square
+            self.blokusS.grid[r][c] = (3, self.hovering.shape.kind)
         print(self.hovering.shape)
         print(self.blokusS.grid)
-
-
         """
             self.hovering.face_up = face_up
             self.hovering.rotation = rotation
@@ -191,8 +203,17 @@ class GUI:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                elif event.type == pygame.KEYUP:
-                    self.hovering_piece("up", False)
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        self.hovering_piece("up", False)
+                    if event.key == pygame.K_DOWN:
+                        self.hovering_piece("down", False)
+                    if event.key == pygame.K_LEFT:
+                        self.hovering_piece("left", False)
+                    if event.key == pygame.K_RIGHT:
+                        self.hovering_piece("right", False)
+                    if event.key == pygame.K_SPACE:
+                        self.hovering_piece("right", True)
             self.draw_pieces()
             pygame.display.update()
             self.clock.tick(24)
