@@ -579,7 +579,7 @@ class BlokusFake(BlokusBase):
         completion of a game.
         """
         total: int = 0
-        remaining = self.remaining_shapes(player)
+        remaining: list[ShapeKind] = self.remaining_shapes(player)
         for shapekind in remaining:
             cur_shape = Shape.from_string(shapekind, definitions[shapekind])
             total += len(cur_shape.squares)
