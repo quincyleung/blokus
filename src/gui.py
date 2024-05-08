@@ -59,7 +59,6 @@ class GUI:
         self.start_positions.add(((self.size//4), self.size//4))
         self.start_positions.add((3 * (self.size//4), 3 * (self.size//4)))
         self.hovering = list(self.blokusS.available_moves())[0]
-        self.hovering.shape.squares = [(0,0),(0,1)]
 
         # initialize Pygame
         pygame.init()
@@ -101,31 +100,41 @@ class GUI:
                         self.blokusS.grid[r][c] = None
         if switch:
             self.hovering = random.choice(list(self.blokusS.available_moves()))
+            print("random choice", self.hovering)
+            print(self.hovering.shape.squares)
         else:
-            print("available:", list(self.blokusS.available_moves()))
+            #print("available:", len(list(self.blokusS.available_moves())))
             new_squares = []
+            implement = True
             if direction == "up":
                 for temp in self.hovering.shape.squares:
                     r, c = temp
                     new_squares.append((r-1,c))
+                    if r-1 < 0 or self.blokusS.grid[r-1][c] != None:
+                        implement = False
             elif direction == "down":
                 for temp in self.hovering.shape.squares:
                     r, c = temp
                     new_squares.append((r+1,c))
+                    if r+1 == self.size or self.blokusS.grid[r+1][c] != None:
+                        implement = False
             elif direction == "right":
                 for temp in self.hovering.shape.squares:
                     r, c = temp
                     new_squares.append((r,c+1))
+                    if c+1 == self.size or self.blokusS.grid[r][c+1] != None:
+                        implement = False
             elif direction == "left":
                 for temp in self.hovering.shape.squares:
                     r, c = temp
                     new_squares.append((r,c-1))
-            self.hovering.shape.squares = new_squares
+                    if c-1 < 0 or self.blokusS.grid[r][c-1] != None:
+                        implement = False
+            if implement:
+                self.hovering.shape.squares = new_squares
         for square in self.hovering.shape.squares:
             r, c = square
-            self.blokusS.grid[r][c] = (3, self.hovering.shape.kind)
-        print(self.hovering.shape)
-        print(self.blokusS.grid)
+            self.blokusS.grid[r][c] = (3, self.hovering.shape)
         """
             self.hovering.face_up = face_up
             self.hovering.rotation = rotation
@@ -223,5 +232,5 @@ class GUI:
         """
 
 if __name__ == "__main__":
-    blokus : BlokusStub = BlokusStub(num_players=0, size=BOARD_SIZE, start_positions=set())
+    blokus : BlokusFake = BlokusFake(num_players=2, size=BOARD_SIZE, start_positions={(4,4), (9,9)})
     GUI(blokus)
