@@ -871,7 +871,7 @@ def test_some_available_moves():
     """
     blokus = test_init_blokus_mono()
     assert blokus.available_moves() != {}, "available_moves should not be empty"
-    cur_length = len(blokus.available_moves) #initialize cur_length
+    cur_length = len(blokus.available_moves()) #initialize cur_length
 
     # Piece 1: P1 plays ONE at (5, 5)
     piece_one = Piece(blokus.shapes[ShapeKind.ONE])

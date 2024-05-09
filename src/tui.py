@@ -6,9 +6,15 @@ import curses
 import colorama
 from colorama import Fore
 import sys
+from typing import Any
 
 from blokus import BlokusBase
 from fakes import BlokusStub, BlokusFake
+
+ESC = 27
+curses.set_escdelay(25)
+ENTER_KEYS = [10, 13]
+ARROW_KEYS = [curses.KEY_LEFT, curses.KEY_RIGHT, curses.KEY_UP, curses.KEY_DOWN]
 
 # main function for running tui
 def run_tui(user_input: str) -> str:
@@ -16,14 +22,13 @@ def run_tui(user_input: str) -> str:
     board: BlokusFake
     if user_input == "mono":
         board = BlokusFake(1, 11, {(5, 5)})
-        print_board(board)
     elif user_input == "duo":
         board = BlokusFake(2, 14, {(4, 4), (9, 9)})
         print_board(board)
-    # board size
+    # board size - milestone 1
     else:
         board_size = int(user_input)
-        board = BlokusFake(2, board_size, {(0, 0), (board_size - 1, board_size - 1)})
+        board = BlokusStub(2, board_size, {(0, 0), (board_size - 1, board_size - 1)})
         print_board(board)
 
 # printing board (visual display with gui)
@@ -79,11 +84,17 @@ def print_board(board: BlokusFake) -> str:
                 status_screen += Fore.BLACK + shape + " "
         print(f"{status_screen}")
 
-# future tasks..?
+def user_interact(screen: Any) -> None:
+    raise NotImplementedError
+
 def play_blokus(blokus: BlokusBase) -> None:
     # game loop: ends when player/players win (all pieces are placed)
     while True:
-        print(blokus)
+        # print state of screen
+        run_tui(blokus)
+        # curses:
+        #key_action = screen.getch()
+
         # If there is a winner, break out of the loop
         if BlokusFake.winners is not None:
             break

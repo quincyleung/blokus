@@ -276,7 +276,8 @@ class Blokus(BlokusBase):
         
         if len(self.remaining_shapes(self.curr_player)) == 21:
             for point in piece.squares():
-                if point in self.start_positions:
+                r, c = point
+                if point in self.start_positions and self.grid[r][c] is None:
                     return True
         else:
             for point in piece.squares():
