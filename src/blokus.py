@@ -383,6 +383,7 @@ class Blokus(BlokusBase):
         available_moves: set[Piece] = set()
     
         for remaining_shape in self.remaining_shapes(self.curr_player):
+            # traverse grid
             for r in range(self.size):
                 for c in range(self.size):
                     piece = Piece(self.shapes[remaining_shape])
