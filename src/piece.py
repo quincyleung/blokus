@@ -297,10 +297,10 @@ class Piece:
         self._check_anchor()
 
         card_nbs = set()
-        for (r,c) in self.squares:
+        for (r,c) in self.squares():
             c_directions = {(r - 1, c), (r + 1, c), (r, c + 1), (r, c - 1)}
             for neighbor in c_directions:
-                if neighbor not in self.squares:
+                if neighbor not in self.squares():
                     card_nbs.add(neighbor)
         return card_nbs
 
@@ -315,9 +315,11 @@ class Piece:
         self._check_anchor()
 
         card_int_nbs = set()
-        for (r,c) in self.squares:
-            ic_directions = {(r - 1, c + 1), (r + 1, c + 1), (r + 1, c - 1), (r - 1, c - 1)}
-            for neighbor in ic_directions:
-                if neighbor not in self.squares:
-                    card_int_nbs.add(neighbor)
+        for (r,c) in self.squares():
+            ic_directions = {(r - 1, c + 1), (r + 1, c + 1), (r + 1, c - 1), 
+                             (r - 1, c - 1)}
+            for int_neighbor in ic_directions:
+                if int_neighbor not in self.squares() and (int_neighbor not in
+                                                    self.cardinal_neighbors()):
+                    card_int_nbs.add(int_neighbor)
         return card_int_nbs
