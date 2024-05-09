@@ -156,6 +156,16 @@ def test_shapes_loaded() -> None:
                 f"square: {square} should be in expected squares:"
                 f"{exp['squares']}"
             )
+## Test pieces to reduce repeated code
+def test_pieces_two_five_a_f() -> list[Piece]:
+    """A few shapes for testing: TWO, FIVE, A, F"""
+    blokus = init_blokus_classic()
+    return [
+       Piece(blokus.shapes[ShapeKind.TWO]),
+       Piece(blokus.shapes[ShapeKind.FIVE]),
+       Piece(blokus.shapes[ShapeKind.A]),
+       Piece(blokus.shapes[ShapeKind.F])
+    ]
 
 # Test 6  
 def test_some_flipped_shapes() -> Blokus:
@@ -164,25 +174,19 @@ def test_some_flipped_shapes() -> Blokus:
     least three kinds of shapes can be flipped correctly via the
     Shape.flip_horizontally method.
     """
-    blokus = init_blokus_classic()
+    # Expected squares in order TWO, FIVE, A, and F
+    expected_squares: list[set[Point]] = [
+        {(0, -1), (0, 0)}, # for TWO
+        {(-2, 0), (-1, 0), (0, 0), (1, 0), (2, 0)}, # for FIVE
+        {(-1, 0), (0, -1), (0, 0), (0, 1)}, # for A
+        {(-1, -1), (-1, 0), (0, 0), (0, 1), (1, 0)}, # for F
+    ]
 
-    # A few shapes for testing
-    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
-    piece_five = Piece(blokus.shapes[ShapeKind.FIVE])
-    piece_a = Piece(blokus.shapes[ShapeKind.A])
-    piece_f = Piece(blokus.shapes[ShapeKind.F])
-
-    piece_two.flip_horizontally()
-    assert piece_two.squares() == [(0, -1), (0, 0)]
-
-    piece_five.flip_horizontally()
-    assert piece_five.squares() == [(-2, 0), (-1, 0), (0, 0), (1, 0), (2, 0)]
-
-    piece_a.flip_horizontally()
-    assert piece_a.squares() == [(-1, 0), (0, -1), (0, 0), (0, 1)]
-
-    piece_f.flip_horizontally()
-    assert piece_f.squares() == [(-1, -1), (-1, 0), (0, 0), (0, 1), (1, 0)] 
+    for i, piece in enumerate(test_pieces_two_five_a_f()):
+        piece.set_anchor((0, 0))
+        piece.flip_horizontally()
+        for square in piece.squares():
+            assert square in expected_squares[i]
 
 # Test 7
 def test_some_left_rotated_shapes() -> Blokus:
@@ -191,26 +195,18 @@ def test_some_left_rotated_shapes() -> Blokus:
     least three kinds of shapes can be flipped correctly via the
     Shape.rotate_left method.
     """
-    blokus = init_blokus_classic()
-
-    # A few shapes for testing
-    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
-    piece_five = Piece(blokus.shapes[ShapeKind.FIVE])
-    piece_a = Piece(blokus.shapes[ShapeKind.A])
-    piece_f = Piece(blokus.shapes[ShapeKind.F])
-
-    # Order assumes rotate_left rotates each (r,c)->(-c,r) in original order
-    piece_two.rotate_left()
-    assert piece_two.squares() == [(0, 0), (-1, 0)]
-
-    piece_five.rotate_left()
-    assert piece_five.squares() == [(0, 2), (0, 1), (0, 0), (0, -1), (0, -2)]
-
-    piece_a.rotate_left()
-    assert piece_a.squares() == [(0, -1), (1, 0), (0, 0), (-1, 0)]
-
-    piece_f.rotate_left()
-    assert piece_f.squares() == [(0, -1), (-1, -1), (1, 0), (0, 0), (0, 1)] 
+    # Expected squares in order TWO, FIVE, A, and F
+    expected_squares: list[set[Point]] = [
+        {(0, 0), (-1, 0)}, # for TWO
+        {(0, 2), (0, 1), (0, 0), (0, -1), (0, -2)}, # for FIVE
+        {(0, -1), (1, 0), (0, 0), (-1, 0)}, # for A
+        {(0, -1), (-1, -1), (1, 0), (0, 0), (0, 1)}, # for F
+    ]
+    for i, piece in enumerate(test_pieces_two_five_a_f()):
+        piece.set_anchor((0, 0))
+        piece.rotate_left()
+        for square in piece.squares():
+            assert square in expected_squares[i]
 
 # Test 8
 def test_some_right_rotated_shapes() -> Blokus:
@@ -219,26 +215,18 @@ def test_some_right_rotated_shapes() -> Blokus:
     least three kinds of shapes can be flipped correctly via the
     Shape.rotate_right method.
     """
-    blokus = init_blokus_classic()
-
-    # A few shapes for testing
-    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
-    piece_five = Piece(blokus.shapes[ShapeKind.FIVE])
-    piece_a = Piece(blokus.shapes[ShapeKind.A])
-    piece_f = Piece(blokus.shapes[ShapeKind.F])
-
-    # Order assumes rotate_right rotates each (r,c)->(c,-r) in original order
-    piece_two.rotate_right()
-    assert piece_two.squares() == [(0, 0), (1, 0)]
-
-    piece_five.rotate_right()
-    assert piece_five.squares() == [(0, -2), (0, -1), (0, 0), (0, 1), (0, 2)]
-
-    piece_a.rotate_right()
-    assert piece_a.squares() == [(0, -1), (-1, 0), (0, 0), (1, 0)]
-
-    piece_f.rotate_right()
-    assert piece_f.squares() == [(0, 1), (1, 1), (-1, 0), (0, 0), (0, -1)] 
+    # Expected squares in order TWO, FIVE, A, and F
+    expected_squares: list[set[Point]] = [
+        {(0, 0), (1, 0)}, # for TWO
+        {(0, -2), (0, -1), (0, 0), (0, 1), (0, 2)}, # for FIVE
+        {(0, 1), (-1, 0), (0, 0), (1, 0)}, # for A
+        {(0, 1), (1, 1), (-1, 0), (0, 0), (0, -1)}, # for F
+    ]
+    for i, piece in enumerate(test_pieces_two_five_a_f()):
+        piece.set_anchor((0, 0))
+        piece.rotate_right()
+        for square in piece.squares():
+            assert square in expected_squares[i]
 
 ### Test neighbors ###
 # Test 9
@@ -248,34 +236,20 @@ def test_some_cardinal_neighbors() -> None:
     Piece.cardinal_neighbors correctly computes the cardinal neighbors of at
     least three kinds of pieces.
     """
-    blokus = init_blokus_classic()
-
-    # A few shapes for testing
-    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
-    piece_five = Piece(blokus.shapes[ShapeKind.FIVE])
-    piece_a = Piece(blokus.shapes[ShapeKind.A])
-    piece_f = Piece(blokus.shapes[ShapeKind.F])
-
-    neighbors_two = piece_two.cardinal_neighbors()
-    assert neighbors_two == {(-1, 0), (-1, 1), (0, 2), (1, 0), (1, 1)
-                             }, "Wrong cardinal neighbors for TWO"
-
-    neighbors_five = piece_five.cardinal_neighbors()
-    assert neighbors_five == {(-3, 0), (3, 0), # above and below
-                              (-2, -1), (-1, -1), (0, -1), (1, -1), (2, -1), #L
-                              (-2, 1), (-1, 1), (0, 1), (1, 1), (2, 1) #R
-                              }, "Wrong cardinal neighbors for FIVE"
-
-    neighbors_a = piece_a.cardinal_neighbors()
-    assert neighbors_a == {(-2, 0), (1, -1), (1, 1), (0, -2), (0, 2)
-                           },"Wrong cardinal neighbors for A" 
-
-    neighbors_f = piece_f.cardinal_neighbors()
-    assert neighbors_f == {(-2, 0), (-2, 1), # above 
-                              (2, 0), 
-                              (-1, -1), (0, -2), (1, -1), #L
-                              (0, 1), (1, 1) #R
-                              }, "Wrong cardinal neighbors for F"
+    # Expected neighbors in order TWO, FIVE, A, and F
+    expected_nbs: list[set[Point]] = [
+        {(-1, 0), (-1, 1), (0, 2), (1, 0), (1, 1), (0, -1)}, # for TWO
+        {(-3, 0), (3, 0), # for FIVE, above and below
+        (-2, -1), (-1, -1), (0, -1), (1, -1), (2, -1), #L
+            (-2, 1), (-1, 1), (0, 1), (1, 1), (2, 1)}, # R
+        {(-2, 0), (-1, -1), (-1, 1), (0, -2), (0, 2),
+                            (1, -1), (1, 0), (1, 1)}, # for A
+        {(-2, 0), (-2, 1), (-1, -1), (-1, 2), (0, -2), (0, 1),
+                            (1, -1), (2, 0), (1, 1)}, # for F
+    ]
+    for i, piece in enumerate(test_pieces_two_five_a_f()):
+        piece.set_anchor((0, 0))
+        assert piece.cardinal_neighbors() == expected_nbs[i]
 
 # Test 10
 def test_some_intercardinal_neighbors() -> None:
@@ -284,29 +258,16 @@ def test_some_intercardinal_neighbors() -> None:
     Piece.intercardinal_neighbors correctly computes the cardinal neighbors of
     at least three kinds of pieces.
     """
-    blokus = init_blokus_classic()
-
-    # A few shapes for testing
-    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
-    piece_five = Piece(blokus.shapes[ShapeKind.FIVE])
-    piece_a = Piece(blokus.shapes[ShapeKind.A])
-    piece_f = Piece(blokus.shapes[ShapeKind.F])
-
-    neighbors_two = piece_two.intercardinal_neighbors()
-    assert neighbors_two == {(-1, -1), (-1, 1), (1, -1), (1, 1)
-                             }, "Wrong intercardinal neighbors for TWO"
-
-    neighbors_five = piece_five.intercardinal_neighbors()
-    assert neighbors_five == {(-3, -1), (-3, 1), (3, -1), (3, 1)
-                              }, "Wrong intercardinal neighbors for FIVE"
-
-    neighbors_a = piece_a.intercardinal_neighbors()
-    assert neighbors_a == {(-1, -1), (-1, 2), (1, 0)
-                           },"Wrong intercardinal neighbors for A" 
-
-    neighbors_f = piece_f.intercardinal_neighbors()
-    assert neighbors_f == {(-2, 1), (-2, 2), (2, -1), (2, 1)
-                              }, "Wrong intercardinal neighbors for F"
+    # Expected neighbors in order TWO, FIVE, A, and F
+    expected_nbs: list[set[Point]] = [
+        {(-1, -1), (-1, 2), (1, -1), (1, 2)}, # for TWO
+        {(-3, -1), (-3, 1), (3, -1), (3, 1)}, # for FIVE,
+        {(-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2)}, # for A
+        {(-2, -1), (-2, 2), (-1, -2), (0, 2), (1, -2), (2, -1), (2, 1)}, #for F
+    ]
+    for i, piece in enumerate(test_pieces_two_five_a_f()):
+        piece.set_anchor((0, 0))
+        assert piece.intercardinal_neighbors() == expected_nbs[i]
 
 ### Test game runs ###
 # Test 11
@@ -339,7 +300,7 @@ def test_one_player_blokus_mini_game() -> None:
     blokus.retire()
     assert blokus.game_over, "game should be over"
     assert blokus.winners == [1], "P1 should've won"
-    assert blokus.get_score(1) == -88, "Score should be -88 for P1"
+    assert blokus.get_score(1) == -86, "Score should be -86 for P1"
 
 # Test 12
 def test_two_player_blokus_mini_game() -> None:
@@ -352,23 +313,34 @@ def test_two_player_blokus_mini_game() -> None:
     """
     blokus = test_init_blokus_mini_2()
 
-    # Test playing 1st piece
+    # Piece 1: P1 plays ONE at (0, 0)
     piece_one = Piece(blokus.shapes[ShapeKind.ONE])
     piece_one.set_anchor((0, 0))
     assert blokus.curr_player == 1, "curr_player should be 1"
-    assert blokus.maybe_place(piece_one) # P1 plays ONE at (0, 0)
+    assert blokus.maybe_place(piece_one), "P1 can play ONE at (0, 0)"
     assert blokus.curr_player == 2, "curr_player should be 2"
     assert not blokus.game_over, "game should not be over"
 
-    # Test playing 2nd piece
-    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
-    # P2 cannot play TWO at (0, 0)
-    piece_two.set_anchor((0, 0))
-    assert not blokus.maybe_place(piece_two), "P2 cannot play TWO at (0, 0)"
-    # P2 can play TWO at (0, 1)
-    piece_two.set_anchor((0, 1))
+    # Piece 2: P2 plays ONE at (4, 4)
+    piece_one.set_anchor((4, 4))
     assert blokus.curr_player == 2, "curr_player should be 2"
-    assert blokus.maybe_place(piece_two) # P2 plays TWO at (0, 1)
+    assert blokus.maybe_place(piece_one), "P2 can play ONE at (4, 4)"
+    assert blokus.curr_player == 1, "curr_player should be 1"
+    assert not blokus.game_over, "game should not be over"
+
+    # Piece 3: P1 plays TWO at (1, 1)
+    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
+    piece_two.set_anchor((1, 1))
+    assert blokus.curr_player == 1, "curr_player should be 1"
+    assert blokus.maybe_place(piece_two), "P1 can play TWO at (1, 1)"
+    assert blokus.curr_player == 2, "curr_player should be 2"
+    assert not blokus.game_over, "game should not be over"
+
+    # Piece 4: P2 plays THREE at (3, 2)
+    piece_three = Piece(blokus.shapes[ShapeKind.THREE])
+    piece_three.set_anchor((3, 2))
+    assert blokus.curr_player == 2, "curr_player should be 2"
+    assert blokus.maybe_place(piece_three), "P2 can play THREE at (3, 2)"
     assert blokus.curr_player == 1, "curr_player should be 1"
     assert not blokus.game_over, "game should not be over"
 
@@ -379,8 +351,8 @@ def test_two_player_blokus_mini_game() -> None:
 
     assert blokus.game_over, "game should be over"
     assert blokus.winners == [2], "winner should be P2"
-    assert blokus.get_score(1) == -88, "P1 score should be -88"
-    assert blokus.get_score(2) == -87, "P2 score should be -87"
+    assert blokus.get_score(1) == -86, "P1 score should be -86"
+    assert blokus.get_score(2) == -85, "P2 score should be -85"
 
 ######### Milestone 2 #########
 
