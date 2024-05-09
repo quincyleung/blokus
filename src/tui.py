@@ -2,14 +2,16 @@
 referred to connectm's tui.py implementation for inspiration 
 on constructing the grid and utilizing colorama
 """
+import random
 import curses
 import colorama
 from colorama import Fore
 import sys
 from typing import Any
 
-from blokus import BlokusBase
+from blokus import BlokusBase, Shape, Piece
 from fakes import BlokusStub, BlokusFake
+from shape_definitions import ShapeKind, definitions
 
 ESC = 27
 curses.set_escdelay(25)
@@ -19,13 +21,13 @@ ARROW_KEYS = [curses.KEY_LEFT, curses.KEY_RIGHT, curses.KEY_UP, curses.KEY_DOWN]
 # main function for running tui
 def run_tui(user_input: str) -> str:
     # mono and duo versions
-    board: BlokusFake
+    board: BlokusFake | BlokusStub
     if user_input == "mono":
         board = BlokusFake(1, 11, {(5, 5)})
     elif user_input == "duo":
         board = BlokusFake(2, 14, {(4, 4), (9, 9)})
         print_board(board)
-    # board size - milestone 1
+    # board size - milestone 1: I used Stub here just for now to show I've completed this stage with the pieces
     else:
         board_size = int(user_input)
         board = BlokusStub(2, board_size, {(0, 0), (board_size - 1, board_size - 1)})
@@ -84,20 +86,56 @@ def print_board(board: BlokusFake) -> str:
                 status_screen += Fore.BLACK + shape + " "
         print(f"{status_screen}")
 
-def user_interact(screen: Any) -> None:
-    raise NotImplementedError
+def play_blokus() -> None:
+    curses.wrapper(_play_blokus)
 
-def play_blokus(blokus: BlokusBase) -> None:
+# 
+def _play_blokus(blokus: BlokusBase | BlokusFake, screen: Any) -> None:
     # game loop: ends when player/players win (all pieces are placed)
     while True:
-        # print state of screen
+        # state of screen - q: print every move?
         run_tui(blokus)
-        # curses:
-        #key_action = screen.getch()
 
-        # If there is a winner, break out of the loop
-        if BlokusFake.winners is not None:
+        # choose random remaining piece from remaining pieces
+        random_piece: ShapeKind = random.choice(blokus.remaining_shapes(blokus.curr_player))
+        cur_piece: Piece = Piece(blokus.shapes[random_piece])
+        cur_piece.set_anchor((blokus.size / 2, blokus.size / 2))
+       
+        # USER CONTROL
+        key = screen.getch()
+        # if ESC pressed, simply exit
+        if key == ESC or BlokusFake.winners is not None:
+            break
+
+        # move the piece
+        elif key in ARROW_KEYS:
+            x, y = cur_piece.anchor
+            if key == curses.KEY_LEFT and not blokus.any_wall_collisions(cur_piece):
+                cur_piece.set_anchor(x, y - 1)
+            elif key == curses.KEY_RIGHT and not blokus.any_wall_collisions(cur_piece):
+                cur_piece.set_anchor(x, y + 1)
+            elif key == curses.KEY_UP and not blokus.any_wall_collisions(cur_piece):
+                cur_piece.set_anchor(x - 1, y)
+            elif key == curses.KEY_DOWN and not blokus.any_wall_collisions(cur_piece): 
+                cur_piece.set_anchor(x + 1, y)
+        
+        # decide the piece location
+        elif key in ENTER_KEYS:
+            blokus.maybe_place(cur_piece)
+
+        # change player
+        if blokus.curr_player == 1:
+            blokus.curr_player = 2
+        else:
+            blokus.curr_player = 1
+        
+        # if someone has won
+        if blokus.winners is not None:
+            report: str = "Winners are "
+            for player in blokus.winners:
+                report += f"player {player} "
             break
 
 if __name__ == "__main__":
-    run_tui(sys.argv[1])
+    #run_tui(sys.argv[1])
+    _play_blokus(sys.argv[1], None)
