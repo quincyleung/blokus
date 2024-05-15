@@ -280,26 +280,27 @@ class Blokus(BlokusBase):
                 if point in self.start_positions and self.grid[r][c] is None:
                     return True
         else:
+            corner_case = False
             for point in piece.squares():
                 r, c = point
-                print("point row:", r, "point col:", c)
+                #print("point row:", r, "point col:", c)
                 for row_index in range(r - 1, r + 2):
                     for col_index in range(c - 1, c + 2):
                         if (0 <= row_index < self.size) and (0 <= col_index < self.size):
                             grid_value = self.grid[row_index][col_index]
-                            print("checking row index: ", row_index, "col index:", col_index, "grid val:", grid_value)
+                            #print("checking row index: ", row_index, "col index:", col_index, "grid val:", grid_value)
                             index = (row_index, col_index)
                             
                             if grid_value is not None:
                                 if index == (r-1, c-1) or index == (r-1, c+1) or index == (r+1, c-1) or index == (r+1, c+1):
-                                    print("has corner case!", index)
-                                    print("grid val", grid_value[0], "player:", self.curr_player)
+                                    #print("has corner case!", index)
+                                    #print("grid val", grid_value[0], "player:", self.curr_player)
                                     if grid_value[0] == self.curr_player:
-                                        return True
+                                        corner_case = True
                                 elif grid_value[0] == self.curr_player:
-                                    print("index:", index, "return false!")
+                                    #print("index:", index, "return false!")
                                     return False
-        return False
+            return corner_case
 
     def maybe_place(self, piece: Piece) -> bool:
         """
