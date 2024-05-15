@@ -946,7 +946,7 @@ def test_no_available_moves():
     )
 
     # There should be no more legal moves logically
-    assert blokus.available_moves() == {}, "Should be no available moves left"
+    assert blokus.available_moves() == set(), "Should be no available moves left"
 
 ### Test X points ###
 ## Helper to avoid repeated code for Tests 30 and 31
