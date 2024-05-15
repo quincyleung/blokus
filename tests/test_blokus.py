@@ -1062,7 +1062,7 @@ def fill_grid_except_last_two() -> Blokus:
     assert blokus.curr_player == 1
     piece_letter_o = Piece(blokus.shapes[ShapeKind.LETTER_O])
     piece_letter_o.set_anchor((11, 5))
-    assert blokus.maybe_place(piece_t), "Issue with piece 15"
+    assert blokus.maybe_place(piece_letter_o), "Issue with piece 15"
 
     # Piece 16: P2 plays flipped N at (7, 2)
     assert blokus.curr_player == 1
