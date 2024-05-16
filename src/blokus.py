@@ -19,6 +19,7 @@ class Blokus(BlokusBase):
     _grid: Grid
     _num_moves: int
     _retired_players: set[int]
+    _last_move: Piece
 
     def __init__(self, num_players: int, size: int, start_positions: set[tuple[int, int]]) -> None:
         """
@@ -46,6 +47,7 @@ class Blokus(BlokusBase):
         self._grid = [[None] * size for _ in range(size)]
         self._num_moves = 0
         self._retired_players = set()
+        self._last_move = None
 
         # load 21 shapes
         for kind, definition in definitions.items():
@@ -190,7 +192,7 @@ class Blokus(BlokusBase):
                     p, shape = cell
                     if player == p:
                         shape_kinds.discard(shape)
-        return shape_kinds
+        return list(shape_kinds)
 
     def any_wall_collisions(self, piece: Piece) -> bool:
         """
@@ -272,7 +274,7 @@ class Blokus(BlokusBase):
             raise ValueError("Anchor of the piece is None")
 
         if self.any_collisions(piece):
-            print("HAS COLLISION")
+            #print("HAS COLLISION")
             return False
         
         if len(self.remaining_shapes(self.curr_player)) == 21:
@@ -299,9 +301,9 @@ class Blokus(BlokusBase):
                                     if grid_value[0] == self.curr_player:
                                         corner_case = True
                                 elif grid_value[0] == self.curr_player:
-                                    print("index:", index, "already has piece!")
+                                    #print("index:", index, "already has piece!")
                                     return False
-            print("corner case:", corner_case)
+            #print("corner case:", corner_case)
             return corner_case
 
     def maybe_place(self, piece: Piece) -> bool:
@@ -331,18 +333,19 @@ class Blokus(BlokusBase):
             raise ValueError("Anchor of the piece is None")
         
         if self.legal_to_place(piece):
-            print("Legal to place!")
+            #print("Legal to place!")
             for point in piece.squares():
                 r, c = point
                 self.grid[r][c] = (self.curr_player, piece.shape.kind)
 
-            # updates current player to next player
+            # updates last move and current player to next player
+            self._last_move = piece
             all_players: list[int] = list(range(1, self.num_players + 1))
 
-            while True:
+            while self.num_players != 1 and not self.game_over:
                 cur_index = self.curr_player % len(all_players) - 1
                 self.set_curr_player(all_players[cur_index + 1])
-                if all_players[cur_index] not in self.retired_players:
+                if all_players[cur_index + 1] not in self.retired_players:
                     break
             return True
         return False
@@ -354,10 +357,17 @@ class Blokus(BlokusBase):
         turns; they are skipped over during subsequent gameplay.
         """
         self._retired_players.add(self.curr_player)
-        if self.curr_player == self.num_players:
-                self.set_curr_player(1)
-        else:
-            self.set_curr_player(self.curr_player + 1)
+        all_players: list[int] = list(range(1, self.num_players + 1))
+        print("retiring player:", self.curr_player, "all players:", all_players)
+
+        while self.num_players != 1 and not self.game_over:
+            cur_index = self.curr_player % len(all_players) - 1
+            print("cur index:", cur_index)
+            self.set_curr_player(all_players[cur_index + 1])
+            print("setting player to", all_players[cur_index + 1])
+            if all_players[cur_index + 1] not in self.retired_players:
+                print(all_players[cur_index + 1], "not in retired, breaking!!!")
+                break
 
     def get_score(self, player: int) -> int:
         """
@@ -370,6 +380,10 @@ class Blokus(BlokusBase):
         for shapekind in remaining:
             cur_shape = Shape.from_string(shapekind, definitions[shapekind])
             total += len(cur_shape.squares)
+        if len(self.remaining_shapes(player)) == 0 and self._last_move.shape.kind == ShapeKind.ONE:
+            return 20
+        elif len(self.remaining_shapes(player)) == 0:
+            return 15
         return -(total)
 
     def available_moves(self) -> set[Piece]:

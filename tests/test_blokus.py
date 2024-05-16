@@ -1223,7 +1223,7 @@ def test_15_points():
     assert blokus.maybe_place(piece_four), "Issue with piece 35"
 
     assert blokus.game_over, "P2 retired and P1 played all pieces"
-    assert blokus.winners == 1, "P1 should have won"
+    assert blokus.winners == [1], "P1 should have won"
     assert blokus.get_score(1) == 15, "P1's score should be 15"
     assert blokus.get_score(2) == -33, "P2's score should be -33"
     assert blokus.remaining_shapes(1) == [], "P1 should have no shapes left"
@@ -1254,7 +1254,7 @@ def test_20_points():
     assert blokus.maybe_place(piece_one), "Issue with piece 35"
 
     assert blokus.game_over, "P2 retired and P1 played all pieces"
-    assert blokus.winners == 1, "P1 should have won"
+    assert blokus.winners == [1], "P1 should have won"
     assert blokus.get_score(1) == 20, "P1's score should be 20"
     assert blokus.get_score(2) == -33, "P2's score should be -33"
     assert blokus.remaining_shapes(1) == [], "P1 should have no shapes left"
