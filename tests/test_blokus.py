@@ -870,7 +870,9 @@ def test_some_available_moves():
     of available_moves decreases after each step.
     """
     blokus = test_init_blokus_mono()
-    assert blokus.available_moves() != {}, "available_moves should not be empty"
+    assert len(blokus.available_moves()) != 0, (
+        "available_moves should not be empty"
+    )
     cur_length = len(blokus.available_moves()) #initialize cur_length
 
     # Piece 1: P1 plays ONE at (5, 5)
@@ -946,7 +948,7 @@ def test_no_available_moves():
     )
 
     # There should be no more legal moves logically
-    assert len(blokus.available_moves()) == 0, "Should be no available moves left"
+    assert len(blokus.available_moves()) == 0, "Should be no avail moves left"
 
 ### Test X points ###
 ## Helper to avoid repeated code for Tests 30 and 31
@@ -1084,27 +1086,28 @@ def fill_grid_except_last_two() -> Blokus:
     piece_f.rotate_right()
     assert blokus.maybe_place(piece_f), "Issue with piece 18"
 
-    # Piece 19: P1 plays rotated L N at (10, 12)
-    assert blokus.curr_player == 1
-    piece_n = Piece(blokus.shapes[ShapeKind.N])
-    piece_n.set_anchor((10, 12))
-    piece_n.rotate_left()
-    assert blokus.maybe_place(piece_n), "Issue with piece 19"
-
-    # Piece 20: P2 plays flipped N at (7, 2)
-    assert blokus.curr_player == 1
-    piece_n = Piece(blokus.shapes[ShapeKind.N])
-    piece_n.set_anchor((7, 2))
-    piece_n.flip_horizontally()
-    assert blokus.maybe_place(piece_n), "Issue with piece 20"
-
-    # Piece 21: P1 plays flipped + rotated R Z at (10, 9)
+    # Piece 19: P1 plays flipped + rotated R Z at (10, 9) 
     assert blokus.curr_player == 1
     piece_z = Piece(blokus.shapes[ShapeKind.Z])
     piece_z.set_anchor((10, 9))
     piece_z.flip_horizontally()
     piece_z.rotate_right()
-    assert blokus.maybe_place(piece_z), "Issue with piece 21"
+    assert blokus.maybe_place(piece_z), "Issue with piece 19"
+
+    # Piece 20: P2 plays rotated L + flipped C at (12, 11)
+    assert blokus.curr_player == 2
+    piece_c = Piece(blokus.shapes[ShapeKind.C])
+    piece_c.set_anchor((12, 11))
+    piece_c.rotate_left()
+    piece_c.flip_horizontally()
+    assert blokus.maybe_place(piece_c), "Issue with piece 20"
+
+    # Piece 21: P1 plays rotated L W at (10, 12)
+    assert blokus.curr_player == 1
+    piece_w = Piece(blokus.shapes[ShapeKind.W])
+    piece_w.set_anchor((10, 12))
+    piece_w.rotate_left()
+    assert blokus.maybe_place(piece_w), "Issue with piece 21"
 
     # Piece 22: P2 plays TWO at (13, 5)
     assert blokus.curr_player == 2
@@ -1112,11 +1115,11 @@ def fill_grid_except_last_two() -> Blokus:
     piece_two.set_anchor((13, 5))
     assert blokus.maybe_place(piece_two), "Issue with piece 22"
 
-    # Piece 23: P1 plays rotated R P at (12, 9)
+    # Piece 23: P1 plays rotated L P at (12, 9)
     assert blokus.curr_player == 1
     piece_p = Piece(blokus.shapes[ShapeKind.P])
     piece_p.set_anchor((12, 9))
-    piece_p.rotate_right()
+    piece_p.rotate_left()
     assert blokus.maybe_place(piece_p), "Issue with piece 23"
 
     # Piece 24: P2 plays rotated R V at (12, 1)
@@ -1139,10 +1142,12 @@ def fill_grid_except_last_two() -> Blokus:
     piece_one.set_anchor((3, 5))
     assert blokus.maybe_place(piece_one), "Issue with piece 26"
 
-    # Piece 27: P1 plays A at (0, 8)
+    # Piece 27: P1 plays rotated R twice A at (0, 8)
     assert blokus.curr_player == 1
     piece_a = Piece(blokus.shapes[ShapeKind.A])
     piece_a.set_anchor((0, 8))
+    piece_a.rotate_right()
+    piece_a.rotate_right()
     assert blokus.maybe_place(piece_a), "Issue with piece 27"
 
     # Piece 28: P2 plays LETTER O at (1, 3)
@@ -1174,15 +1179,17 @@ def fill_grid_except_last_two() -> Blokus:
     assert blokus.curr_player == 1
     piece_letter_o = Piece(blokus.shapes[ShapeKind.LETTER_O])
     piece_letter_o.set_anchor((11, 5))
-    assert blokus.maybe_place(piece_o), "Issue with piece 31"
+    assert blokus.maybe_place(piece_letter_o), "Issue with piece 31"
 
     # Piece 32: P1 plays rotates L C at (13, 12)
+    assert blokus.curr_player == 1
     piece_c = Piece(blokus.shapes[ShapeKind.C])
     piece_c.set_anchor((13, 12))
     piece_c.rotate_left()
     assert blokus.maybe_place(piece_c), "Issue with piece 32"
 
     # Piece 33: P2 plays rotated L SEVEN at (1, 11)
+    assert blokus.curr_player == 1
     piece_seven = Piece(blokus.shapes[ShapeKind.SEVEN])
     piece_seven.set_anchor((1, 11))
     piece_seven.rotate_left()
