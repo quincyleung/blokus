@@ -358,7 +358,6 @@ class Blokus(BlokusBase):
         """
         self._retired_players.add(self.curr_player)
         all_players: list[int] = list(range(1, self.num_players + 1))
-        print("retiring player:", self.curr_player, "all players:", all_players)
 
         while self.num_players != 1 and not self.game_over:
             cur_index = self.curr_player % len(all_players) - 1
