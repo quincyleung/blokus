@@ -332,9 +332,6 @@ class Blokus(BlokusBase):
         if piece.anchor is None:
             raise ValueError("Anchor of the piece is None")
         
-        if self._curr_player in self._retired_players:
-            return False # Player is retired
-        
         if self.legal_to_place(piece):
             #print("Legal to place!")
             for point in piece.squares():
