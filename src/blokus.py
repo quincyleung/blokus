@@ -362,11 +362,11 @@ class Blokus(BlokusBase):
 
         while self.num_players != 1 and not self.game_over:
             cur_index = self.curr_player % len(all_players) - 1
-            print("cur index:", cur_index)
+            #print("cur index:", cur_index)
             self.set_curr_player(all_players[cur_index + 1])
-            print("setting player to", all_players[cur_index + 1])
+            #print("setting player to", all_players[cur_index + 1])
             if all_players[cur_index + 1] not in self.retired_players:
-                print(all_players[cur_index + 1], "not in retired, breaking!!!")
+                #print(all_players[cur_index + 1], "not in retired, breaking!!!")
                 break
 
     def get_score(self, player: int) -> int:
@@ -408,15 +408,15 @@ class Blokus(BlokusBase):
                     if self.legal_to_place(piece):
                         available_moves.add(piece)
 
-                    # Check different orientations
-                    for _ in range(4):
-                        piece.rotate_left() 
-                        if self.legal_to_place(piece):
-                            available_moves.add(piece)
-                    # Now check mirrored version and different orientations
-                    piece.flip_horizontally() 
-                    for _ in range(4):
-                        piece.rotate_left() 
-                        if self.legal_to_place(piece):
-                            available_moves.add(piece)
+                    # # Check different orientations
+                    # for _ in range(4):
+                    #     piece.rotate_left() 
+                    #     if self.legal_to_place(piece):
+                    #         available_moves.add(piece)
+                    # # Now check mirrored version and different orientations
+                    # piece.flip_horizontally() 
+                    # for _ in range(4):
+                    #     piece.rotate_left() 
+                    #     if self.legal_to_place(piece):
+                    #         available_moves.add(piece)
         return available_moves
