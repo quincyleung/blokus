@@ -47,18 +47,43 @@ class GUI:
         """
 
         """
-        self.font_size = 30
+        self.font_size = 20
         self.blokusS = blokusS
         self.square_size = 32
         self.spacer = 5
         self.size = BOARD_SIZE  
         self.width = ((self.size) + 2) * (self.square_size + self.spacer)
         self.height = ((self.size) + 4) * (self.square_size + self.spacer)
-        self.player_colors = [(0, 252, 0), (128, 128, 255), (252, 0, 0)]
+        self.player_colors = [(128, 128, 255), (252, 0, 252), (0, 252, 0), (252, 0, 0)]
         self.start_positions = set()
         self.start_positions.add(((self.size//4), self.size//4))
         self.start_positions.add((3 * (self.size//4), 3 * (self.size//4)))
-        self.hovering = list(self.blokusS.available_moves())[0]
+        self.hovering = (list(self.blokusS.available_moves()))[0]
+        self.curr_player = self.blokusS.curr_player
+        self.num_players = 2#self.blokusS.num_players
+        self.display_text = {
+            "ONE" : "1",
+            "TWO" : "2",
+            "THREE" : "3",
+            "FOUR" : "4",
+            "FIVE" : "5",
+            "SEVEN" : "7",
+            "A" : "A",
+            "C" : "C",
+            "F" : "F",
+            "S" : "S",
+            "L" : "L",
+            "N" : "N",
+            "LETTER_O" : "O",
+            "P" : "P",
+            "T" : "T",
+            "U" : "U",
+            "V" : "V",
+            "W" : "W",
+            "X" : "X",
+            "Y" : "Y",
+            "Z" : "Z"
+        }
 
         # initialize Pygame
         pygame.init()
@@ -82,9 +107,14 @@ class GUI:
                 else:
                     pygame.draw.rect(self.surface, color=(255, 222, 173), rect=rect, width=0)
         remaining_1 = ""
-        for i in range(2):
-            for j in self.blokusS.remaining_shapes(i+1):
-                remaining_1 += str(ShapeKind(j))
+        remaining_2 = ""
+        for j in self.blokusS.remaining_shapes(1):
+            remaining_1 += self.display_text[str(j)[10:]]
+            remaining_1 += " "
+        for j in self.blokusS.remaining_shapes(2):
+            remaining_2 += self.display_text[str(j)[10:]]
+            remaining_2 += " "
+        
         remaining_2 = (self.square_size, (self.size + 1) * (self.square_size + self.spacer) + self.spacer, self.size * (self.square_size + self.spacer) + self.spacer, self.square_size * 2)
         pygame.draw.rect(self.surface, color=(0, 0, 0), rect=remaining_2, width=0)
         pieces_remaining_text_1 = self.font.render(remaining_1, True, (255,255,255))
@@ -93,19 +123,13 @@ class GUI:
         self.surface.blit(pieces_remaining_text_2, (self.square_size, (self.size + 2) * (self.square_size + self.spacer) + self.spacer))
 
     def hovering_piece(self, direction, switch) -> None:
-        for r in range(self.size):
-            for c in range(self.size):
-                if self.blokusS.grid[r][c] is not None:
-                    if self.blokusS.grid[r][c][0] == 3:
-                        self.blokusS.grid[r][c] = None
+        implement = True
         if switch:
             self.hovering = random.choice(list(self.blokusS.available_moves()))
             print("random choice", self.hovering)
             print(self.hovering.shape.squares)
         else:
-            #print("available:", len(list(self.blokusS.available_moves())))
             new_squares = []
-            implement = True
             if direction == "up":
                 for temp in self.hovering.shape.squares:
                     r, c = temp
@@ -130,11 +154,42 @@ class GUI:
                     new_squares.append((r,c-1))
                     if c-1 < 0 or self.blokusS.grid[r][c-1] != None:
                         implement = False
+            """
+            elif direction == "place":
+                for square in self.hovering.shape.squares:
+                    r, c = square
+                    self.blokusS.grid[r][c] = (self.curr_player, self.hovering.shape)
+                self.curr_player = self.curr_player % self.num_players + 1
+                self.hovering = random.choice(list(self.blokusS.available_moves()))
+                return None
+            """
             if implement:
                 self.hovering.shape.squares = new_squares
         for square in self.hovering.shape.squares:
             r, c = square
             self.blokusS.grid[r][c] = (3, self.hovering.shape)
+
+        """
+        MUST IMPLEMENT HOVERING OVER A PIECE WITHOUT REPLACING IT:
+        
+
+        for square in self.hovering.shape.squares:
+            color = self.player_colors[3]
+            r, c = square
+            if implement:
+                color = self.player_colors[2]
+            rect = ((1 + c) * (self.square_size + self.spacer), (1 + r) * (self.square_size + self.spacer), self.square_size, self.square_size)
+            pygame.draw.rect(self.surface, color = color, rect=rect, width=0)
+            for i in range(2):
+                if (r + (-1) ** i, c) in self.hovering.shape.squares:
+                    new_rect = ((1 + c) * (self.square_size + self.spacer), (2 + r - i) * (self.square_size + self.spacer) - self.spacer, self.square_size, self.spacer)
+                    pygame.draw.rect(self.surface, color = color, rect=new_rect, width=0)
+            for j in range(2):
+                if (r, c + (-1) ** j) in self.hovering.shape.squares:
+                    new_rect = ((2 + c - j) * (self.square_size + self.spacer) - self.spacer, (1 + r) * (self.square_size + self.spacer), self.spacer, self.square_size)
+                    pygame.draw.rect(self.surface, color = color, rect=new_rect, width=0)
+
+        """
         """
             self.hovering.face_up = face_up
             self.hovering.rotation = rotation
@@ -223,7 +278,10 @@ class GUI:
                         self.hovering_piece("right", False)
                     if event.key == pygame.K_SPACE:
                         self.hovering_piece("right", True)
+                    if event.key == pygame.K_RETURN:
+                        self.hovering_piece("place", False) #IF PLACE
             self.draw_pieces()
+            self.hovering_piece("nothing", False)
             pygame.display.update()
             self.clock.tick(24)
         
