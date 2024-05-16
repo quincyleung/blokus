@@ -157,7 +157,7 @@ def test_shapes_loaded() -> None:
                 f"{exp['squares']}"
             )
 ## Test pieces to reduce repeated code
-def test_pieces_two_five_a_f() -> list[Piece]:
+def pieces_two_five_a_f() -> list[Piece]:
     """A few shapes for testing: TWO, FIVE, A, F"""
     blokus = init_blokus_classic()
     return [
@@ -182,7 +182,7 @@ def test_some_flipped_shapes() -> Blokus:
         {(-1, -1), (-1, 0), (0, 0), (0, 1), (1, 0)}, # for F
     ]
 
-    for i, piece in enumerate(test_pieces_two_five_a_f()):
+    for i, piece in enumerate(pieces_two_five_a_f()):
         piece.set_anchor((0, 0))
         piece.flip_horizontally()
         for square in piece.squares():
@@ -202,7 +202,7 @@ def test_some_left_rotated_shapes() -> Blokus:
         {(0, -1), (1, 0), (0, 0), (-1, 0)}, # for A
         {(0, -1), (-1, -1), (1, 0), (0, 0), (0, 1)}, # for F
     ]
-    for i, piece in enumerate(test_pieces_two_five_a_f()):
+    for i, piece in enumerate(pieces_two_five_a_f()):
         piece.set_anchor((0, 0))
         piece.rotate_left()
         for square in piece.squares():
@@ -222,7 +222,7 @@ def test_some_right_rotated_shapes() -> Blokus:
         {(0, 1), (-1, 0), (0, 0), (1, 0)}, # for A
         {(0, 1), (1, 1), (-1, 0), (0, 0), (0, -1)}, # for F
     ]
-    for i, piece in enumerate(test_pieces_two_five_a_f()):
+    for i, piece in enumerate(pieces_two_five_a_f()):
         piece.set_anchor((0, 0))
         piece.rotate_right()
         for square in piece.squares():
@@ -247,7 +247,7 @@ def test_some_cardinal_neighbors() -> None:
         {(-2, 0), (-2, 1), (-1, -1), (-1, 2), (0, -2), (0, 1),
                             (1, -1), (2, 0), (1, 1)}, # for F
     ]
-    for i, piece in enumerate(test_pieces_two_five_a_f()):
+    for i, piece in enumerate(pieces_two_five_a_f()):
         piece.set_anchor((0, 0))
         assert piece.cardinal_neighbors() == expected_nbs[i]
 
@@ -265,7 +265,7 @@ def test_some_intercardinal_neighbors() -> None:
         {(-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2)}, # for A
         {(-2, -1), (-2, 2), (-1, -2), (0, 2), (1, -2), (2, -1), (2, 1)}, #for F
     ]
-    for i, piece in enumerate(test_pieces_two_five_a_f()):
+    for i, piece in enumerate(pieces_two_five_a_f()):
         piece.set_anchor((0, 0))
         assert piece.intercardinal_neighbors() == expected_nbs[i]
 
