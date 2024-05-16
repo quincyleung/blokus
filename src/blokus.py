@@ -272,34 +272,37 @@ class Blokus(BlokusBase):
             raise ValueError("Anchor of the piece is None")
 
         if self.any_collisions(piece):
+            print("HAS COLLISION")
             return False
         
         if len(self.remaining_shapes(self.curr_player)) == 21:
             for point in piece.squares():
-                if point in self.start_positions:
+                r, c = point
+                if point in self.start_positions and self.grid[r][c] is None:
                     return True
         else:
+            corner_case = False
             for point in piece.squares():
                 r, c = point
                 #print("point row:", r, "point col:", c)
                 for row_index in range(r - 1, r + 2):
-                    for col_index in range(c - 1, r + 2):
+                    for col_index in range(c - 1, c + 2):
                         if (0 <= row_index < self.size) and (0 <= col_index < self.size):
                             grid_value = self.grid[row_index][col_index]
-                            #print("checking row index: ", row_index, "checking col index:", col_index)
-                            #print("grid val:", grid_value)
+                            #print("checking row index: ", row_index, "col index:", col_index, "grid val:", grid_value)
                             index = (row_index, col_index)
                             
                             if grid_value is not None:
                                 if index == (r-1, c-1) or index == (r-1, c+1) or index == (r+1, c-1) or index == (r+1, c+1):
-                                    #print("has corner case!", index)
+                                    #print("has corner case at", index)
                                     #print("grid val", grid_value[0], "player:", self.curr_player)
                                     if grid_value[0] == self.curr_player:
-                                        return True
+                                        corner_case = True
                                 elif grid_value[0] == self.curr_player:
-                                    #print("index:", index, "return false!")
+                                    print("index:", index, "already has piece!")
                                     return False
-        return False
+            print("corner case:", corner_case)
+            return corner_case
 
     def maybe_place(self, piece: Piece) -> bool:
         """
@@ -328,6 +331,7 @@ class Blokus(BlokusBase):
             raise ValueError("Anchor of the piece is None")
         
         if self.legal_to_place(piece):
+            print("Legal to place!")
             for point in piece.squares():
                 r, c = point
                 self.grid[r][c] = (self.curr_player, piece.shape.kind)
@@ -382,6 +386,7 @@ class Blokus(BlokusBase):
         available_moves: set[Piece] = set()
     
         for remaining_shape in self.remaining_shapes(self.curr_player):
+            # traverse grid
             for r in range(self.size):
                 for c in range(self.size):
                     piece = Piece(self.shapes[remaining_shape])

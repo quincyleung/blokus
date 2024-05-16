@@ -946,7 +946,11 @@ def test_no_available_moves():
     )
 
     # There should be no more legal moves logically
+<<<<<<< HEAD
     assert len(blokus.available_moves()) == 0, "Should be no avail moves left"
+=======
+    assert blokus.available_moves() == set(), "Should be no available moves left"
+>>>>>>> a11ab3662ced36ccf4c70ff4c4811f5108196b5f
 
 ### Test X points ###
 ## Helper to avoid repeated code for Tests 30 and 31
@@ -1060,9 +1064,15 @@ def fill_grid_except_last_two() -> Blokus:
 
     # Piece 15: P1 plays TWO at (13, 3)
     assert blokus.curr_player == 1
+<<<<<<< HEAD
     piece_two = Piece(blokus.shapes[ShapeKind.TWO])
     piece_two.set_anchor((13, 3))
     assert blokus.maybe_place(piece_two), "Issue with piece 31"
+=======
+    piece_letter_o = Piece(blokus.shapes[ShapeKind.LETTER_O])
+    piece_letter_o.set_anchor((11, 5))
+    assert blokus.maybe_place(piece_letter_o), "Issue with piece 15"
+>>>>>>> a11ab3662ced36ccf4c70ff4c4811f5108196b5f
 
     # Piece 16: P2 plays flipped N at (7, 2)
     assert blokus.curr_player == 2
