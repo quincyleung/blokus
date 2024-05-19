@@ -783,10 +783,11 @@ def test_require_own_corners_1():
         "P1 should be able to play ONE at (5, 5)"
     )
 
-    piece_two = Piece(blokus.shapes[ShapeKind.TWO])
-    piece_two.set_anchor((7, 7))
-    assert not blokus.maybe_place(piece_two), (
-        "P1 cannot play TWO that shares zero corners with ONE"
+    for shape in blokus.remaining_shapes(1):
+        piece = Piece(blokus.shapes[shape])
+        piece.set_anchor((2, 2))
+        assert not blokus.maybe_place(piece), (
+        f"P1 cannot play {shape} at (2, 2) that shares zero corners with ONE"
     )
 
 # Test 27
