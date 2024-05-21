@@ -17,6 +17,7 @@ accordingly.
 
 
 [Completeness] Issue with Require Corners Rule
+Test 26 (test_require_own_corners_1()) was not comprehensive yet. We added lines 794-798 in tests/test_blokus.py to ensure that the player could not place another piece without sharing corners where that piece could take the shape of any of the remaining shapes. 
 
 
 [Completeness] Issue with Available Moves
