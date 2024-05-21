@@ -149,17 +149,13 @@ def main(num_games, player1, player2) -> None:
         if len(board.winners) == 1:
             if 1 in board.winners:
                 bot1_wins += 1
-                print("Game", i, "bot 1 wins!")
             elif 2 in board.winners:
                 bot2_wins += 1
-                print("Game", i, "bot 2 wins!")
         elif len(board.winners) == 2:
             tie += 1
-            print("Game", i, "tie!")
     print("Bot 1 (", player1,") Wins |  ", bot1_wins/NUM_GAMES * 100, "%")
     print("Bot 2 (", player2,") Wins |  ", bot2_wins/NUM_GAMES * 100, "%")
     print("Ties             |  ", tie/NUM_GAMES * 100, "%")
 
 if __name__ == '__main__':
     main()
-
