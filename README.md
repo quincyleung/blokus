@@ -14,11 +14,10 @@ with how it was determining the shape squares. We updated lines 114-157
 accordingly.
 
 [Completeness] Issue with Start Positions
-
+There was an issue with the start positions for Blokus Mini configurations. The expected start positions in test_init_blokus_mini_1() and test_init_blokus_mini_2() were changed from 5 start positions to 2 start positions, as clarified by the updated description of the Blokus Mini game configuration in the Blokus Specification. We updated line 25 and 42 in tests/test_blokus.py accordingly.
 
 [Completeness] Issue with Require Corners Rule
 Test 26 (test_require_own_corners_1()) was not comprehensive yet. We added lines 794-798 in tests/test_blokus.py to ensure that the player could not place another piece without sharing corners where that piece could take the shape of any of the remaining shapes. 
-
 
 [Completeness] Issue with Available Moves
 There was a minor issue with the method legal_to_place() with the exact values 
@@ -34,3 +33,5 @@ fixed the issue.
 This component received two S scores in Milestone 2.
 
 ### QA
+This component received two S scores in Milestone 2.
+
