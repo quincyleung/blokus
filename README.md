@@ -9,7 +9,9 @@ Team members:
 ## Improvements
 ### Game Logic
 [Completeness] Issue with Shape Loading
-
+There was an issue with the method from_string() from the class Shape
+with how it was determining the shape squares. We updated lines 114-157 
+accordingly.
 
 [Completeness] Issue with Start Positions
 
@@ -18,7 +20,10 @@ Team members:
 
 
 [Completeness] Issue with Available Moves
-There was a minor issue with legal_to_place() with the exact values it was iterating through, thus returned the wrong values to available_moves(). We changed line 287 from "range(c - 1, r + 2)" to "range(c - 1, c + 2)", which fixed the issue.
+There was a minor issue with the method legal_to_place() with the exact values 
+it was iterating through, thus returned the wrong values to available_moves(). 
+We changed line 287 from "range(c - 1, r + 2)" to "range(c - 1, c + 2)", which 
+fixed the issue.
 
 ### GUI
 
