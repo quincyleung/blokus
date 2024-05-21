@@ -114,26 +114,20 @@ class Shape:
         if "O" in shape_def_list or "@" in shape_def_list:
             if "O" in shape_def_list:
                 origin_index = shape_def_list.index("O")
-                #print("origin index:", origin_index)
             if "@" in shape_def_list:
                 origin_index = shape_def_list.index("@")
             
             prev_rows: int = shape_def_list[:origin_index].count("\n")
             prev_cols: int = 0
-            #print("Number of spaces", shape_def_list[:origin_index].count(" "))
-            #print("Number of @", shape_def_list[:origin_index].count("@"))
             if prev_rows == 0:
                 prev_cols = (shape_def_list[:origin_index].count(" ")
                         + shape_def_list[:origin_index].count("@") + shape_def_list[:origin_index].count("X"))
-                #print("Prev col:", prev_cols)
             else:
                 for prev in shape_def_list[:origin_index]:
                     if prev == "\n":
                         prev_cols = 0
                     else:
                         prev_cols += 1
-                        #print("prev:", prev, "ADDING ONE TO COL!")
-            #print("FINAL: prev col", prev_cols)
             square_row = -prev_rows
             square_col: int = -prev_cols
             origin = tuple()
