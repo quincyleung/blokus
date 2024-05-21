@@ -5,8 +5,6 @@ from base import BlokusBase, Grid
 from piece import Point, Shape, Piece
 from shape_definitions import ShapeKind, definitions
 
-# Can remove docstrings for methods defined in BlokusBase
-
 class Blokus(BlokusBase):
     """
     Class for Blokus game logic.
@@ -274,7 +272,6 @@ class Blokus(BlokusBase):
             raise ValueError("Anchor of the piece is None")
 
         if self.any_collisions(piece):
-            #print("HAS COLLISION")
             return False
         
         if len(self.remaining_shapes(self.curr_player)) == 21:
@@ -286,24 +283,18 @@ class Blokus(BlokusBase):
             corner_case = False
             for point in piece.squares():
                 r, c = point
-                #print("point row:", r, "point col:", c)
                 for row_index in range(r - 1, r + 2):
                     for col_index in range(c - 1, c + 2):
                         if (0 <= row_index < self.size) and (0 <= col_index < self.size):
                             grid_value = self.grid[row_index][col_index]
-                            #print("checking row index: ", row_index, "col index:", col_index, "grid val:", grid_value)
                             index = (row_index, col_index)
                             
                             if grid_value is not None:
                                 if index == (r-1, c-1) or index == (r-1, c+1) or index == (r+1, c-1) or index == (r+1, c+1):
-                                    #print("has corner case at", index)
-                                    #print("grid val", grid_value[0], "player:", self.curr_player)
                                     if grid_value[0] == self.curr_player:
                                         corner_case = True
                                 elif grid_value[0] == self.curr_player:
-                                    #print("index:", index, "already has piece!")
                                     return False
-            #print("corner case:", corner_case)
             return corner_case
 
     def maybe_place(self, piece: Piece) -> bool:
@@ -333,7 +324,6 @@ class Blokus(BlokusBase):
             raise ValueError("Anchor of the piece is None")
         
         if self.legal_to_place(piece):
-            #print("Legal to place!")
             for point in piece.squares():
                 r, c = point
                 self.grid[r][c] = (self.curr_player, piece.shape.kind)
@@ -361,11 +351,8 @@ class Blokus(BlokusBase):
 
         while self.num_players != 1 and not self.game_over:
             cur_index = self.curr_player % len(all_players) - 1
-            #print("cur index:", cur_index)
             self.set_curr_player(all_players[cur_index + 1])
-            #print("setting player to", all_players[cur_index + 1])
             if all_players[cur_index + 1] not in self.retired_players:
-                #print(all_players[cur_index + 1], "not in retired, breaking!!!")
                 break
 
     def get_score(self, player: int) -> int:
@@ -407,12 +394,12 @@ class Blokus(BlokusBase):
                     if self.legal_to_place(piece):
                         available_moves.add(piece)
 
-                    # # Check different orientations
+                    # Check different orientations
                     # for _ in range(4):
                     #     piece.rotate_left() 
                     #     if self.legal_to_place(piece):
                     #         available_moves.add(piece)
-                    # # Now check mirrored version and different orientations
+                    # Now check mirrored version and different orientations
                     # piece.flip_horizontally() 
                     # for _ in range(4):
                     #     piece.rotate_left() 
