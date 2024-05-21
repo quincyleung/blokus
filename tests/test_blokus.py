@@ -14,7 +14,7 @@ def test_inheritance() -> None:
 
 ### Test initializations ###
 # Test 1
-def test_init_blokus_mini_1() -> Blokus:
+def test_init_blokus_mini_1() -> None:
     """
     Construct an instance of a 1-player Blokus Mini game configuration. Verify
     that properties have been initialized correctly
@@ -28,10 +28,8 @@ def test_init_blokus_mini_1() -> Blokus:
 
     assert blokus_mini_1.grid == [[None for _ in range(5)] for _ in range(5)]
 
-    return blokus_mini_1
-
 # Test 2
-def test_init_blokus_mini_2() -> Blokus:
+def test_init_blokus_mini_2() -> None:
     """
     Construct an instance of a 2-player Blokus Mini game configuration. Verify
     that properties have been initialized correctly
@@ -45,10 +43,8 @@ def test_init_blokus_mini_2() -> Blokus:
 
     assert blokus_mini_2.grid == [[None for _ in range(5)] for _ in range(5)]
 
-    return blokus_mini_2
-
 # Test 3
-def test_init_blokus_mono() -> Blokus:
+def test_init_blokus_mono() -> None:
     """
     Construct an instance of a Blokus Mono game configuration. Verify
     that properties have been initialized correctly
@@ -62,10 +58,8 @@ def test_init_blokus_mono() -> Blokus:
 
     assert blokus_mono.grid == [[None for _ in range(11)] for _ in range(11)]
 
-    return blokus_mono
-
 # Test 4
-def test_init_blokus_duo_2() -> Blokus:
+def test_init_blokus_duo_2() -> None:
     """
     Construct an instance of a Blokus Duo game configuration. Verify
     that properties have been initialized correctly
@@ -79,9 +73,23 @@ def test_init_blokus_duo_2() -> Blokus:
 
     assert blokus_duo.grid == [[None for _ in range(14)] for _ in range(14)]
 
-    return blokus_duo
-
 ## For testing purposes
+def init_blokus_mini_1() -> Blokus:
+    """"Initialize a 1-player Blokus Mini game configuration."""
+    return Blokus(1, 5, {(0, 0), (4, 4)})
+
+def init_blokus_mini_2() -> Blokus:
+    """"Initialize a 2-player Blokus Mini game configuration."""
+    return Blokus(2, 5, {(0, 0), (4, 4)})
+
+def init_blokus_mono() -> Blokus:
+    """"Initialize a 1-player Blokus Mono game configuration."""
+    return Blokus(1, 11, {(5,5)})
+
+def init_blokus_duo() -> Blokus:
+    """"Initialize a 2-player Blokus Duo game configuration."""
+    return Blokus(2, 14, {(4, 4), (9, 9)})
+    
 def init_blokus_classic() -> Blokus:
     """"Initialize a 2-player Blokus Classic game configuration."""
     return Blokus(2, 20, {(0, 0), (0, 19), (19, 0), (19, 19)})
@@ -278,7 +286,7 @@ def test_one_player_blokus_mini_game() -> None:
     verify that the values of game_over and curr_player are correct. After game
     over, verify the values of game_over, winners, and get_score(1).
     """
-    blokus = test_init_blokus_mini_1()
+    blokus = init_blokus_mini_1()
 
     # Test playing 1st piece
     piece_one = Piece(blokus.shapes[ShapeKind.ONE])
@@ -311,7 +319,7 @@ def test_two_player_blokus_mini_game() -> None:
     over, verify the values of game_over, winners, get_score(1), and
     get_score(2).
     """
-    blokus = test_init_blokus_mini_2()
+    blokus = init_blokus_mini_2()
 
     # Piece 1: P1 plays ONE at (0, 0)
     piece_one = Piece(blokus.shapes[ShapeKind.ONE])
@@ -415,7 +423,7 @@ def test_start_positions_1():
     does cover the start position, and that the player can place a second piece
     on the board.
     """
-    blokus = test_init_blokus_mono() # (5, 5) is the only start position
+    blokus = init_blokus_mono() # (5, 5) is the only start position
     piece_one = Piece(blokus.shapes[ShapeKind.ONE])
     piece_one.set_anchor((0, 0)) # not valid start position
     assert not blokus.maybe_place(piece_one), "Can't play piece not at start"
@@ -439,7 +447,7 @@ def test_start_positions_2():
     1 and Player 2 can each play another piece.
     (This sequence involves four placed pieces in total.)
     """
-    blokus = test_init_blokus_duo_2()
+    blokus = init_blokus_duo()
     piece_one = Piece(blokus.shapes[ShapeKind.ONE])
     piece_one.set_anchor((1, 1)) # Not valid start position
     assert blokus.curr_player == 1
@@ -521,7 +529,7 @@ def test_place_flipped_shape_1():
     Then place the piece, and verify that grid stores the correct values for
     every cell in the matrix.
     """
-    blokus = test_init_blokus_mono()
+    blokus = init_blokus_mono()
     piece_four = Piece(blokus.shapes[ShapeKind.FOUR])
     piece_four.set_anchor((5, 5))
     piece_four.flip_horizontally()
@@ -551,7 +559,7 @@ def test_rotated_shape_1():
     Same as the previous, except for a shape that is rotated once (90 degrees)
     to the right.
     """
-    blokus = test_init_blokus_mono()
+    blokus = init_blokus_mono()
     piece_four = Piece(blokus.shapes[ShapeKind.FOUR])
     piece_four.set_anchor((5, 5))
     piece_four.rotate_right()
@@ -581,7 +589,7 @@ def test_rotated_shape_2():
     Same as the previous, except for a shape that is rotated twice (180 degrees)
     to the right.
     """
-    blokus = test_init_blokus_mono()
+    blokus = init_blokus_mono()
     piece_four = Piece(blokus.shapes[ShapeKind.FOUR])
     piece_four.set_anchor((5, 5))
     piece_four.rotate_right()
@@ -612,7 +620,7 @@ def test_flipped_and_rotated_shape_1():
     Same as the previous, except for a shape that is flipped and then rotated
     three times (270 degrees) to the right.
     """
-    blokus = test_init_blokus_mono()
+    blokus = init_blokus_mono()
     piece_four = Piece(blokus.shapes[ShapeKind.FOUR])
     piece_four.set_anchor((5, 5))
     piece_four.flip_horizontally() # Flip first
@@ -644,7 +652,7 @@ def test_flipped_and_rotated_shape_2():
     Same as the previous, except for a shape that is flipped twice and then
     rotated four times (360 degrees) to the right.
     """
-    blokus = test_init_blokus_mono()
+    blokus = init_blokus_mono()
     piece_four = Piece(blokus.shapes[ShapeKind.FOUR])
     piece_four.set_anchor((5, 5))
     piece_four.flip_horizontally()
@@ -680,7 +688,7 @@ def test_prevent_own_edges_1():
     a piece, verify that the player cannot place another piece that shares an
     edge with their first played piece.
     """
-    blokus = test_init_blokus_mono()
+    blokus = init_blokus_mono()
 
     assert blokus.curr_player == 1
     piece_one = Piece(blokus.shapes[ShapeKind.ONE])
@@ -707,7 +715,7 @@ def test_prevent_own_edges_2():
     Player 2s pieces, and vice versa. (This sequence involves six placed pieces
     in total.)
     """
-    blokus = test_init_blokus_duo_2()
+    blokus = init_blokus_duo()
 
     # Piece 1: P1 plays ONE at (4, 4)
     assert blokus.curr_player == 1
@@ -775,7 +783,7 @@ def test_require_own_corners_1():
     a piece, verify that the player cannot place another piece that shares zero
     corners with their first played piece.
     """
-    blokus = test_init_blokus_mono()
+    blokus = init_blokus_mono()
 
     piece_one = Piece(blokus.shapes[ShapeKind.ONE])
     piece_one.set_anchor((5, 5))
@@ -804,7 +812,7 @@ def test_require_own_corners_2():
     with Player 2s pieces, and vice versa. (In sum, this sequence involves six
     placed pieces.)
     """
-    blokus = test_init_blokus_duo_2()
+    blokus = init_blokus_duo()
 
     # Piece 1: P1 plays ONE at (4, 4)
     assert blokus.curr_player == 1
@@ -870,7 +878,7 @@ def test_some_available_moves():
     available_moves is non-empty. Play a few pieces, and verify that the number
     of available_moves decreases after each step.
     """
-    blokus = test_init_blokus_mono()
+    blokus = init_blokus_mono()
     assert len(blokus.available_moves()) != 0, (
         "available_moves should not be empty"
     )
@@ -914,7 +922,7 @@ def test_no_available_moves():
     Create an instance of any Blokus game configuration. Play pieces until there
     are no more available moves, and verify that available_moves is empty.
     """
-    blokus = test_init_blokus_mini_1()
+    blokus = init_blokus_mini_1()
     assert blokus.available_moves(), (
         "available_moves should not be empty at game start"
     )
@@ -958,7 +966,7 @@ def fill_grid_except_last_two() -> Blokus:
     Constructs an instance of Blokus Duo. Each player places pieces until P1 has
     placed 19 pieces and is about to play their last two pieces and win.
     """
-    blokus = test_init_blokus_duo_2()
+    blokus = init_blokus_duo()
 
     # Piece 1: P1 plays flipped F at (4, 4)
     assert blokus.curr_player == 1
