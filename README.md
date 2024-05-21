@@ -8,6 +8,17 @@ Team members:
 
 ## Improvements
 ### Game Logic
+[Completeness] Issue with Shape Loading
+
+
+[Completeness] Issue with Start Positions
+
+
+[Completeness] Issue with Require Corners Rule
+
+
+[Completeness] Issue with Available Moves
+There was a minor issue with legal_to_place() with the exact values it was iterating through, thus returned the wrong values to available_moves(). We changed line 287 from "range(c - 1, r + 2)" to "range(c - 1, c + 2)", which fixed the issue.
 
 ### GUI
 
