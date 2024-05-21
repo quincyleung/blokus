@@ -61,7 +61,7 @@ def string_to_grid(s: str) -> Grid:
 
 # Test Blokus Mini, P1 places ONE at (0, 0) and P2 places ONE at (4, 4)
 def test_grid_1() -> None:
-    blokus = test_blokus.test_init_blokus_mini_2()
+    blokus = test_blokus.init_blokus_mini_2()
 
     # P1 plays ONE at (0, 0)
     piece_one = Piece(blokus.shapes[ShapeKind.ONE])
@@ -89,7 +89,7 @@ def test_grid_1() -> None:
 
 # Test Blokus Mini, P1 places C at (0, 0) and P2 places TWO at (4, 3)
 def test_grid_2() -> None:
-    blokus = test_blokus.test_init_blokus_mini_2()
+    blokus = test_blokus.init_blokus_mini_2()
 
     # P1 plays C at (0, 0)
     piece_c = Piece(blokus.shapes[ShapeKind.C])
@@ -118,7 +118,7 @@ def test_grid_2() -> None:
 
 # Test Blokus Duo, P1 places ONE at (4, 4) and P2 places ONE at (9, 9)
 def test_grid_3() -> None:
-    blokus = test_blokus.test_init_blokus_duo_2()
+    blokus = test_blokus.init_blokus_duo()
 
     # P1 plays ONE at (4, 4)
     piece_one = Piece(blokus.shapes[ShapeKind.ONE])
@@ -155,7 +155,7 @@ def test_grid_3() -> None:
 
 # Test Blokus Duo, P1 places C at (4, 4) and P2 places TWO at (9, 9)
 def test_grid_4() -> None:
-    blokus = test_blokus.test_init_blokus_duo_2()
+    blokus = test_blokus.init_blokus_duo()
 
     # P1 plays C at (4, 4)
     piece_c = Piece(blokus.shapes[ShapeKind.C])
@@ -193,7 +193,7 @@ def test_grid_4() -> None:
 
 # Test Blokus Mono, P1 places ONE at (5, 5)
 def test_grid_5() -> None:
-    blokus = test_blokus.test_init_blokus_mono()
+    blokus = test_blokus.init_blokus_mono()
 
     # P1 plays ONE at (5, 5)
     piece_one = Piece(blokus.shapes[ShapeKind.ONE])
