@@ -19,10 +19,13 @@ ARROW_KEYS = [curses.KEY_LEFT, curses.KEY_RIGHT, curses.KEY_UP, curses.KEY_DOWN]
 ORIENT_KEYS = [101, 114, 32] # left, right, flip
 RETIRE = 113
 
-blokus: Blokus
+blokus: None | Blokus
 num_players: int
 board_size: int
 screen: Any
+players_list: list[int]
+size: int
+start_position: set
 
 class TUI:
     """
@@ -32,31 +35,31 @@ class TUI:
                  num_players: int,
                  board_size: int,
                  start_position: set[tuple],
-                 game: None | str) -> None:
+                 game_mode: None | str) -> None:
         """
         Constructor for TUI class
         """
         # self.blokus = blokus
-        self.blokus: None | Blokus = None
+        self.screen = screen
+        self.blokus = None
         self.num_players = num_players
         self.board_size = board_size
-        self.screen = screen
         # list of players-block colors referenced to curses colors list, initialized below
-        self.players_list: list[int] = []
+        self.players_list = []
         for i in range(num_players):
             self.players_list.append(i + 1)
         
         # initialize Blokus object for given round of TUI, based on user input
-        if game == "mono":
+        if game_mode == "mono":
             self.blokus = Blokus(1, 11, {5, 5})
-        elif game == "duo":
+        elif game_mode == "duo":
             self.blokus = Blokus(2, 14, {(4, 4), (9, 9)})
-        elif game == "classic-2":
-            raise NotImplementedError
-        elif game == "classic-3":
-            raise NotImplementedError
-        elif game == "classic-4":
-            raise NotImplementedError
+        elif game_mode == "classic-2":
+            self.blokus = Blokus(2, 20, {(0,0), (0,19), (19,0), (19,19)})
+        elif game_mode == "classic-3":
+            self.blokus = Blokus(3, 20, {(0,0), (0,19), (19,0), (19,19)})
+        elif game_mode == "classic-4":
+            self.blokus = Blokus(4, 20, {(0,0), (0,19), (19,0), (19,19)})
         else:
             self.blokus = Blokus(num_players = num_players, board_size = board_size, start_position = start_position)
 
@@ -65,7 +68,7 @@ class TUI:
         curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLACK) # player 2
         curses.init_pair(3, curses.COLOR_GREEN, curses.COLOR_BLACK) # player 3
         curses.init_pair(4, curses.COLOR_RED, curses.COLOR_BLACK) # player 4
-        curses.init_pair(5, curses.COLOR_CYAN, curses.COLOR_BLACK) # pending piece (selected)
+        curses.init_pair(5, curses.COLOR_CYAN, curses.COLOR_BLACK) # current player
         curses.init_pair(6, curses.COLOR_MAGENTA, curses.COLOR_BLACK) # pieces needed to be played
         curses.init_pair(7, curses.COLOR_BLACK, curses.COLOR_BLACK) # already-played pieces
 
@@ -79,7 +82,6 @@ class TUI:
 
         Returns: string-type visualization of the blokus board
         """
-        # grid's top edge - addstr (number defined)
         self._print("┌───" + ("┬───" * (self.blokus.size - 1)) + "┐" + "\n", 0)
         #self._print("\n", 0)
 
@@ -92,7 +94,6 @@ class TUI:
                     x1, y1 = loc
                     x2, y2 = cur_piece.anchor
                     if (x, y) == (x1 + x2, y1 + y2):
-
                         self._print("███", 2)
                 # None: place empty space in it
                 
@@ -115,7 +116,7 @@ class TUI:
             else:
                 self._print("└───" + ("┴───" * (self.blokus.size - 1)) + "┘"+ "\n", 0)
 
-        self.screen.addstr("\n")
+        self._print("\n")
         
     def print_display(self) -> str:
         """
@@ -132,7 +133,10 @@ class TUI:
         shapes : list[str] = ["1", "2", "3", "4", "5", "7", "A", "C", "F", "S", "L", "N", "O", "P", "T", "U", "V", "W", "X", "Y", "Z"]
         # supports any given number of players
         for player in range (1, self.blokus.num_players + 1):
-            self._print(f"player {player}: ", 0)
+            if self.blokus.curr_player is player:
+                self._print(f"player {player}: ", 5)
+            else:
+                self._print(f"player {player}: ", 0)
             for shape in shapes:
                 if shape in self.blokus.remaining_shapes(player):
                     self._print(shape + " ", 1)
@@ -149,7 +153,7 @@ class TUI:
             string [str]: string to print
             color [int]: color to apply
 
-        Returns [str]: temrinal string
+        Returns [str]: terminal string
         """
         self.screen.addstr(string, curses.color_pair(color)) # in specific color?
     
@@ -162,6 +166,7 @@ class TUI:
             cur_piece.set_anchor((self.blokus.size / 2, self.blokus.size / 2))
 
             self.print_board(cur_piece)
+            self.print_display()
             key = screen.getch()
             
             if key == ESC or self.blokus.winners is not None: # if ESC pressed, exit terminal
@@ -172,48 +177,57 @@ class TUI:
             # move the piece
                 if key in ARROW_KEYS:
                     x, y = cur_piece.anchor
+                    # move left
                     if key == curses.KEY_LEFT and not self.blokus.any_wall_collisions(cur_piece):
                         cur_piece.set_anchor(x, y - 1)
+                    # move right
                     elif key == curses.KEY_RIGHT and not self.blokus.any_wall_collisions(cur_piece):
                         cur_piece.set_anchor(x, y + 1)
+                    # move up
                     elif key == curses.KEY_UP and not self.blokus.any_wall_collisions(cur_piece):
                         cur_piece.set_anchor(x - 1, y)
+                    # move down
                     elif key == curses.KEY_DOWN and not self.blokus.any_wall_collisions(cur_piece): 
                         cur_piece.set_anchor(x + 1, y)
                 elif key in ORIENT_KEYS:
                     temp: Piece = Piece(cur_piece.shape)
                     temp.set_anchor(cur_piece.anchor)
                     # rotate left
-                    temp.rotate_left()
-                    if key == 101 and not self.blokus.any_wall_collisions(temp):
-                        cur_piece.rotate_left()
+                    if key == 101:
+                        temp.rotate_left()
+                        if not self.blokus.any_wall_collisions(temp):
+                            cur_piece.rotate_left()
                     # rotate right
                     elif key == 114:
-
-                elif key == RETIRE:
-                    self._print(f"player {self.blokus.curr_player} retires")
-                    self.blokus.retire()
-                    
-                #TODO: add player score changes
-
-                
-                # decide the piece location
+                        temp.rotate_right()
+                        if not self.blokus.any_wall_collisions(temp):
+                            cur_piece.rotate_right()
+                    # flip
+                    else:
+                        temp.flip_horizontally()
+                        if not self.blokus.any_wall_collisions(temp):
+                            cur_piece.flip_horizontally()
                 elif key in ENTER_KEYS:
                     self.blokus.maybe_place(cur_piece)
                     break
+                elif key in RETIRE:
+                    self._print(f"player {self.blokus.curr_player} retires")
+                    self.blokus.retire()
             
             # change player turn
-            if self.blokus.curr_player == 1:
-                self.blokus.curr_player = 2
+            if self.blokus.curr_player == len(self.players_list):
+                self.blokus.set_curr_player(1)
             else:
-                self.blokus.curr_player = 1
+                self.blokus.set_curr_player(self.blokus.curr_player + 1)
             
             # if someone has won
             if self.blokus.winners is not None:
                 report: str = "Winners are "
                 for player in self.blokus.winners:
                     report += f"player {player} "
+                self._print(report, 5)
                 break
+            
             screen.refresh()
 
 # COMMAND LINE INTERFACE (Click) - defaulted to duo set-up
@@ -223,18 +237,12 @@ class TUI:
 @click.option("-p", "--start-position", nargs = 2, multiple = True, default = (("4", "4"), ("9", "9")))
 @click.option("--game", default = None)
 
-def run_tui(screen: Any):
-    """
-    user interaction for tui
-    """
-    tui = TUI(screen, num_players, board_size, start_position, game)
+def run_tui(screen: Any, num_players, size, start_position, game) -> None:
+    tui = TUI(screen, num_players, size, start_position, game)
     tui.user_interaction(screen)
 
 def main() -> None:
-    """
-    function to apply curses wrapper onto run_tui
-    """
-    curses.wrapper(run_tui, num_players, board_size, start_position_int, game)
+    curses.wrapper(run_tui, screen, num_players, size, start_position)
 
 #create tui object in helper function
 
