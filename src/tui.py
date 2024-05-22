@@ -21,7 +21,7 @@ RETIRE = 113
 
 blokus: None | Blokus
 num_players: int
-board_size: int
+size: int
 screen: Any
 players_list: list[int]
 size: int
@@ -33,7 +33,7 @@ class TUI:
     """
     def __init__(self, screen: Any,
                  num_players: int,
-                 board_size: int,
+                 size: int,
                  start_position: set[tuple],
                  game_mode: None | str) -> None:
         """
@@ -42,8 +42,8 @@ class TUI:
         # self.blokus = blokus
         self.screen = screen
         self.blokus = None
-        self.num_players = num_players
-        self.board_size = board_size
+        self.num_players = int(num_players)
+        self.size = int(size)
         # list of players-block colors referenced to curses colors list, initialized below
         self.players_list = []
         for i in range(num_players):
@@ -61,7 +61,7 @@ class TUI:
         elif game_mode == "classic-4":
             self.blokus = Blokus(4, 20, {(0,0), (0,19), (19,0), (19,19)})
         else:
-            self.blokus = Blokus(num_players = num_players, board_size = board_size, start_position = start_position)
+            self.blokus = Blokus(num_players, size, start_position)
 
         # initialize colors from curses
         curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK) # player 1
@@ -90,12 +90,15 @@ class TUI:
             self._print("│", 0)
             for y in range(self.blokus.size):
                 # hovering piece
+                state: bool = False
                 for loc in cur_piece.shape.squares:
                     x1, y1 = loc
                     x2, y2 = cur_piece.anchor
                     if (x, y) == (x1 + x2, y1 + y2):
                         self._print("███", 5)
-                        break                
+                        state = True
+                if state:
+                    break        
                 # blank or already-placed piece on the board
                 if self.blokus.grid[x][y] is None:
                     self._print("   ", 0)
@@ -115,7 +118,7 @@ class TUI:
             else:
                 self._print("└───" + ("┴───" * (self.blokus.size - 1)) + "┘"+ "\n", 0)
 
-        self._print("\n")
+        self._print("\n", 0)
         
     def print_display(self) -> str:
         """
@@ -126,9 +129,9 @@ class TUI:
 
         Returns [str]: display of blokus board's current state
         """
-        self._print(f"current player {self.blokus.curr_player} has pending piece TODO\n")
+        self._print(f"layer {self.blokus.curr_player} is currently making a move\n", 0)
         # summary of remaining pieces needed to be played
-        self._print("STATUS SCREEN:\n")
+        self._print("STATUS SCREEN:\n", 0)
         shapes : list[str] = ["1", "2", "3", "4", "5", "7", "A", "C", "F", "S", "L", "N", "O", "P", "T", "U", "V", "W", "X", "Y", "Z"]
         # supports any given number of players
         for player in range (1, self.blokus.num_players + 1):
@@ -139,12 +142,10 @@ class TUI:
             for shape in shapes:
                 if shape in self.blokus.remaining_shapes(player):
                     self._print(shape + " ", 1)
-                else:
-                    self._print(shape + " ", 0)
-            self._print("\n")
+            self._print("\n", 0)
             # print player's score
-            self._print(f"Player's score: {self.blokus.get_score(player)}")
-            self._print("\n")
+            self._print(f"Player's score: {self.blokus.get_score(player)}", 0)
+            self._print("\n", 0)
 
     def _print(self, string: str, color: int) -> str:
         """
@@ -158,16 +159,17 @@ class TUI:
         """
         self.screen.addstr(string, curses.color_pair(color)) # in specific color?
     
-    def user_interaction(self, screen: Any):
+    def user_interaction(self, screen: Any) -> None:
         """
-        runs the full game logic loop of a blokus game
+        runs the full game logic loop of a blokus match
+
+        Inputs:
+            screen: Any
+        
+        Returns [None]: updates the terminal with the game until it ends
         """
         while True: # game runs until someone wins
             screen.clear()
-
-            if key == ESC or self.blokus.winners is not None: # if ESC pressed, exit terminal
-                # screen.getch() <-- need this or not?
-                break
             
             random_piece: ShapeKind = random.choice(self.blokus.remaining_shapes(self.blokus.curr_player))
             cur_piece: Piece = Piece(self.blokus.shapes[random_piece])
@@ -176,6 +178,10 @@ class TUI:
             self.print_board(cur_piece)
             self.print_display()
             key = screen.getch()
+
+            if key == ESC or self.blokus.winners is not None: # if ESC pressed, exit terminal
+                # screen.getch() <-- need this or not?
+                break
 
             while True: # until player places piece (break in ENTER)
             # move the piece
@@ -252,15 +258,20 @@ class TUI:
 @click.option("-p", "--start-position", nargs = 2, multiple = True, default = (("4", "4"), ("9", "9")))
 @click.option("--game", default = None)
 
-def run_tui(screen: Any, num_players, size, start_position, game) -> None:
+def run_tui(num_players, size, start_position, game) -> None:
     set_of_positions: set = set()
     for position in start_position:
-        set_of_positions.append(position)
-    tui = TUI(screen, num_players, size, set_of_positions, game)
-    tui.user_interaction(screen)
+        x, y = position
+        set_of_positions.add((int(x), int(y)))
+    
+    def curses_main(screen: Any) -> None:
+        tui = TUI(screen, num_players, size, set_of_positions, game)
+        tui.user_interaction(screen)
+    
+    curses.wrapper(curses_main)
 
 def main() -> None:
-    curses.wrapper(run_tui)
+    run_tui()
 
 if __name__ == "__main__":
     main()
