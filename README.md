@@ -50,6 +50,18 @@ Implemented escape key so now it quits when escape key is pressed
 
 
 ### TUI
+[Completeness] Game modes not displaying boards properly
+Mono, Duo, and specified board sizes can create Blokus instances with the given board specifications. 
+Overall code is also re-organized to have an overarching TUI class with the blokus attribute and to create Blokus
+objects of these game modes inside the constructor.
+
+[Completeness] Display Issues
+(Before changing parts of the main function's screen and wrappers, which are currently causing last-minute errors) 
+display shows the board and piece being played. Piece is also randomly chosen for each player.
+
+[Completeness] Arrow, Enter, and Escape Keys
+Keys and their effect on the shape has been implemented.
+
 
 ### Bot
 This component received two S scores in Milestone 2.

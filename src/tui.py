@@ -2,140 +2,249 @@
 referred to connectm's tui.py implementation for inspiration 
 on constructing the grid and utilizing colorama
 """
-import random
+import click
 import curses
-import colorama
-from colorama import Fore
+import random
 import sys
 from typing import Any
 
-from blokus import BlokusBase, Shape, Piece
-from fakes import BlokusStub, BlokusFake
-from shape_definitions import ShapeKind, definitions
+from blokus import Piece, Blokus
+from shape_definitions import ShapeKind
 
+# constants for command line interface keys
 ESC = 27
 curses.set_escdelay(25)
 ENTER_KEYS = [10, 13]
 ARROW_KEYS = [curses.KEY_LEFT, curses.KEY_RIGHT, curses.KEY_UP, curses.KEY_DOWN]
+ORIENT_KEYS = [101, 114, 32] # left, right, flip
+RETIRE = 113
 
-# main function for running tui
-def run_tui(user_input: str) -> str:
-    # mono and duo versions
-    board: BlokusFake | BlokusStub
-    if user_input == "mono":
-        board = BlokusFake(1, 11, {(5, 5)})
-    elif user_input == "duo":
-        board = BlokusFake(2, 14, {(4, 4), (9, 9)})
-        print_board(board)
-    # board size - milestone 1: I used Stub here just for now to show I've completed this stage with the pieces
-    else:
-        board_size = int(user_input)
-        board = BlokusStub(2, board_size, {(0, 0), (board_size - 1, board_size - 1)})
-        print_board(board)
+blokus: None | Blokus
+num_players: int
+board_size: int
+screen: Any
+players_list: list[int]
+size: int
+start_position: set
 
-# printing board (visual display with gui)
-def print_board(board: BlokusFake) -> str:
-    colorama.init() # to color symbols
-
-    # grid's top edge
-    print(Fore.BLACK + "┌───" + ("┬───" * (board.size - 1)) + "┐")
-
-    # sides and inner sections (between spots)
-    for x in range(board.size):
-        base = Fore.BLACK + "│"
-        for y in range(board.size):
-            # None: place empty space in it
-            if board.grid[x][y] is None:
-                base += "   "
-            # process per player (1 and 2)
-            else:
-                player = board.grid[x][y][0]
-                piece = board.grid[x][y][1]
-                if player == 1:
-                    if piece is not None:
-                        base += Fore.BLUE + "███"
-                    else:
-                        base += "   "
-                elif player == 2:
-                    if piece is not None:
-                        base += Fore.RED + "███"
-                    else:
-                        base += "   "
-            base += Fore.BLACK + "│"
-        print(base)
-
-        # middle sections or bottom edge
-        if x < board.size - 1:
-            print(Fore.BLACK + "├───" + ("┼───" * (board.size - 1)) + "┤")
-        else:
-            print(Fore.BLACK + "└───" + ("┴───" * (board.size - 1)) + "┘")
-
-    # DISPLAY
-    # pending piece AND current player
-    print("\n")
-    print(f"current player {board.curr_player} has pending piece TODO\n")
-    # summary of remaining pieces needed to be played
-    print("STATUS SCREEN:\n")
-    shapes: list[str] = ["1", "2", "3", "4", "5", "7", "A", "C", "F", "S", "L", "N", "O", "P", "T", "U", "V", "W", "X", "Y", "Z"]
-    for i in range (1, board.num_players + 1):
-        status_screen: str = f"player {i}: "
-        for shape in shapes:
-            if shape in board.remaining_shapes(i):
-                status_screen += Fore.YELLOW + shape + " "
-            else:
-                status_screen += Fore.BLACK + shape + " "
-        print(f"{status_screen}")
-
-def play_blokus() -> None:
-    curses.wrapper(_play_blokus)
-
-# 
-def _play_blokus(blokus: BlokusBase | BlokusFake, screen: Any) -> None:
-    # game loop: ends when player/players win (all pieces are placed)
-    while True:
-        # state of screen - q: print every move?
-        run_tui(blokus)
-
-        # choose random remaining piece from remaining pieces
-        random_piece: ShapeKind = random.choice(blokus.remaining_shapes(blokus.curr_player))
-        cur_piece: Piece = Piece(blokus.shapes[random_piece])
-        cur_piece.set_anchor((blokus.size / 2, blokus.size / 2))
-       
-        # USER CONTROL
-        key = screen.getch()
-        # if ESC pressed, simply exit
-        if key == ESC or BlokusFake.winners is not None:
-            break
-
-        # move the piece
-        elif key in ARROW_KEYS:
-            x, y = cur_piece.anchor
-            if key == curses.KEY_LEFT and not blokus.any_wall_collisions(cur_piece):
-                cur_piece.set_anchor(x, y - 1)
-            elif key == curses.KEY_RIGHT and not blokus.any_wall_collisions(cur_piece):
-                cur_piece.set_anchor(x, y + 1)
-            elif key == curses.KEY_UP and not blokus.any_wall_collisions(cur_piece):
-                cur_piece.set_anchor(x - 1, y)
-            elif key == curses.KEY_DOWN and not blokus.any_wall_collisions(cur_piece): 
-                cur_piece.set_anchor(x + 1, y)
+class TUI:
+    """
+    Class for TUI simulation of blokus
+    """
+    def __init__(self, screen: Any,
+                 num_players: int,
+                 board_size: int,
+                 start_position: set[tuple],
+                 game_mode: None | str) -> None:
+        """
+        Constructor for TUI class
+        """
+        # self.blokus = blokus
+        self.screen = screen
+        self.blokus = None
+        self.num_players = num_players
+        self.board_size = board_size
+        # list of players-block colors referenced to curses colors list, initialized below
+        self.players_list = []
+        for i in range(num_players):
+            self.players_list.append(i + 1)
         
-        # decide the piece location
-        elif key in ENTER_KEYS:
-            blokus.maybe_place(cur_piece)
-
-        # change player
-        if blokus.curr_player == 1:
-            blokus.curr_player = 2
+        # initialize Blokus object for given round of TUI, based on user input
+        if game_mode == "mono":
+            self.blokus = Blokus(1, 11, {5, 5})
+        elif game_mode == "duo":
+            self.blokus = Blokus(2, 14, {(4, 4), (9, 9)})
+        elif game_mode == "classic-2":
+            self.blokus = Blokus(2, 20, {(0,0), (0,19), (19,0), (19,19)})
+        elif game_mode == "classic-3":
+            self.blokus = Blokus(3, 20, {(0,0), (0,19), (19,0), (19,19)})
+        elif game_mode == "classic-4":
+            self.blokus = Blokus(4, 20, {(0,0), (0,19), (19,0), (19,19)})
         else:
-            blokus.curr_player = 1
+            self.blokus = Blokus(num_players = num_players, board_size = board_size, start_position = start_position)
+
+        # initialize colors from curses
+        curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK) # player 1
+        curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLACK) # player 2
+        curses.init_pair(3, curses.COLOR_GREEN, curses.COLOR_BLACK) # player 3
+        curses.init_pair(4, curses.COLOR_RED, curses.COLOR_BLACK) # player 4
+        curses.init_pair(5, curses.COLOR_CYAN, curses.COLOR_BLACK) # current player
+        curses.init_pair(6, curses.COLOR_MAGENTA, curses.COLOR_BLACK) # pieces needed to be played
+        curses.init_pair(7, curses.COLOR_BLACK, curses.COLOR_BLACK) # already-played pieces
+
+
+    def print_board(self, cur_piece: Piece) -> str:
+        """
+        Print the blokus board's status visually onto the terminal
+
+        Input:
+            cur_piece: current player's currently hovering piece
+
+        Returns: string-type visualization of the blokus board
+        """
+        self._print("┌───" + ("┬───" * (self.blokus.size - 1)) + "┐" + "\n", 0)
+        #self._print("\n", 0)
+
+        # sides and inner sections (between spots)
+        for x in range(self.blokus.size):
+            self._print("│", 0)
+            for y in range(self.blokus.size):
+                # hovering piece
+                for loc in cur_piece.shape.squares:
+                    x1, y1 = loc
+                    x2, y2 = cur_piece.anchor
+                    if (x, y) == (x1 + x2, y1 + y2):
+                        self._print("███", 2)
+                # None: place empty space in it
+                
+                if self.blokus.grid[x][y] is None:
+                    self._print("   ", 0)
+                # process per player (1 and 2) - already placed pieces
+                else:
+                    player = self.blokus.grid[x][y][0]
+                    piece = self.blokus.grid[x][y][1]
+                    if piece is not None:
+                        self._print("███", player)
+                    else:
+                        self._print("   ", 0)
+                self._print("│", 0)
+            self._print("\n", 0)
+
+            # middle sections or bottom edge
+            if x < self.blokus.size - 1:
+                self._print("├───" + ("┼───" * (self.blokus.size - 1)) + "┤" + "\n", 0)
+            else:
+                self._print("└───" + ("┴───" * (self.blokus.size - 1)) + "┘"+ "\n", 0)
+
+        self._print("\n")
         
-        # if someone has won
-        if blokus.winners is not None:
-            report: str = "Winners are "
-            for player in blokus.winners:
-                report += f"player {player} "
-            break
+    def print_display(self) -> str:
+        """
+        Print display for the blokus game by tracking pending piece and current player
+
+        Input: 
+            None
+
+        Returns [str]: display of blokus board's current state
+        """
+        self._print(f"current player {self.blokus.curr_player} has pending piece TODO\n")
+        # summary of remaining pieces needed to be played
+        self._print("STATUS SCREEN:\n")
+        shapes : list[str] = ["1", "2", "3", "4", "5", "7", "A", "C", "F", "S", "L", "N", "O", "P", "T", "U", "V", "W", "X", "Y", "Z"]
+        # supports any given number of players
+        for player in range (1, self.blokus.num_players + 1):
+            if self.blokus.curr_player is player:
+                self._print(f"player {player}: ", 5)
+            else:
+                self._print(f"player {player}: ", 0)
+            for shape in shapes:
+                if shape in self.blokus.remaining_shapes(player):
+                    self._print(shape + " ", 1)
+                else:
+                    self._print(shape + " ", 0)
+            self._print("\n")
+        # TODO: add player score changes, determine if retired or not
+
+    def _print(self, string: str, color: int) -> str:
+        """
+        Applies print and color using addstr() to show text on the Terminal screen
+
+        Inputs:
+            string [str]: string to print
+            color [int]: color to apply
+
+        Returns [str]: terminal string
+        """
+        self.screen.addstr(string, curses.color_pair(color)) # in specific color?
+    
+    def user_interaction(self, screen):
+         while True:
+            screen.clear()
+            
+            random_piece: ShapeKind = random.choice(self.blokus.remaining_shapes(self.blokus.curr_player))
+            cur_piece: Piece = Piece(self.blokus.shapes[random_piece])
+            cur_piece.set_anchor((self.blokus.size / 2, self.blokus.size / 2))
+
+            self.print_board(cur_piece)
+            self.print_display()
+            key = screen.getch()
+            
+            if key == ESC or self.blokus.winners is not None: # if ESC pressed, exit terminal
+                # screen.getch() <-- need this or not?
+                break
+
+            while key not in ENTER_KEYS:
+            # move the piece
+                if key in ARROW_KEYS:
+                    x, y = cur_piece.anchor
+                    # move left
+                    if key == curses.KEY_LEFT and not self.blokus.any_wall_collisions(cur_piece):
+                        cur_piece.set_anchor(x, y - 1)
+                    # move right
+                    elif key == curses.KEY_RIGHT and not self.blokus.any_wall_collisions(cur_piece):
+                        cur_piece.set_anchor(x, y + 1)
+                    # move up
+                    elif key == curses.KEY_UP and not self.blokus.any_wall_collisions(cur_piece):
+                        cur_piece.set_anchor(x - 1, y)
+                    # move down
+                    elif key == curses.KEY_DOWN and not self.blokus.any_wall_collisions(cur_piece): 
+                        cur_piece.set_anchor(x + 1, y)
+                elif key in ORIENT_KEYS:
+                    temp: Piece = Piece(cur_piece.shape)
+                    temp.set_anchor(cur_piece.anchor)
+                    # rotate left
+                    if key == 101:
+                        temp.rotate_left()
+                        if not self.blokus.any_wall_collisions(temp):
+                            cur_piece.rotate_left()
+                    # rotate right
+                    elif key == 114:
+                        temp.rotate_right()
+                        if not self.blokus.any_wall_collisions(temp):
+                            cur_piece.rotate_right()
+                    # flip
+                    else:
+                        temp.flip_horizontally()
+                        if not self.blokus.any_wall_collisions(temp):
+                            cur_piece.flip_horizontally()
+                elif key in ENTER_KEYS:
+                    self.blokus.maybe_place(cur_piece)
+                    break
+                elif key in RETIRE:
+                    self._print(f"player {self.blokus.curr_player} retires")
+                    self.blokus.retire()
+            
+            # change player turn
+            if self.blokus.curr_player == len(self.players_list):
+                self.blokus.set_curr_player(1)
+            else:
+                self.blokus.set_curr_player(self.blokus.curr_player + 1)
+            
+            # if someone has won
+            if self.blokus.winners is not None:
+                report: str = "Winners are "
+                for player in self.blokus.winners:
+                    report += f"player {player} "
+                self._print(report, 5)
+                break
+            
+            screen.refresh()
+
+# COMMAND LINE INTERFACE (Click) - defaulted to duo set-up
+@click.command(name = "blokus-tui")
+@click.option("-n", "--num_players", default = 2)
+@click.option("-s", "--size", default = 14)
+@click.option("-p", "--start-position", nargs = 2, multiple = True, default = (("4", "4"), ("9", "9")))
+@click.option("--game", default = None)
+
+def run_tui(screen: Any, num_players, size, start_position, game) -> None:
+    tui = TUI(screen, num_players, size, start_position, game)
+    tui.user_interaction(screen)
+
+def main() -> None:
+    curses.wrapper(run_tui, screen, num_players, size, start_position)
+
+#create tui object in helper function
 
 if __name__ == "__main__":
-    #run_tui(sys.argv[1])
-    _play_blokus(sys.argv[1], None)
+    main()
