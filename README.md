@@ -28,6 +28,17 @@ fixed the issue.
 ### GUI
 
 ### TUI
+[Completeness] Game modes not displaying boards properly
+Mono, Duo, and specified board sizes can all be created.
+Code is also re-organized to have a TUI class with the blokus attribute and 
+
+[Completeness] Display Issues
+(Before changing parts of the main function's screen and wrappers that are currently causing issues) display shows
+the board and piece being played. Piece is also randomly chosen for each player (no mouse events for TUI).
+
+[Completeness] Arrow, Enter, and Escape Keys
+Keys and their effect on the shape has been implemented.
+
 
 ### Bot
 This component received two S scores in Milestone 2.
