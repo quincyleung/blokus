@@ -94,12 +94,11 @@ class TUI:
                     x1, y1 = loc
                     x2, y2 = cur_piece.anchor
                     if (x, y) == (x1 + x2, y1 + y2):
-                        self._print("███", 2)
-                # None: place empty space in it
-                
+                        self._print("███", 5)
+                        break                
+                # blank or already-placed piece on the board
                 if self.blokus.grid[x][y] is None:
                     self._print("   ", 0)
-                # process per player (1 and 2) - already placed pieces
                 else:
                     player = self.blokus.grid[x][y][0]
                     piece = self.blokus.grid[x][y][1]
@@ -143,7 +142,9 @@ class TUI:
                 else:
                     self._print(shape + " ", 0)
             self._print("\n")
-        # TODO: add player score changes, determine if retired or not
+            # print player's score
+            self._print(f"Player's score: {self.blokus.get_score(player)}")
+            self._print("\n")
 
     def _print(self, string: str, color: int) -> str:
         """
@@ -157,9 +158,16 @@ class TUI:
         """
         self.screen.addstr(string, curses.color_pair(color)) # in specific color?
     
-    def user_interaction(self, screen):
-         while True:
+    def user_interaction(self, screen: Any):
+        """
+        runs the full game logic loop of a blokus game
+        """
+        while True: # game runs until someone wins
             screen.clear()
+
+            if key == ESC or self.blokus.winners is not None: # if ESC pressed, exit terminal
+                # screen.getch() <-- need this or not?
+                break
             
             random_piece: ShapeKind = random.choice(self.blokus.remaining_shapes(self.blokus.curr_player))
             cur_piece: Piece = Piece(self.blokus.shapes[random_piece])
@@ -168,12 +176,8 @@ class TUI:
             self.print_board(cur_piece)
             self.print_display()
             key = screen.getch()
-            
-            if key == ESC or self.blokus.winners is not None: # if ESC pressed, exit terminal
-                # screen.getch() <-- need this or not?
-                break
 
-            while key not in ENTER_KEYS:
+            while True: # until player places piece (break in ENTER)
             # move the piece
                 if key in ARROW_KEYS:
                     x, y = cur_piece.anchor
@@ -189,6 +193,7 @@ class TUI:
                     # move down
                     elif key == curses.KEY_DOWN and not self.blokus.any_wall_collisions(cur_piece): 
                         cur_piece.set_anchor(x + 1, y)
+                    self._print(f"Arrow key: {key}", 0)
                 elif key in ORIENT_KEYS:
                     temp: Piece = Piece(cur_piece.shape)
                     temp.set_anchor(cur_piece.anchor)
@@ -197,21 +202,31 @@ class TUI:
                         temp.rotate_left()
                         if not self.blokus.any_wall_collisions(temp):
                             cur_piece.rotate_left()
+                            self._print(f"Piece {cur_piece} has been rotated left", 0)
                     # rotate right
                     elif key == 114:
                         temp.rotate_right()
                         if not self.blokus.any_wall_collisions(temp):
                             cur_piece.rotate_right()
-                    # flip
+                            self._print(f"Piece {cur_piece} has been rotated right", 0)
+                    # flip horizontally
                     else:
                         temp.flip_horizontally()
                         if not self.blokus.any_wall_collisions(temp):
                             cur_piece.flip_horizontally()
+                            self._print(f"Piece {cur_piece} has been flipped horizontally", 0)
                 elif key in ENTER_KEYS:
                     self.blokus.maybe_place(cur_piece)
                     break
-                elif key in RETIRE:
-                    self._print(f"player {self.blokus.curr_player} retires")
+
+                self.print_board(cur_piece)
+                self.print_display()
+                key = screen.getch()
+                screen.refresh()
+
+            # a player retires
+            if key in RETIRE:
+                    self._print(f"player {self.blokus.curr_player} has retired", 0)
                     self.blokus.retire()
             
             # change player turn
@@ -238,13 +253,14 @@ class TUI:
 @click.option("--game", default = None)
 
 def run_tui(screen: Any, num_players, size, start_position, game) -> None:
-    tui = TUI(screen, num_players, size, start_position, game)
+    set_of_positions: set = set()
+    for position in start_position:
+        set_of_positions.append(position)
+    tui = TUI(screen, num_players, size, set_of_positions, game)
     tui.user_interaction(screen)
 
 def main() -> None:
-    curses.wrapper(run_tui, screen, num_players, size, start_position)
-
-#create tui object in helper function
+    curses.wrapper(run_tui)
 
 if __name__ == "__main__":
     main()
