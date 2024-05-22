@@ -39,14 +39,14 @@ Instead of taking the squares of pending piece from shape.squares and trying to 
 
 [Completeness] Current Player Display not completed as required
 
-I added within the board the necessary display for every single player. Remainig pieces now highlights if in remaining shapes or grey if it's not in remaining shapes. Displays winner at the end but current player turn before then. Displays scores and retired players. 
+I added within the board the necessary display for every single player. Remainig pieces now highlights if in remaining shapes or grey if it's not in remaining shapes. Displays winner at the end but current player turn before then. Displays scores and retired players. This is in the draw_board() function
 
 [Completeness] Random Piece Selection not completed as required
-No longer random because now you can choose either by pressing keys or clicking on remaining shapes.
+No longer random because now you can choose either by pressing keys or clicking on remaining shapes. In the self.hovering function
 
 [Completeness] Escape Key not completed as required
 
-Implemented escape key so now it quits when escape key is pressed
+Implemented escape key so now it quits when escape key is pressed. 
 
 
 ### TUI
