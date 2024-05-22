@@ -27,6 +27,28 @@ fixed the issue.
 
 ### GUI
 
+[Code_Quality] Added doc strings 
+
+[Completeness] Running python3 src/{g,t}ui.py 20 doesn’t correctly display the board, start positions, and initial randomly selected piece, Same as previous but for python3 src/{g,t}ui.py duo, Same as previous but for python3 src/{g,t}ui.py mono:
+
+Fixed all and went through all listed parameters using click methods. Added a main function and set default variables to make sure every input listed on canvas was functional 
+
+[Completeness] Pending Piece Display not completed as required
+
+Instead of taking the squares of pending piece from shape.squares and trying to shift each square, I now use the squares() method which returns the accurate squares and just change the anchors instead. Now the pending piece (hovering in my case) will place exactly where it was hovering and no longer starts outside of the frame.
+
+[Completeness] Current Player Display not completed as required
+
+I added within the board the necessary display for every single player. Remainig pieces now highlights if in remaining shapes or grey if it's not in remaining shapes. Displays winner at the end but current player turn before then. Displays scores and retired players. 
+
+[Completeness] Random Piece Selection not completed as required
+No longer random because now you can choose either by pressing keys or clicking on remaining shapes.
+
+[Completeness] Escape Key not completed as required
+
+Implemented escape key so now it quits when escape key is pressed
+
+
 ### TUI
 
 ### Bot
