@@ -329,8 +329,8 @@ class Blokus(BlokusBase):
                 self.grid[r][c] = (self.curr_player, piece.shape.kind)
 
             # updates last move and current player to next player
-            if len(self.available_moves()) == 0:
-                self.retire()
+            #if len(self.available_moves()) == 0:
+            #    self.retire()
 
             self._last_move = piece
             all_players: list[int] = list(range(1, self.num_players + 1))
