@@ -27,7 +27,41 @@ fixed the issue.
 
 ### GUI
 
+[Code_Quality] Added doc strings 
+
+[Completeness] Running python3 src/{g,t}ui.py 20 doesn’t correctly display the board, start positions, and initial randomly selected piece, Same as previous but for python3 src/{g,t}ui.py duo, Same as previous but for python3 src/{g,t}ui.py mono:
+
+Fixed all and went through all listed parameters using click methods. Added a main function and set default variables to make sure every input listed on canvas was functional 
+
+[Completeness] Pending Piece Display not completed as required
+
+Instead of taking the squares of pending piece from shape.squares and trying to shift each square, I now use the squares() method which returns the accurate squares and just change the anchors instead. Now the pending piece (hovering in my case) will place exactly where it was hovering and no longer starts outside of the frame.
+
+[Completeness] Current Player Display not completed as required
+
+I added within the board the necessary display for every single player. Remainig pieces now highlights if in remaining shapes or grey if it's not in remaining shapes. Displays winner at the end but current player turn before then. Displays scores and retired players. This is in the draw_board() function
+
+[Completeness] Random Piece Selection not completed as required
+No longer random because now you can choose either by pressing keys or clicking on remaining shapes. In the self.hovering function
+
+[Completeness] Escape Key not completed as required
+
+Implemented escape key so now it quits when escape key is pressed. 
+
+
 ### TUI
+[Completeness] Game modes not displaying boards properly
+Mono, Duo, and specified board sizes can create Blokus instances with the given board specifications. 
+Overall code is also re-organized to have an overarching TUI class with the blokus attribute and to create Blokus
+objects of these game modes inside the constructor.
+
+[Completeness] Display Issues
+(Before changing parts of the main function's screen and wrappers, which are currently causing last-minute errors) 
+display shows the board and piece being played. Piece is also randomly chosen for each player.
+
+[Completeness] Arrow, Enter, and Escape Keys
+Keys and their effect on the shape has been implemented.
+
 
 ### Bot
 This component received two S scores in Milestone 2.
