@@ -1,71 +1,62 @@
-# CMSC 14200 Course Project
+# CS 142 Final Project: Blokus Game
 
-Team members:
+This repository contains our team implementation of a playable **Blokus** game developed for CMSC 14200: Computer Science with Applications II at the University of Chicago. The project supports multiple interfaces (GUI and TUI), rule enforcement, and a basic game-playing bot.
+
+## Team members:
 - GUI: Sean Choi (schoi12)
 - TUI: Minseo Kim (mkim27)
 - Bot: Quincy Leung (quincyleung)
 - QA: Grace Lu (ggracelu)
 
-## Improvements
-### Game Logic
-[Completeness] Issue with Shape Loading
-There was an issue with the method from_string() from the class Shape
-with how it was determining the shape squares. We updated lines 114-157 
-accordingly.
+## 🎮 Features
 
-[Completeness] Issue with Start Positions
-There was an issue with the start positions for Blokus Mini configurations. The expected start positions in test_init_blokus_mini_1() and test_init_blokus_mini_2() were changed from 5 start positions to 2 start positions, as clarified by the updated description of the Blokus Mini game configuration in the Blokus Specification. We updated line 25 and 42 in tests/test_blokus.py accordingly.
+- Complete game logic for **Blokus** and **Blokus Mini**
+- **Graphical UI (GUI)** using Pygame
+- **Text-based UI (TUI)** with full keyboard interaction
+- Bot player implementation with rule-compliant moves
+- Turn-based play with legal move enforcement, corner-checking, and piece tracking
+- Support for multiple game modes: mono, duo, and custom board sizes
 
-[Completeness] Issue with Require Corners Rule
-Test 26 (test_require_own_corners_1()) was not comprehensive yet. We added lines 794-798 in tests/test_blokus.py to ensure that the player could not place another piece without sharing corners where that piece could take the shape of any of the remaining shapes. 
+## 🔧 Game Logic Fixes
 
-[Completeness] Issue with Available Moves
-There was a minor issue with the method legal_to_place() with the exact values 
-it was iterating through, thus returned the wrong values to available_moves(). 
-We changed line 287 from "range(c - 1, r + 2)" to "range(c - 1, c + 2)", which 
-fixed the issue.
+- **Shape Loading:** Fixed incorrect square parsing in `Shape.from_string()`  
+- **Start Positions:** Adjusted Mini mode start positions from 5 to 2 based on updated spec  
+- **Corner Rule:** Improved test coverage to enforce corner-sharing requirement for legal moves  
+- **Available Moves:** Corrected iteration range in `legal_to_place()` to fix move generation
 
-### GUI
+## 🖥️ GUI Improvements
 
-[Code_Quality] Added doc strings 
+- Refactored input handling using `click` CLI framework
+- Fixed board and piece display issues across all game modes
+- Implemented accurate pending piece preview with `Shape.squares()`
+- Visualized current player, remaining pieces, scores, and winner announcements
+- Escape key now cleanly exits the game
 
-[Completeness] Running python3 src/{g,t}ui.py 20 doesn’t correctly display the board, start positions, and initial randomly selected piece, Same as previous but for python3 src/{g,t}ui.py duo, Same as previous but for python3 src/{g,t}ui.py mono:
+## 🧾 TUI Improvements
 
-Fixed all and went through all listed parameters using click methods. Added a main function and set default variables to make sure every input listed on canvas was functional 
+- Structured into a unified `TUI` class with dynamic `Blokus` instance creation
+- Fixed rendering issues in mono/duo modes
+- Added arrow key navigation, Enter to confirm, and Escape to quit
 
-[Completeness] Pending Piece Display not completed as required
+## 🧠 Bot
 
-Instead of taking the squares of pending piece from shape.squares and trying to shift each square, I now use the squares() method which returns the accurate squares and just change the anchors instead. Now the pending piece (hovering in my case) will place exactly where it was hovering and no longer starts outside of the frame.
+- Rule-compliant bot player implemented to simulate autonomous turns
+- Integrated into full game loop for testing and play
 
-[Completeness] Current Player Display not completed as required
+---
 
-I added within the board the necessary display for every single player. Remainig pieces now highlights if in remaining shapes or grey if it's not in remaining shapes. Displays winner at the end but current player turn before then. Displays scores and retired players. This is in the draw_board() function
+## 📦 How to Run
 
-[Completeness] Random Piece Selection not completed as required
-No longer random because now you can choose either by pressing keys or clicking on remaining shapes. In the self.hovering function
+```bash
+# Clone repo and set up virtual environment
+git clone https://github.com/quincyleung/blokus.git
+cd blokus
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 
-[Completeness] Escape Key not completed as required
+# Run GUI version
+python3 src/gui.py mono
 
-Implemented escape key so now it quits when escape key is pressed. 
-
-
-### TUI
-[Completeness] Game modes not displaying boards properly
-Mono, Duo, and specified board sizes can create Blokus instances with the given board specifications. 
-Overall code is also re-organized to have an overarching TUI class with the blokus attribute and to create Blokus
-objects of these game modes inside the constructor.
-
-[Completeness] Display Issues
-(Before changing parts of the main function's screen and wrappers, which are currently causing last-minute errors) 
-display shows the board and piece being played. Piece is also randomly chosen for each player.
-
-[Completeness] Arrow, Enter, and Escape Keys
-Keys and their effect on the shape has been implemented.
-
-
-### Bot
-This component received two S scores in Milestone 2.
-
-### QA
-This component received two S scores in Milestone 2.
-
+# Run TUI version
+python3 src/tui.py mono
